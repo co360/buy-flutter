@@ -1,0 +1,31 @@
+{
+  "label": {
+    "main": "Apa khabar {user}!"
+  },
+  "button": {
+    "label": {
+      "clickMe": "Tekan Saya",
+      "language": "Bahasa Malaysia",
+      "switchLanguage": "Tukar Bahasa"
+    },
+    "toastMessage" : "Anda tekan butang"
+  },
+  "screen" : {
+    "bottomNavigation": {
+      "market": "Pasaran",
+      "orders": "Pesanan",
+      "cart": "Troli",
+      "account": "Akaun"
+    },
+    "account" : {
+      "login": "Log Masuk"
+    }
+  },
+  "shopping": {
+    "productListing": "Senarai Produk",
+    "productDetail": {
+      "name" : "Product Info",
+      "productInformation": "Maklumat Produk"
+    }
+  }
+}
