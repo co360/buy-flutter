@@ -1,14 +1,7 @@
 {
-  "label": {
-    "main": "Hello {user}!"
-  },
-  "button": {
-    "label": {
-      "clickMe": "Click Me",
-      "language": "English",
-      "switchLanguage": "Switch Language"
-    },
-    "toastMessage" : "Anda tekan butang"
+  "language" :{
+    "en": "English",
+    "ms": "Bahasa Melayu"
   },
   "screen" : {
     "bottomNavigation": {
@@ -16,9 +9,6 @@
       "orders": "Orders",
       "cart": "Cart",
       "account": "Account"
-    },
-    "account" : {
-      "login": "Login"
     }
   },
   "shopping": {
@@ -26,6 +16,23 @@
     "productDetail": {
       "name" : "Product Detail",
       "productInformation": "Product Information"
+    }
+  },
+  "account" : {
+    "login": "Login",
+    "logout": "Logout",
+    "loginSignup" : "Login / Signup",
+    "changeLanguage": "Change Language",
+    "settings": "Settings",
+    "myAccount": "My Account",
+    "myProfile": "My Profile",
+    "changeEmailAddress": "Change Email Address",
+    "changePassword": "Change Password",
+    "myAddresses": "My Addresses",
+    "bankAccounts": "Bank Accounts / Cards",
+
+    "changeLanguageScreen" : {
+      "languages" : "Languages"
     }
   }
 }

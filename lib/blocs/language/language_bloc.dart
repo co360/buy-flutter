@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
+import 'package:storeFlutter/components/app_notification.dart';
 
 // Because the the bloc is process simple so put all bloc, state and event into one file
 
@@ -21,6 +22,21 @@ class LanguageBloc extends Bloc<LanguageEvent, LanguageState> {
       await FlutterI18n.refresh(event.context, currentLang);
 
       yield LanguageChangeSuccess();
+//      final snackBar = SnackBar(content: Text('Yay! A SnackBar!'));
+//      Scaffold.of(event.context).showSnackBar(snackBar);
+
+//      Flushbar(
+//        message: "Language Changed",
+//        margin: EdgeInsets.only(left: 10, right: 10, bottom: 10),
+//        borderRadius: 10,
+//        animationDuration: Duration(
+//          milliseconds: 500,
+//        ),
+//        duration: Duration(
+//          seconds: 2,
+//        ),
+//      )..show(event.context);
+      AppNotification("Language Change").show(event.context);
     } else if (event is SwitchLanguage) {
       yield LanguageChangeInProgress();
 

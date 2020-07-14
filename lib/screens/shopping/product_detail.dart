@@ -36,7 +36,7 @@ class ProductDetailScreen extends StatelessWidget {
 //                  Navigator.popAndPushNamed(context, '/cart'),
                   Navigator.of(context).popUntil((route) => route.isFirst),
                 },
-                type: Type.white,
+                type: AppButtonType.white,
               )
             ],
           ),

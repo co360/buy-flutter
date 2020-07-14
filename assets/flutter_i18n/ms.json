@@ -1,24 +1,10 @@
 {
-  "label": {
-    "main": "Apa khabar {user}!"
-  },
-  "button": {
-    "label": {
-      "clickMe": "Tekan Saya",
-      "language": "Bahasa Malaysia",
-      "switchLanguage": "Tukar Bahasa"
-    },
-    "toastMessage" : "Anda tekan butang"
-  },
   "screen" : {
     "bottomNavigation": {
       "market": "Pasaran",
       "orders": "Pesanan",
       "cart": "Troli",
       "account": "Akaun"
-    },
-    "account" : {
-      "login": "Log Masuk"
     }
   },
   "shopping": {
@@ -26,6 +12,25 @@
     "productDetail": {
       "name" : "Product Info",
       "productInformation": "Maklumat Produk"
+    }
+  },
+  "account" : {
+    "login": "Log Masuk",
+    "logout": "Log Keluar",
+    "loginSignup" : "Log Masuk / Daftar",
+    "changeLanguage": "Tukar Bahasa",
+    "settings": "Tetapan",
+    "myAccount": "Akaun Saya",
+    "myProfile": "Profil Saya",
+    "changeEmailAddress": "Tukar Alamat Emel",
+    "changePassword": "Tukar Kata Laluan",
+    "myAddresses": "Alamat Saya",
+    "bankAccounts": "Akaun Bank / Kad",
+
+    "changeLanguageScreen" : {
+      "languages" : "Bahasa",
+      "english" : "English",
+      "malay" : "Bahasa Malayu"
     }
   }
 }

@@ -6,13 +6,24 @@ class AppButton extends StatelessWidget {
   final VoidCallback onPressed;
   final bool noPadding;
 
-  final Type type;
+  final AppButtonType type;
+  final AppButtonSize size;
 
   const AppButton(this.text, this.onPressed,
-      {this.type = Type.orange, this.noPadding = false});
+      {this.type = AppButtonType.orange,
+      this.noPadding = false,
+      this.size = AppButtonSize.big});
 
   @override
   Widget build(BuildContext context) {
+    double fontSize = 17;
+    EdgeInsets padding = EdgeInsets.symmetric(vertical: 14, horizontal: 20);
+
+    if (this.size == AppButtonSize.small) {
+      fontSize = 14;
+      padding = EdgeInsets.symmetric(vertical: 11, horizontal: 20);
+    }
+
     return Padding(
       padding: EdgeInsets.only(
           bottom: this.noPadding ? 0 : AppTheme.paddingStandard),
@@ -20,14 +31,14 @@ class AppButton extends StatelessWidget {
         onPressed: this.onPressed,
         color: this.type.backgroundColor,
         elevation: 3,
-        padding: EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+        padding: padding,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(80.0),
         ),
         child: Text(this.text,
             style: TextStyle(
               color: this.type.textColor,
-              fontSize: 17,
+              fontSize: fontSize,
               fontWeight: FontWeight.bold,
             )),
       ),
@@ -35,16 +46,18 @@ class AppButton extends StatelessWidget {
   }
 }
 
-enum Type { success, white, orange }
+enum AppButtonSize { big, small }
 
-extension TypeExtension on Type {
+enum AppButtonType { success, white, orange }
+
+extension TypeExtension on AppButtonType {
   Color get backgroundColor {
     switch (this) {
-      case Type.orange:
+      case AppButtonType.orange:
         return AppTheme.colorOrange;
-      case Type.white:
+      case AppButtonType.white:
         return Colors.white;
-      case Type.success:
+      case AppButtonType.success:
         return AppTheme.colorSuccess;
       default:
         return AppTheme.colorOrange;
@@ -53,8 +66,8 @@ extension TypeExtension on Type {
 
   Color get textColor {
     switch (this) {
-      case Type.white:
-        return AppTheme.colorPrimary;
+      case AppButtonType.white:
+        return AppTheme.colorLink;
       default:
         return Colors.white;
     }

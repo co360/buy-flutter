@@ -7,6 +7,7 @@ class AppTheme {
   static Color colorDanger = Color(0xFFEB547C);
   static Color colorInfo = Color(0xFFB2DBBF);
   static Color colorOrange = Color(0xFFF37318);
+  static Color colorLink = Color(0xFF0093E9);
 
   static Color colorBg = Color(0xFFF9F9F9);
   static Color colorBg2 = Color(0xFFF3F5F8);
@@ -22,4 +23,14 @@ class AppTheme {
   static Color colorGray9 = Color(0xFF212529);
 
   static double paddingStandard = 20;
+
+  static Widget gradientBackground = Container(
+    decoration: BoxDecoration(
+      gradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: <Color>[AppTheme.colorPrimary, AppTheme.colorSuccess],
+      ),
+    ),
+  );
 }

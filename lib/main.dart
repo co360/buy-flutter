@@ -13,6 +13,7 @@ import 'package:storeFlutter/screens/shopping/product_detail.dart';
 import 'package:storeFlutter/screens/shopping/product_listing.dart';
 import 'package:storeFlutter/screens/shopping_cart.dart';
 import 'package:storeFlutter/services/locator.dart';
+import 'package:storeFlutter/util/app-theme.dart';
 
 void main() async {
   final FlutterI18nDelegate flutterI18nDelegate = FlutterI18nDelegate(
@@ -44,14 +45,14 @@ class MyApp extends StatelessWidget {
             return MaterialApp(
               title: 'Flutter Demo',
               theme: ThemeData(
-                primarySwatch: Colors.blue,
+                primarySwatch:
+                    Colors.grey, // use grey so the text title is black
+                scaffoldBackgroundColor: AppTheme.colorBg2,
+                appBarTheme: AppBarTheme(color: AppTheme.colorBg),
                 visualDensity: VisualDensity.adaptivePlatformDensity,
               ),
-//              home: MyHomePage(title: 'Flutter Demo Home Page'),
-
               initialRoute: '/',
               routes: {
-//                '/': (context) => RootContainer(),
                 '/': (context) => RootContainer(),
                 '/listing': (context) => ProductListingScreen(),
                 '/detail': (context) => ProductDetailScreen(),
