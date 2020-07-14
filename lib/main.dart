@@ -86,7 +86,7 @@ class RootContainer extends StatelessWidget {
       bloc: GetIt.I<LanguageBloc>(),
 //          bloc: LanguageBloc(context),
       builder: (context, state) {
-        print('change laguage ${state}');
+        print('change laguage $state');
         print(FlutterI18n.currentLocale(context));
 
         List<Widget> allScreens = <Widget>[

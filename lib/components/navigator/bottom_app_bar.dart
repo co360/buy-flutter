@@ -16,7 +16,8 @@ class CustomBottomAppBar extends StatefulWidget {
     this.color,
     this.selectedColor,
     this.onTabSelected,
-  }) {}
+  });
+
   final List<CustomBottomAppBarItem> items;
   final double height;
   final double iconSize;
