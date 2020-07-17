@@ -2,14 +2,17 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
-import 'package:storeFlutter/components/app_notification.dart';
+import 'package:get_it/get_it.dart';
+import 'package:storeFlutter/components/app-notification.dart';
+import 'package:storeFlutter/services/storage-service.dart';
 
 // Because the the bloc is process simple so put all bloc, state and event into one file
 
 // bloc
 class LanguageBloc extends Bloc<LanguageEvent, LanguageState> {
-  @override
-  LanguageState get initialState => LanguageInitial();
+  StorageService _storageService = GetIt.I<StorageService>();
+
+  LanguageBloc() : super(LanguageInitial());
 
   @override
   Stream<LanguageState> mapEventToState(LanguageEvent event) async* {
@@ -20,23 +23,13 @@ class LanguageBloc extends Bloc<LanguageEvent, LanguageState> {
 
       currentLang = Locale(event.languageCode);
       await FlutterI18n.refresh(event.context, currentLang);
+      _storageService.language = event.languageCode;
 
       yield LanguageChangeSuccess();
-//      final snackBar = SnackBar(content: Text('Yay! A SnackBar!'));
-//      Scaffold.of(event.context).showSnackBar(snackBar);
-
-//      Flushbar(
-//        message: "Language Changed",
-//        margin: EdgeInsets.only(left: 10, right: 10, bottom: 10),
-//        borderRadius: 10,
-//        animationDuration: Duration(
-//          milliseconds: 500,
-//        ),
-//        duration: Duration(
-//          seconds: 2,
-//        ),
-//      )..show(event.context);
-      AppNotification("Language Change").show(event.context);
+      AppNotification(
+        FlutterI18n.translate(
+            event.context, "account.changeLanguageScreen.languageChanged"),
+      ).show(event.context);
     } else if (event is SwitchLanguage) {
       yield LanguageChangeInProgress();
 
@@ -63,9 +56,7 @@ class LanguageInitial extends LanguageState {}
 
 class LanguageChangeInProgress extends LanguageState {}
 
-class LanguageChangeSuccess extends LanguageState {
-  const LanguageChangeSuccess();
-}
+class LanguageChangeSuccess extends LanguageState {}
 
 // Event
 abstract class LanguageEvent extends Equatable {

@@ -4,8 +4,10 @@ import 'package:storeFlutter/util/app-theme.dart';
 class AppCard extends StatelessWidget {
   final Widget child;
   final Widget footer;
+  final EdgeInsets padding;
 
-  const AppCard(this.child, {this.footer});
+  const AppCard(this.child,
+      {this.footer, this.padding = const EdgeInsets.all(20)});
 
   @override
   Widget build(BuildContext context) {
@@ -23,14 +25,14 @@ class AppCard extends StatelessWidget {
         ),
         child: this.footer == null
             ? Padding(
-                padding: const EdgeInsets.all(20),
+                padding: padding,
                 child: this.child,
               )
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Padding(
-                    padding: const EdgeInsets.all(20),
+                    padding: padding,
                     child: this.child,
                   ),
                   Divider(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
-import 'package:storeFlutter/components/app_button.dart';
+import 'package:storeFlutter/components/app-button.dart';
 import 'package:storeFlutter/util/app-theme.dart';
 
 class ProductDetailScreen extends StatelessWidget {

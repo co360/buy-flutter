@@ -1,32 +1,58 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:flutter_i18n/loaders/decoders/json_decode_strategy.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get_it/get_it.dart';
-import 'package:storeFlutter/blocs/language/language_bloc.dart';
+import 'package:storeFlutter/blocs/account/auth-bloc.dart';
+import 'package:storeFlutter/blocs/language/language-bloc.dart';
 import 'package:storeFlutter/screens/account.dart';
+import 'package:storeFlutter/screens/account/login.dart';
 import 'package:storeFlutter/screens/home.dart';
-import 'package:storeFlutter/screens/main_layout.dart';
+import 'package:storeFlutter/screens/main-layout.dart';
 import 'package:storeFlutter/screens/orders.dart';
-import 'package:storeFlutter/screens/shopping/product_detail.dart';
-import 'package:storeFlutter/screens/shopping/product_listing.dart';
-import 'package:storeFlutter/screens/shopping_cart.dart';
+import 'package:storeFlutter/screens/shopping-cart.dart';
+import 'package:storeFlutter/screens/shopping/product-detail.dart';
+import 'package:storeFlutter/screens/shopping/product-listing.dart';
+import 'package:storeFlutter/services/initial-loading-service.dart';
 import 'package:storeFlutter/services/locator.dart';
+import 'package:storeFlutter/services/storage-service.dart';
 import 'package:storeFlutter/util/app-theme.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // TODO need to restructure the whole initialization and loading process
+  await setupLocator();
+
+  StorageService storageService = GetIt.I<StorageService>();
+
+  if (storageService.accessToken != null) {
+    InitialLoadingService initialLoadingService =
+        GetIt.I<InitialLoadingService>();
+    await initialLoadingService.reload();
+  } else {
+    // login as guest
+    AuthBloc authBloc = GetIt.I<AuthBloc>();
+    authBloc.add(LoginGuest());
+  }
+
+  // TODO if cannot reload because no session or session expired.. need to login as guest..
+  // TODO or do auto login as guest when we are in the DioLoggingInterceptors
+
   final FlutterI18nDelegate flutterI18nDelegate = FlutterI18nDelegate(
     translationLoader: FileTranslationLoader(
         decodeStrategies: [JsonDecodeStrategy()],
         useCountryCode: false,
         fallbackFile: 'en',
-        forcedLocale: Locale('en')),
+        forcedLocale: storageService.language != null
+            ? Locale(storageService.language)
+            : Locale('en')),
   );
-  WidgetsFlutterBinding.ensureInitialized();
 
   await flutterI18nDelegate.load(null);
-  setupLocator();
+
   runApp(MyApp(flutterI18nDelegate));
 }
 
@@ -38,6 +64,11 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+
     return FutureBuilder(
         future: GetIt.I.allReady(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -57,6 +88,7 @@ class MyApp extends StatelessWidget {
                 '/listing': (context) => ProductListingScreen(),
                 '/detail': (context) => ProductDetailScreen(),
                 '/cart': (context) => ShoppingCartScreen(),
+                '/login': (context) => LoginScreen(),
               },
               localizationsDelegates: [
                 flutterI18nDelegate,
@@ -85,11 +117,7 @@ class RootContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<LanguageBloc, LanguageState>(
       bloc: GetIt.I<LanguageBloc>(),
-//          bloc: LanguageBloc(context),
       builder: (context, state) {
-        print('change laguage $state');
-        print(FlutterI18n.currentLocale(context));
-
         List<Widget> allScreens = <Widget>[
           HomeScreen(),
           OrdersScreen(),

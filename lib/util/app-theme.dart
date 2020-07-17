@@ -33,4 +33,16 @@ class AppTheme {
       ),
     ),
   );
+
+  static InputBorder formInputEnabledBorder = UnderlineInputBorder(
+    borderSide: BorderSide(
+      color: AppTheme.colorGray2,
+    ),
+  );
+
+  static InputBorder formInputFocusedBorder = UnderlineInputBorder(
+    borderSide: BorderSide(
+      color: AppTheme.colorGray2,
+    ),
+  );
 }

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
-import 'package:storeFlutter/blocs/language/language_bloc.dart';
-import 'package:storeFlutter/components/app_list_title.dart';
+import 'package:storeFlutter/blocs/language/language-bloc.dart';
+import 'package:storeFlutter/components/app-list-title.dart';
 import 'package:storeFlutter/util/app-theme.dart';
 
 class ChangeLanguageScreen extends StatelessWidget {
@@ -12,20 +12,16 @@ class ChangeLanguageScreen extends StatelessWidget {
     String currentLang = FlutterI18n.currentLocale(context).languageCode;
 
     return Scaffold(
-//      backgroundColor: AppTheme.colorBg2,
       appBar: AppBar(
-//        backgroundColor: AppTheme.colorBg,
         title: I18nText("account.changeLanguage"),
       ),
-      body: Builder(
-        builder: (context) => Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            AppListTitle("account.changeLanguageScreen.languages"),
-            buildLanguageTile("ms", currentLang, context),
-            buildLanguageTile("en", currentLang, context),
-          ],
-        ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          AppListTitle("account.changeLanguageScreen.languages"),
+          buildLanguageTile("ms", currentLang, context),
+          buildLanguageTile("en", currentLang, context),
+        ],
       ),
     );
   }

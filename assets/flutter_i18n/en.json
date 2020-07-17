@@ -3,6 +3,14 @@
     "en": "English",
     "ms": "Bahasa Melayu"
   },
+  "error" : {
+    "required": "This field cannot be empty.",
+    "email": "This field required a valid email address.",
+    "Bad credentials": "Invalid Login"
+  },
+  "general": {
+    "pleaseWait" : "Please Wait..."
+  },
   "screen" : {
     "bottomNavigation": {
       "market": "Marketplace",
@@ -30,9 +38,16 @@
     "changePassword": "Change Password",
     "myAddresses": "My Addresses",
     "bankAccounts": "Bank Accounts / Cards",
+    "inCollaborationWith": "in collaboration with",
+    "noAccountYet": "No Account Yet? Signup Now!",
+
+    "email": "Email",
+    "password": "Password",
+    "forgotPassword": "Forgot Password",
 
     "changeLanguageScreen" : {
-      "languages" : "Languages"
+      "languages" : "Languages",
+      "languageChanged" : "Language Changed"
     }
   }
 }

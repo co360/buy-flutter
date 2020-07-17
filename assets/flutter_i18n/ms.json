@@ -1,4 +1,12 @@
 {
+  "error" : {
+    "required": "Bidang ini tak boleh kosong.",
+    "email": "Medan ini memerlukan alamat e-mel yang sah.",
+    "Bad credentials": "Log Masuk Tidak Sah"
+  },
+  "general": {
+    "pleaseWait" : "Sila Tunggu..."
+  },
   "screen" : {
     "bottomNavigation": {
       "market": "Pasaran",
@@ -27,10 +35,16 @@
     "myAddresses": "Alamat Saya",
     "bankAccounts": "Akaun Bank / Kad",
 
+    "inCollaborationWith": "dengan kerjasama",
+    "noAccountYet": "Belum Ada Akaun? Daftarlah Sekarang!",
+
+    "email": "Emel",
+    "password": "Kata laluan",
+    "forgotPassword": "Lupa Kata Laluan",
+
     "changeLanguageScreen" : {
       "languages" : "Bahasa",
-      "english" : "English",
-      "malay" : "Bahasa Malayu"
+      "languageChanged" : "Bahasa Telah Tukar"
     }
   }
 }
