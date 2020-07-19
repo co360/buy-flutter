@@ -20,6 +20,12 @@ import 'package:storeFlutter/services/locator.dart';
 import 'package:storeFlutter/services/storage-service.dart';
 import 'package:storeFlutter/util/app-theme.dart';
 
+// TODO to handle/test session scenario
+// 1. [DONE] no token and login as guest
+// 2. got token but invalid/expired.. can renew and event set to LoginSuccess after renew
+// 3. got token but invalid/expired.. cannot renew and Login as guest.. set event as LogoutSuccess
+// 4. got token but invalid/expired... cannot renew and cannot login as guest.. set event as LoginFailed
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -28,6 +34,7 @@ void main() async {
 
   StorageService storageService = GetIt.I<StorageService>();
 
+  // TODO session validation initailization should only start after runapp to prevent screen freeze
   if (storageService.accessToken != null) {
     InitialLoadingService initialLoadingService =
         GetIt.I<InitialLoadingService>();

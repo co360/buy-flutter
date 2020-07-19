@@ -18,7 +18,8 @@ class ChangeLanguageScreen extends StatelessWidget {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          AppListTitle("account.changeLanguageScreen.languages"),
+          AppListTitle(FlutterI18n.translate(
+              context, "account.changeLanguageScreen.languages")),
           buildLanguageTile("ms", currentLang, context),
           buildLanguageTile("en", currentLang, context),
         ],

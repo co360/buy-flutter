@@ -78,10 +78,16 @@ class DioLoggingInterceptors extends InterceptorsWrapper {
 //      ApiAuthRepository apiAuthRepository = ApiAuthRepository();
       AuthService authService = GetIt.I<AuthService>();
       AccessToken token = await authService.refreshAuth(refreshTokenBody);
-      String newAccessToken = token.accessToken;
-      String newRefreshToken = token.refreshToken;
-      _storageService.accessToken = newAccessToken;
-      _storageService.refreshToken = newRefreshToken;
+
+      if (token.error != null) {
+        // login with guest
+        print("error refershing the token... should login with guest now");
+      } else {
+        String newAccessToken = token.accessToken;
+        String newRefreshToken = token.refreshToken;
+        _storageService.accessToken = newAccessToken;
+        _storageService.refreshToken = newRefreshToken;
+      }
 
       RequestOptions options = dioError.response.request;
 //      options.headers.addAll({'requirestoken': true});

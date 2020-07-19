@@ -62,14 +62,16 @@ class AccountScreen extends StatelessWidget {
   Widget buildSessionContent(BuildContext context) {
     return ListView(
       children: <Widget>[
-        AppListTitle("account.myAccount"),
-        AppListTile("account.myProfile", topDivider: true),
-        AppListTile("account.changeEmailAddress"),
-        AppListTile("account.changePassword"),
-        AppListTile("account.myAddresses"),
-        AppListTile("account.bankAccounts"),
-        AppListTitle("account.settings"),
-        AppListTile("account.changeLanguage",
+        AppListTitle(FlutterI18n.translate(context, "account.myAccount")),
+        AppListTile(FlutterI18n.translate(context, "account.myProfile"),
+            topDivider: true),
+        AppListTile(
+            FlutterI18n.translate(context, "account.changeEmailAddress")),
+        AppListTile(FlutterI18n.translate(context, "account.changePassword")),
+        AppListTile(FlutterI18n.translate(context, "account.myAddresses")),
+        AppListTile(FlutterI18n.translate(context, "account.bankAccounts")),
+        AppListTitle(FlutterI18n.translate(context, "account.settings")),
+        AppListTile(FlutterI18n.translate(context, "account.changeLanguage"),
             onTap: () => {
                   Navigator.push(
                     context,
@@ -96,8 +98,8 @@ class AccountScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        AppListTitle("account.settings"),
-        AppListTile("account.changeLanguage",
+        AppListTitle(FlutterI18n.translate(context, "account.settings")),
+        AppListTile(FlutterI18n.translate(context, "account.changeLanguage"),
             onTap: () => {
                   Navigator.push(
                     context,
@@ -107,15 +109,6 @@ class AccountScreen extends StatelessWidget {
                   )
                 },
             topDivider: true),
-        Padding(
-          padding: EdgeInsets.only(left: 60, right: 60, top: 60, bottom: 20),
-          child: AppButton(
-            FlutterI18n.translate(context, "account.logout"),
-            () => {GetIt.I<AuthBloc>().add(LogoutEvent())},
-            size: AppButtonSize.small,
-            type: AppButtonType.white,
-          ),
-        )
       ],
     );
   }

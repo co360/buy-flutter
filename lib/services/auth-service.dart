@@ -82,6 +82,7 @@ class AuthService extends BaseRestService {
   }
 
   Future<AccessToken> refreshAuth(RefreshToken refreshTokenBody) async {
+    print("calling refresh token");
     try {
       final response = await dio.post(
         'oauth/token',
@@ -98,7 +99,7 @@ class AuthService extends BaseRestService {
       );
       return AccessToken.fromJson(response.data);
     } catch (error, stacktrace) {
-      print('handle error here');
+      print('refresh token error $error');
       _printError(error, stacktrace);
       if (error != null &&
           error.response != null &&

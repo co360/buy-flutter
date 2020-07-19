@@ -9,7 +9,8 @@
     "Bad credentials": "Invalid Login"
   },
   "general": {
-    "pleaseWait" : "Please Wait..."
+    "pleaseWait" : "Please Wait...",
+    "cancel" : "Cancel"
   },
   "screen" : {
     "bottomNavigation": {
@@ -20,6 +21,8 @@
     }
   },
   "shopping": {
+    "searchProductSeller" : "Search Product, Seller",
+    "browse": "Browse",
     "productListing": "Product Listing",
     "productDetail": {
       "name" : "Product Detail",

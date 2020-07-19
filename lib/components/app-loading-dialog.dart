@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:storeFlutter/util/app-theme.dart';
 
 class AppLoadingDialog {
-  final String text;
+  String text;
   final BuildContext context;
 
   BuildContext builderContext;
 
-  AppLoadingDialog(this.context, {this.text = "general.pleaseWait"}) {
+  AppLoadingDialog(this.context, {this.text}) {
+    if (this.text == null) {
+      this.text = FlutterI18n.translate(context, "general.pleaseWait");
+    }
     _showDialog();
   }
 
@@ -41,40 +43,40 @@ class AppLoadingDialog {
                 ),
                 Expanded(
                   child: Text(
-                    FlutterI18n.translate(context, text),
+                    text,
                     maxLines: 3,
                   ),
                 )
               ],
             ),
-            actions: <Widget>[
-              new FlatButton(
-                onPressed: () {
-                  //Function called
-                },
-                child: new Text('Ok Done!'),
-              ),
-              new FlatButton(
-                onPressed: () {
-//                  Navigator.pop(context);
-                  pop();
-                },
-                child: new Text('Go Back'),
-              ),
-            ],
+//            actions: <Widget>[
+//              new FlatButton(
+//                onPressed: () {
+//                  //Function called
+//                },
+//                child: new Text('Ok Done!'),
+//              ),
+//              new FlatButton(
+//                onPressed: () {
+////                  Navigator.pop(context);
+//                  pop();
+//                },
+//                child: new Text('Go Back'),
+//              ),
+//            ],
           ),
         );
       },
     );
   }
 
-  pop() {
-    print('calling pop in side app-loading-dialog');
-//    Navigator.pop(builderContext);
-//    Navigator.of(context, rootNavigator: true).pop('dialog');
-
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      Navigator.pop(context);
-    });
-  }
+//  pop() {
+//    print('calling pop in side app-loading-dialog');
+////    Navigator.pop(builderContext);
+////    Navigator.of(context, rootNavigator: true).pop('dialog');
+//
+//    SchedulerBinding.instance.addPostFrameCallback((_) {
+//      Navigator.pop(context);
+//    });
+//  }
 }

@@ -16,7 +16,9 @@
     }
   },
   "shopping": {
+    "searchProductSeller" : "Cari Produk, Penjual",
     "productListing": "Senarai Produk",
+    "browse": "Layar",
     "productDetail": {
       "name" : "Product Info",
       "productInformation": "Maklumat Produk"

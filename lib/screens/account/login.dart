@@ -21,7 +21,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<FormBuilderState> _fbKey = GlobalKey<FormBuilderState>();
 
-  AppLoadingDialog dialog;
+//  AppLoadingDialog dialog;
   bool hasDialog = false;
 
   @override
@@ -117,14 +117,15 @@ class _LoginScreenState extends State<LoginScreen> {
         print("current state $state , hasDialog $hasDialog");
         if (state is LoginInProgress) {
           print("we wang wang");
-          dialog = AppLoadingDialog(context);
+//          dialog = AppLoadingDialog(context);
+          AppLoadingDialog(context);
           hasDialog = true;
         } else {
           if (hasDialog) {
             print("try to pop");
             Navigator.of(context).pop();
 //            dialog.pop();
-            dialog = null;
+//            dialog = null;
             hasDialog = false;
           }
 

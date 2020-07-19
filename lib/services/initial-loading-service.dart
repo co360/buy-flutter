@@ -24,5 +24,7 @@ class InitialLoadingService extends BaseRestService {
         await _accountService.getAccountByUsername(currentUser.username);
 
     _storageService.loginUser = account;
+
+    // TODO load shopping cart item to display number of itme in the cart
   }
 }
