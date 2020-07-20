@@ -53,8 +53,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
 // State
 abstract class AuthState extends Equatable {
-  const AuthState();
-
   @override
   List<Object> get props => [];
 }

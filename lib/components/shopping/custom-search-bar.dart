@@ -410,6 +410,7 @@ class _CustomSearchBarState<T> extends State<CustomSearchBar<T>>
                   ),
                   GestureDetector(
                     onTap: _cancel,
+                    behavior: HitTestBehavior.translucent,
                     child: Padding(
                       padding: EdgeInsets.only(left: 10),
                       child: Center(

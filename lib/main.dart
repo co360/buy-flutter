@@ -7,6 +7,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get_it/get_it.dart';
 import 'package:storeFlutter/blocs/account/auth-bloc.dart';
 import 'package:storeFlutter/blocs/language/language-bloc.dart';
+import 'package:storeFlutter/blocs/logging-bloc-observer.dart';
 import 'package:storeFlutter/screens/account.dart';
 import 'package:storeFlutter/screens/account/login.dart';
 import 'package:storeFlutter/screens/home.dart';
@@ -59,6 +60,8 @@ void main() async {
   );
 
   await flutterI18nDelegate.load(null);
+
+  Bloc.observer = LoggingBlocObserver();
 
   runApp(MyApp(flutterI18nDelegate));
 }

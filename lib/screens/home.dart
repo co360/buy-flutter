@@ -47,7 +47,7 @@ class HomeScreen extends StatelessWidget {
       children: <Widget>[
         HomePageSlider(),
         PromoWidget(),
-        Text("product cateogry suggestion...")
+        Text("product category suggestion...")
       ],
     );
   }

@@ -31,7 +31,7 @@ class _SearchGeneralState extends State<SearchGeneral> {
         child: GestureDetector(
           onTap: () => {FocusScope.of(context).requestFocus(new FocusNode())},
           child: BlocProvider<SearchBloc>(
-            lazy: false,
+//            lazy: false,
             create: (context) => SearchBloc(),
             child: Builder(
               builder: (context) {
@@ -49,9 +49,12 @@ class _SearchGeneralState extends State<SearchGeneral> {
                       strokeWidth: 3,
                     ),
                   ),
-                  cancellationWidget: Text(
-                    FlutterI18n.translate(context, "general.cancel"),
-                    style: TextStyle(color: AppTheme.colorLink),
+                  cancellationWidget: Padding(
+                    padding: EdgeInsets.only(top: 15, bottom: 15),
+                    child: Text(
+                      FlutterI18n.translate(context, "general.cancel"),
+                      style: TextStyle(color: AppTheme.colorLink),
+                    ),
                   ),
                   searchBarPadding:
                       EdgeInsets.only(left: 20, right: 20, bottom: 10, top: 10),
