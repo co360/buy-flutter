@@ -30,8 +30,8 @@ class StorageService {
 
     // init from local storage
     // TODO revert later
-    _instance._accessToken = _instance.getString(_keyAccessToken) + "a";
-    _instance._refreshToken = _instance.getString(_keyRefreshToken) + "a";
+    _instance._accessToken = _instance.getString(_keyAccessToken);
+    _instance._refreshToken = _instance.getString(_keyRefreshToken);
     _instance._language = _instance.getString(_keyLanguage);
     print(_instance.getString(_keyLoginUser));
     try {

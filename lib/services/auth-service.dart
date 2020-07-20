@@ -41,7 +41,7 @@ class AuthService extends BaseRestService {
 
       params.addAll(loginBody.toJson());
 
-      final response = await dio.post(
+      final response = await noTokenDio.post(
         'buy-auth-service/uaa/oauth/token',
         data: params,
         options: Options(
@@ -62,6 +62,8 @@ class AuthService extends BaseRestService {
       _storageService.accessToken = newAccessToken;
       _storageService.refreshToken = newRefreshToken;
 
+      print("setting new token ${_storageService.accessToken}");
+
       if (loginBody.username != 'guest') {
         // load all the thing here...
       }
@@ -73,18 +75,20 @@ class AuthService extends BaseRestService {
           error.response != null &&
           error.response.data != null) {
         if (error.response.data['error_description'] != null) {
-          return LoginStatus.error(error.response.data['error_description']);
+          return LoginStatus.error(
+              error.response.data['error_description'], error);
         }
-        return LoginStatus.error('${error.response.data}');
+        return LoginStatus.error('${error.response.data}', error);
       }
-      return LoginStatus.error('$error');
+      return LoginStatus.error('$error', error);
     }
   }
 
   Future<AccessToken> refreshAuth(RefreshToken refreshTokenBody) async {
     print("calling refresh token");
+
     try {
-      final response = await dio.post(
+      final response = await noTokenDio.post(
         'oauth/token',
         data: FormData.fromMap(refreshTokenBody.toJson()),
         options: Options(
