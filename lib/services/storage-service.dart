@@ -20,9 +20,11 @@ class StorageService {
   String _refreshToken;
   String _language;
 
+  StorageService._();
+
   static Future<StorageService> getInstance() async {
     if (_instance == null) {
-      _instance = StorageService();
+      _instance = StorageService._();
     }
     if (_sharedPreferences == null) {
       _sharedPreferences = await SharedPreferences.getInstance();

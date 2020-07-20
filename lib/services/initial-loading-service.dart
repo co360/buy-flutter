@@ -7,7 +7,8 @@ import 'package:storeFlutter/services/base-rest-service.dart';
 import 'package:storeFlutter/services/storage-service.dart';
 
 class InitialLoadingService extends BaseRestService {
-  AccountService _accountService = GetIt.I<AccountService>();
+//  AccountService _accountService = GetIt.I<AccountService>();
+  AccountService _accountService = AccountService.getInstance();
   AuthService _authService = GetIt.I<AuthService>();
   StorageService _storageService = GetIt.I<StorageService>();
 

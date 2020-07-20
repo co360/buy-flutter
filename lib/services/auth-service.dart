@@ -16,7 +16,8 @@ class AuthService extends BaseRestService {
   final String clientId = 'browser';
   final String clientSecret = 'secret';
 
-  AccountService _accountService = GetIt.I<AccountService>();
+//  AccountService _accountService = GetIt.I<AccountService>();
+  AccountService _accountService = AccountService.getInstance();
   StorageService _storageService = GetIt.I<StorageService>();
 
   Future<LoginStatus> loginAsGuest() async {
