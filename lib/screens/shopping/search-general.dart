@@ -1,6 +1,7 @@
 import 'package:flappy_search_bar/search_bar_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
+import 'package:get_it/get_it.dart';
 import 'package:storeFlutter/components/app-list-tile.dart';
 import 'package:storeFlutter/components/shopping/custom-search-bar.dart';
 import 'package:storeFlutter/models/label-value.dart';
@@ -17,7 +18,7 @@ class _SearchGeneralState extends State<SearchGeneral> {
 //  final SearchBarController<Post> searchController = SearchBarController();
   final SearchBarController<LabelValue> searchController =
       SearchBarController();
-  final ProductService productService = ProductService.getInstance();
+  final ProductService productService = GetIt.I<ProductService>();
 
   String searchedText;
 

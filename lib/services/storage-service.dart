@@ -28,19 +28,19 @@ class StorageService {
     }
     if (_sharedPreferences == null) {
       _sharedPreferences = await SharedPreferences.getInstance();
-    }
 
-    // init from local storage
-    // TODO revert later
-    _instance._accessToken = _instance.getString(_keyAccessToken);
-    _instance._refreshToken = _instance.getString(_keyRefreshToken);
-    _instance._language = _instance.getString(_keyLanguage);
-    print(_instance.getString(_keyLoginUser));
-    try {
-      _instance.loginUser =
-          Account.fromJson(json.decode(_instance.getString(_keyLoginUser)));
-    } catch (_) {
-      print(_);
+      // init from local storage
+      // TODO revert later
+      _instance._accessToken = _instance.getString(_keyAccessToken);
+      _instance._refreshToken = _instance.getString(_keyRefreshToken);
+      _instance._language = _instance.getString(_keyLanguage);
+      print(_instance.getString(_keyLoginUser));
+      try {
+        _instance.loginUser =
+            Account.fromJson(json.decode(_instance.getString(_keyLoginUser)));
+      } catch (_) {
+        print(_);
+      }
     }
 
     return _instance;

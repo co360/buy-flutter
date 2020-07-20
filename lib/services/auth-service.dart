@@ -8,7 +8,6 @@ import 'package:storeFlutter/models/auth/current-user.dart';
 import 'package:storeFlutter/models/auth/login-body.dart';
 import 'package:storeFlutter/models/auth/login-status.dart';
 import 'package:storeFlutter/models/auth/refresh-token.dart';
-import 'package:storeFlutter/services/account-service.dart';
 import 'package:storeFlutter/services/base-rest-service.dart';
 import 'package:storeFlutter/services/storage-service.dart';
 
@@ -16,8 +15,6 @@ class AuthService extends BaseRestService {
   final String clientId = 'browser';
   final String clientSecret = 'secret';
 
-//  AccountService _accountService = GetIt.I<AccountService>();
-  AccountService _accountService = AccountService.getInstance();
   StorageService _storageService = GetIt.I<StorageService>();
 
   Future<LoginStatus> loginAsGuest() async {

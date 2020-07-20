@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
-import 'package:storeFlutter/services/dio-logging-interceptors.dart';
-import 'package:storeFlutter/services/dio-token-interceptors.dart';
+import 'package:storeFlutter/services/interceptors/dio-logging-interceptors.dart';
+import 'package:storeFlutter/services/interceptors/dio-token-interceptors.dart';
 
 abstract class BaseRestService {
   final Dio _dio = new Dio();
