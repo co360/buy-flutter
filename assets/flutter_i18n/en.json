@@ -23,6 +23,7 @@
   "shopping": {
     "searchProductSeller" : "Search Product, Seller",
     "browse": "Browse",
+    "searchWith" : "Search for {query}",
     "productListing": "Product Listing",
     "productDetail": {
       "name" : "Product Detail",

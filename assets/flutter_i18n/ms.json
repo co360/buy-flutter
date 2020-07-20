@@ -5,7 +5,8 @@
     "Bad credentials": "Log Masuk Tidak Sah"
   },
   "general": {
-    "pleaseWait" : "Sila Tunggu..."
+    "pleaseWait" : "Sila Tunggu...",
+    "cancel" : "Batal"
   },
   "screen" : {
     "bottomNavigation": {
@@ -19,6 +20,7 @@
     "searchProductSeller" : "Cari Produk, Penjual",
     "productListing": "Senarai Produk",
     "browse": "Layar",
+    "searchWith" : "Cari dengan {query}",
     "productDetail": {
       "name" : "Product Info",
       "productInformation": "Maklumat Produk"

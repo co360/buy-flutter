@@ -198,6 +198,8 @@ class CustomSearchBar<T> extends StatefulWidget {
   /// Set a padding on the list
   final EdgeInsetsGeometry listPadding;
 
+  final void Function(String) onSubmitText;
+
   CustomSearchBar({
     Key key,
     @required this.onSearch,
@@ -229,6 +231,7 @@ class CustomSearchBar<T> extends StatefulWidget {
     this.listPadding = const EdgeInsets.all(0),
     this.searchBarPadding = const EdgeInsets.all(0),
     this.headerPadding = const EdgeInsets.all(0),
+    this.onSubmitText,
   }) : super(key: key);
   @override
   _CustomSearchBarState createState() => _CustomSearchBarState<T>();
@@ -299,6 +302,12 @@ class _CustomSearchBarState<T> extends State<CustomSearchBar<T>>
         });
       }
     });
+  }
+
+  _onTextSubmitted(String newText) {
+    if (widget.onSubmitText != null) {
+      widget.onSubmitText(newText);
+    }
   }
 
   void _cancel() {
@@ -385,8 +394,10 @@ class _CustomSearchBarState<T> extends State<CustomSearchBar<T>>
                         child: TextField(
                           autofocus: true,
                           controller: _searchQueryController,
+                          textInputAction: TextInputAction.search,
                           onChanged: _onTextChanged,
                           style: widget.textStyle,
+                          onSubmitted: _onTextSubmitted,
                           decoration: InputDecoration(
                             icon: widget.icon,
                             border: InputBorder.none,

@@ -7,6 +7,10 @@ import 'package:storeFlutter/util/app-theme.dart';
 class ProductListingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final ProductListingScreenParams args =
+        ModalRoute.of(context).settings.arguments;
+    String query = args.query;
+
     return Scaffold(
       backgroundColor: AppTheme.colorBg2,
       appBar: AppBar(
@@ -25,6 +29,7 @@ class ProductListingScreen extends StatelessWidget {
         child: Center(
           child: Column(
             children: <Widget>[
+              Text("param $query"),
               AppButton(
                 "Go To Detail",
                 () => {
@@ -37,4 +42,10 @@ class ProductListingScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+class ProductListingScreenParams {
+  final String query;
+
+  ProductListingScreenParams({this.query});
 }
