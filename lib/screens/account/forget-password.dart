@@ -143,7 +143,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
             ),
           ),
           Container(
-            margin: const EdgeInsets.only(top: 50.0, bottom: 20.0),
+            margin: const EdgeInsets.only(top: 30.0, bottom: 20.0),
             child: Column(
               children: <Widget>[
                 Text(
