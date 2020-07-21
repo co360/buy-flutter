@@ -6,7 +6,8 @@
   "error" : {
     "required": "This field cannot be empty.",
     "email": "This field required a valid email address.",
-    "Bad credentials": "Invalid Login"
+    "Bad credentials": "Invalid Login",
+    "notExist": "Email does not exist"
   },
   "general": {
     "pleaseWait" : "Please Wait...",
@@ -47,7 +48,11 @@
 
     "email": "Email",
     "password": "Password",
-    "forgotPassword": "Forgot Password",
+    "forgetPassword": "Forgot Password",
+    "resetPassword": "Reset Password",
+    "backToLogin": "Back To Login",
+    "sentEmail": "We've sent you an email to reset your password.",
+    "checkEmail": "Please check your email.",
 
     "changeLanguageScreen" : {
       "languages" : "Languages",

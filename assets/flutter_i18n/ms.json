@@ -2,7 +2,8 @@
   "error" : {
     "required": "Bidang ini tak boleh kosong.",
     "email": "Medan ini memerlukan alamat e-mel yang sah.",
-    "Bad credentials": "Log Masuk Tidak Sah"
+    "Bad credentials": "Log Masuk Tidak Sah",
+    "notExist": "E-mel tidak didaftarkan."
   },
   "general": {
     "pleaseWait" : "Sila Tunggu...",
@@ -44,7 +45,11 @@
 
     "email": "Emel",
     "password": "Kata laluan",
-    "forgotPassword": "Lupa Kata Laluan",
+    "forgetPassword": "Lupa Kata Laluan",
+    "resetPassword": "Tukar Kata Laluan",
+    "backToLogin": "Kembali ke Log Masuk",
+    "sentEmail": "We've sent you an email to reset your password.",
+    "checkEmail": "Sila cek e-mel anda.",
 
     "changeLanguageScreen" : {
       "languages" : "Bahasa",
