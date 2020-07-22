@@ -9,6 +9,7 @@ import 'package:storeFlutter/components/app-button.dart';
 import 'package:storeFlutter/components/app-card.dart';
 import 'package:storeFlutter/components/app-loading-dialog.dart';
 import 'package:storeFlutter/components/app-notification.dart';
+import 'package:storeFlutter/screens/account/forget-password.dart';
 import 'package:storeFlutter/models/auth/login-body.dart';
 import 'package:storeFlutter/util/app-theme.dart';
 import 'package:storeFlutter/util/form-util.dart';
@@ -205,10 +206,17 @@ class _LoginScreenState extends State<LoginScreen> {
             splashColor: Colors.transparent,
             highlightColor: Colors.transparent,
             child: Text(
-              FlutterI18n.translate(context, "account.forgotPassword"),
+              FlutterI18n.translate(context, "account.forgetPassword"),
               style: TextStyle(color: AppTheme.colorLink),
             ),
-            onPressed: () {},
+            onPressed: () {
+                Navigator.push(
+                  context,
+                  CupertinoPageRoute(
+                    builder: (context) => ForgetPasswordScreen()
+                    ),
+                  );
+                },
           ),
         ],
       ),
