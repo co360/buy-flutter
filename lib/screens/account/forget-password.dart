@@ -24,9 +24,6 @@ class ForgetPasswordScreen extends StatefulWidget {
 class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
   final GlobalKey<FormBuilderState> _fbKey = GlobalKey<FormBuilderState>();
 
-//  AppLoadingDialog dialog;
-  bool hasDialog = false;
-
   @override
   void initState() {
     print("Initialize ForgotPassword Screen and State");
@@ -176,7 +173,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
     return BlocListener<ForgetPasswordBloc, ForgetPasswordState>(
       bloc: GetIt.I<ForgetPasswordBloc>(),
       listener: (context, state) {
-        print("current state $state , hasDialog $hasDialog");
+        print("current state $state");
         if (state is ForgetPasswordFailed) {          
           AppNotification(
                   FlutterI18n.translate(context, "error.notExist"))
