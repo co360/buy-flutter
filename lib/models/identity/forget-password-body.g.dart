@@ -12,6 +12,7 @@ ForgetPasswordBody _$ForgetPasswordBodyFromJson(Map<String, dynamic> json) {
   );
 }
 
-Map<String, dynamic> _$ForgetPasswordBodyToJson(ForgetPasswordBody instance) => <String, dynamic>{
-      'email': instance.email
+Map<String, dynamic> _$ForgetPasswordBodyToJson(ForgetPasswordBody instance) =>
+    <String, dynamic>{
+      'email': instance.email,
     };

@@ -12,6 +12,8 @@ import 'package:storeFlutter/services/base-rest-service.dart';
 import 'package:storeFlutter/services/storage-service.dart';
 
 class AuthService extends BaseRestService {
+  String _endPoint = 'store-auth-service';
+
   final String clientId = 'browser';
   final String clientSecret = 'secret';
 
@@ -40,7 +42,7 @@ class AuthService extends BaseRestService {
       params.addAll(loginBody.toJson());
 
       final response = await noTokenDio.post(
-        'buy-auth-service/uaa/oauth/token',
+        '$_endPoint/uaa/oauth/token',
         data: params,
         options: Options(
           contentType: Headers.formUrlEncodedContentType,
@@ -118,7 +120,7 @@ class AuthService extends BaseRestService {
 
     if (refreshToken != null) {
       final response = await dio.get(
-        'buy-auth-service/uaa/users/revokeUser/' + refreshToken,
+        '$_endPoint/uaa/users/revokeUser/' + refreshToken,
         options: Options(
           contentType: Headers.formUrlEncodedContentType,
         ),
@@ -130,7 +132,7 @@ class AuthService extends BaseRestService {
   }
 
   Future<CurrentUser> currentUser() async {
-    final response = await dio.get('buy-auth-service/uaa/users/current-user');
+    final response = await dio.get('$_endPoint/uaa/users/current-user');
     return CurrentUser.fromJson(response.data);
   }
 

@@ -9,7 +9,7 @@ class Document {
   String documentName;
   String filename;
   String documentUrl;
-  int fileSize;
+  double fileSize;
   String status;
   LocalDateTime uploadTime;
   String uploadUser;

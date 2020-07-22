@@ -22,6 +22,7 @@ class _SearchGeneralState extends State<SearchGeneral> {
   final ProductService productService = GetIt.I<ProductService>();
 
   String searchedText;
+  FocusNode searchFN = new FocusNode();
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +40,7 @@ class _SearchGeneralState extends State<SearchGeneral> {
                   onSearch: (term) => search(context, term),
                   icon: null,
                   searchBarController: searchController,
+                  searchFocusNode: searchFN,
                   minimumChars: 1,
                   emptyWidget: buildNotFound(),
                   placeHolder: buildPlaceHolder(),
@@ -182,9 +184,12 @@ class _SearchGeneralState extends State<SearchGeneral> {
     );
   }
 
-  void submitText(String term) {
-    Navigator.pushNamed(context, '/listing',
+  void submitText(String term) async {
+    final focus = await Navigator.pushNamed(context, '/listing',
         arguments: ProductListingScreenParams(query: term));
+    if (focus == true || focus == null) {
+      FocusScope.of(context).requestFocus(searchFN);
+    }
   }
 
   Future<List<LabelValue>> search(BuildContext context, String search) async {

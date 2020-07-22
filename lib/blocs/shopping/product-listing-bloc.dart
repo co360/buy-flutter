@@ -16,23 +16,31 @@ class ProductListingBloc
   Stream<ProductListingState> mapEventToState(
       ProductListingEvent event) async* {
     if (event is ProductListingSearch) {
-      yield ProductListingSearchInProgress();
+      yield ProductListingSearchInProgress(QueryResult<Product>());
 
       try {
         QueryResult<Product> result =
-            await _productService.searchProduct(event.query);
-        yield ProductListingSearchComplete(result);
+            await _productService.searchProduct(event.queryFilter);
+        yield ProductListingSearchComplete(result, event.queryFilter);
       } catch (_, stacktrace) {
         print(stacktrace);
         yield ProductListingSearchError(_.toString());
       }
     } else if (event is ProductListingNextPage) {
-      yield ProductListingSearchInProgress();
+      yield ProductListingSearchInProgress(event.result);
 
       try {
         QueryResult<Product> result = await _productService
-            .searchProduct(event.query, page: event.result.page + 1);
-        yield ProductListingSearchComplete(result);
+            .searchProduct(event.queryFilter, page: event.result.page + 1);
+
+        // append result from previous search
+        List<Product> newResult = [];
+        newResult.addAll(event.result.items);
+        newResult.addAll(result.items);
+
+        result.items = newResult;
+
+        yield ProductListingSearchComplete(result, event.queryFilter);
       } catch (_, stacktrace) {
         print(stacktrace);
         yield ProductListingSearchError(_.toString());
@@ -49,7 +57,14 @@ abstract class ProductListingState extends Equatable {
 
 class ProductListingInitial extends ProductListingState {}
 
-class ProductListingSearchInProgress extends ProductListingState {}
+class ProductListingSearchInProgress extends ProductListingState {
+  final QueryResult<Product> result;
+
+  ProductListingSearchInProgress(this.result);
+
+  @override
+  List<Object> get props => [result];
+}
 
 class ProductListingSearchError extends ProductListingState {
   final String error;
@@ -61,14 +76,12 @@ class ProductListingSearchError extends ProductListingState {
 }
 
 class ProductListingSearchComplete extends ProductListingState {
-  // TODO all the info like list of products, page number
-  // still need page number if we going to do infinite scrolling
-
+  final ProductListingQueryFilter queryFilter;
   final QueryResult<Product> result;
 
-  ProductListingSearchComplete(this.result);
+  ProductListingSearchComplete(this.result, this.queryFilter);
   @override
-  List<Object> get props => [result];
+  List<Object> get props => [result, queryFilter];
 
 //  final dynamic data;
 //
@@ -84,21 +97,21 @@ abstract class ProductListingEvent extends Equatable {
 }
 
 class ProductListingSearch extends ProductListingEvent {
-  final String query;
+  final ProductListingQueryFilter queryFilter;
   final QueryResult<Product> result;
 
-  ProductListingSearch(this.query, {this.result});
+  ProductListingSearch(this.queryFilter, {this.result});
 
   @override
-  List<Object> get props => [query, this.result];
+  List<Object> get props => [queryFilter, this.result];
 }
 
 class ProductListingNextPage extends ProductListingEvent {
-  final String query;
+  final ProductListingQueryFilter queryFilter;
   final QueryResult<Product> result;
 
-  ProductListingNextPage(this.query, this.result);
+  ProductListingNextPage(this.queryFilter, this.result);
 
   @override
-  List<Object> get props => [query, this.result];
+  List<Object> get props => [queryFilter, this.result];
 }

@@ -6,7 +6,7 @@ import 'package:storeFlutter/services/base-rest-service.dart';
 class ProductService extends BaseRestService {
   // https://office.smarttradzt.com:8001/buy-ecommerce-service/product/searchCombination/?keyword=Flexible%20Packaging&category.code=FLEXIBLE_PACKAGING&_page=0&_pageSize=20
 
-  String _endPoint = 'buy-ecommerce-service/product';
+  String _endPoint = 'store-ecommerce-service/product';
 
   Future<List<LabelValue>> keyWordByName(String name) async {
     var url = '$_endPoint/keywordByName?name=$name';
@@ -17,9 +17,13 @@ class ProductService extends BaseRestService {
     });
   }
 
-  Future<QueryResult<Product>> searchProduct(String searchParam,
-      {int page = 0, int pageSize = 20}) async {
-    var url = '$_endPoint/searchCombination/';
+  Future<QueryResult<Product>> searchProduct(
+      ProductListingQueryFilter queryFilter,
+      {int page = 0,
+      int pageSize = 10}) async {
+    String searchParam = queryFilter.query;
+
+    var url = '$_endPoint/searchCombinationB2C/';
     dynamic somedata = await dio.get<dynamic>(url, queryParameters: {
       "keyword": searchParam,
       "_pageSize": pageSize,
@@ -58,4 +62,12 @@ class ProductService extends BaseRestService {
 
     return somedata;
   }
+}
+
+class ProductListingQueryFilter {
+  String query;
+
+  // TODO include filtering criteria
+
+  ProductListingQueryFilter({this.query});
 }

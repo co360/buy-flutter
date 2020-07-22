@@ -6,13 +6,13 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:storeFlutter/blocs/shopping/product-listing-bloc.dart';
 import 'package:storeFlutter/components/app-button.dart';
 import 'package:storeFlutter/components/app-general-error-info.dart';
-import 'package:storeFlutter/components/app-loading.dart';
 import 'package:storeFlutter/components/shopping/product-listing-grid.dart';
 import 'package:storeFlutter/components/shopping/shopping-cart-icon.dart';
 import 'package:storeFlutter/components/shopping/static-search-bar.dart';
 import 'package:storeFlutter/models/query-result.dart';
 import 'package:storeFlutter/models/shopping/product.dart';
 import 'package:storeFlutter/screens/shopping/search-general.dart';
+import 'package:storeFlutter/services/product-service.dart';
 import 'package:storeFlutter/util/app-theme.dart';
 
 class ProductListingScreen extends StatelessWidget {
@@ -48,8 +48,8 @@ class ProductListingScreen extends StatelessWidget {
         iconTheme: IconThemeData(color: Colors.white),
       ),
       body: BlocProvider<ProductListingBloc>(
-        create: (context) =>
-            ProductListingBloc()..add(ProductListingSearch(query)),
+        create: (context) => ProductListingBloc()
+          ..add(ProductListingSearch(ProductListingQueryFilter(query: query))),
         child: Builder(
           builder: (context) => ProductListingBody(),
         ),
@@ -64,10 +64,11 @@ class ProductListingBody extends StatelessWidget {
     return BlocBuilder<ProductListingBloc, ProductListingState>(
       builder: (context, state) {
         if (state is ProductListingSearchInProgress) {
-          return Padding(
-            padding: EdgeInsets.only(top: 60),
-            child: AppLoading(),
-          );
+//          return Padding(
+//            padding: EdgeInsets.only(top: 60),
+//            child: AppLoading(),
+//          );
+          return ProductListingResult(state.result);
         } else if (state is ProductListingSearchComplete) {
           return ProductListingResult(state.result);
         } else if (state is ProductListingSearchError) {
@@ -94,7 +95,6 @@ class ProductListingResult extends StatelessWidget {
           children: <Widget>[
             buildToolbar(context),
             Expanded(child: ProductListingGrid(result.items)),
-            Text("total product ${result.total}"),
           ],
         ),
       );

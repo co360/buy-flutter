@@ -11,7 +11,8 @@
   },
   "general": {
     "pleaseWait" : "Please Wait...",
-    "cancel" : "Cancel"
+    "cancel" : "Cancel",
+    "noMoreResults" : "No More Results"
   },
   "screen" : {
     "bottomNavigation": {

@@ -11,7 +11,7 @@ Document _$DocumentFromJson(Map<String, dynamic> json) {
     json['documentName'] as String,
     json['filename'] as String,
     json['documentUrl'] as String,
-    json['fileSize'] as int,
+    (json['fileSize'] as num)?.toDouble(),
     json['status'] as String,
     json['uploadTime'] == null
         ? null

@@ -198,6 +198,8 @@ class CustomSearchBar<T> extends StatefulWidget {
   /// Set a padding on the list
   final EdgeInsetsGeometry listPadding;
 
+  final FocusNode searchFocusNode;
+
   final void Function(String) onSubmitText;
 
   CustomSearchBar({
@@ -205,6 +207,7 @@ class CustomSearchBar<T> extends StatefulWidget {
     @required this.onSearch,
     @required this.onItemFound,
     this.searchBarController,
+    this.searchFocusNode,
     this.minimumChars = 3,
     this.debounceDuration = const Duration(milliseconds: 500),
     this.loader = const Center(child: CircularProgressIndicator()),
@@ -394,6 +397,9 @@ class _CustomSearchBarState<T> extends State<CustomSearchBar<T>>
                         child: TextField(
                           autofocus: true,
                           controller: _searchQueryController,
+                          focusNode: widget.searchFocusNode != null
+                              ? widget.searchFocusNode
+                              : FocusNode(),
                           textInputAction: TextInputAction.search,
                           onChanged: _onTextChanged,
                           style: widget.textStyle,

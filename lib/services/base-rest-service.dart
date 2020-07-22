@@ -5,7 +5,7 @@ import 'package:storeFlutter/services/interceptors/dio-token-interceptors.dart';
 abstract class BaseRestService {
   final Dio _dio = new Dio();
   final Dio _noTokenDio = new Dio();
-  final String _baseUrl = 'https://office.smarttradzt.com:8001/';
+  final String _baseUrl = 'https://office.smarttradzt.com:8022/';
 
   BaseRestService() {
     _dio.options.baseUrl = _baseUrl;
