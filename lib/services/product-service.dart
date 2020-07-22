@@ -35,8 +35,10 @@ class ProductService extends BaseRestService {
 
       if (value.data != null) {
 //        try {
-        result.items = data['results'].map((e) => Product.fromJson(e)).toList();
-//            .cast<Product>();
+        result.items = data['results']
+            .map((e) => Product.fromJson(e))
+            .toList()
+            .cast<Product>();
 
         result.total = data['total'];
 //        } catch (error, stacktrace) {

@@ -28,6 +28,10 @@ Product _$ProductFromJson(Map<String, dynamic> json) {
     _$enumDecodeNullable(
         _$DeliveryDateOptionEnumMap, json['deliveryDateOption']),
     (json['supplyLocations'] as List)?.map((e) => e as int)?.toList(),
+    (json['images'] as List)
+        ?.map(
+            (e) => e == null ? null : Image.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
     (json['propertyValues'] as List)
         ?.map((e) => e == null
             ? null
@@ -49,6 +53,13 @@ Product _$ProductFromJson(Map<String, dynamic> json) {
     _$enumDecodeNullable(_$StatusEnumMap, json['status']),
     json['supplierUuid'] as String,
     json['companyId'] as int,
+    json['sellerCompany'] == null
+        ? null
+        : Company.fromJson(json['sellerCompany'] as Map<String, dynamic>),
+    json['sellerCompanyProfile'] == null
+        ? null
+        : CompanyProfile.fromJson(
+            json['sellerCompanyProfile'] as Map<String, dynamic>),
     json['skuSize'] as int,
     json['category'] == null
         ? null
@@ -77,6 +88,7 @@ Map<String, dynamic> _$ProductToJson(Product instance) => <String, dynamic>{
       'deliveryDateOption':
           _$DeliveryDateOptionEnumMap[instance.deliveryDateOption],
       'supplyLocations': instance.supplyLocations,
+      'images': instance.images,
       'propertyValues': instance.propertyValues,
       'characteristics': instance.characteristics,
       'specificationValues': instance.specificationValues,
@@ -84,6 +96,8 @@ Map<String, dynamic> _$ProductToJson(Product instance) => <String, dynamic>{
       'status': _$StatusEnumMap[instance.status],
       'supplierUuid': instance.supplierUuid,
       'companyId': instance.companyId,
+      'sellerCompany': instance.sellerCompany,
+      'sellerCompanyProfile': instance.sellerCompanyProfile,
       'skuSize': instance.skuSize,
       'category': instance.category,
       'uomCode': instance.uomCode,

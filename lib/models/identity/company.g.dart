@@ -23,6 +23,9 @@ Company _$CompanyFromJson(Map<String, dynamic> json) {
     json['adminEmail'] as String,
     json['type'] as String,
     json['uuid'] as String,
+    json['image'] == null
+        ? null
+        : Image.fromJson(json['image'] as Map<String, dynamic>),
     json['industry'] as String,
     json['totalEmployees'] as String,
     json['yearRegistered'] as String,
@@ -49,6 +52,7 @@ Map<String, dynamic> _$CompanyToJson(Company instance) => <String, dynamic>{
       'adminEmail': instance.adminEmail,
       'type': instance.type,
       'uuid': instance.uuid,
+      'image': instance.image,
       'industry': instance.industry,
       'totalEmployees': instance.totalEmployees,
       'yearRegistered': instance.yearRegistered,

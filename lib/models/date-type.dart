@@ -29,3 +29,22 @@ class LocalTime {
 
   Map<String, dynamic> toJson() => _$LocalTimeToJson(this);
 }
+
+@JsonSerializable()
+class LocalDateTime {
+  int year;
+  int month;
+  int day;
+
+  int hour;
+  int minute;
+  int second;
+
+  LocalDateTime(
+      this.year, this.month, this.day, this.hour, this.minute, this.second);
+
+  factory LocalDateTime.fromJson(Map<String, dynamic> json) =>
+      _$LocalDateTimeFromJson(json);
+
+  Map<String, dynamic> toJson() => _$LocalDateTimeToJson(this);
+}

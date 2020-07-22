@@ -18,10 +18,20 @@ class ProductListingBloc
     if (event is ProductListingSearch) {
       yield ProductListingSearchInProgress();
 
-      // TODO perform search and json conversion
       try {
         QueryResult<Product> result =
             await _productService.searchProduct(event.query);
+        yield ProductListingSearchComplete(result);
+      } catch (_, stacktrace) {
+        print(stacktrace);
+        yield ProductListingSearchError(_.toString());
+      }
+    } else if (event is ProductListingNextPage) {
+      yield ProductListingSearchInProgress();
+
+      try {
+        QueryResult<Product> result = await _productService
+            .searchProduct(event.query, page: event.result.page + 1);
         yield ProductListingSearchComplete(result);
       } catch (_, stacktrace) {
         print(stacktrace);
@@ -75,9 +85,20 @@ abstract class ProductListingEvent extends Equatable {
 
 class ProductListingSearch extends ProductListingEvent {
   final String query;
+  final QueryResult<Product> result;
 
-  ProductListingSearch(this.query);
+  ProductListingSearch(this.query, {this.result});
 
   @override
-  List<Object> get props => [query];
+  List<Object> get props => [query, this.result];
+}
+
+class ProductListingNextPage extends ProductListingEvent {
+  final String query;
+  final QueryResult<Product> result;
+
+  ProductListingNextPage(this.query, this.result);
+
+  @override
+  List<Object> get props => [query, this.result];
 }
