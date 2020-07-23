@@ -5,7 +5,7 @@ import 'package:storeFlutter/models/query-result-category.dart';
 import 'package:storeFlutter/services/base-rest-service.dart';
 
 class ProductCategoryService extends BaseRestService {
-  String url = 'buy-ecommerce-service/category/find-all';
+  String url = 'store-ecommerce-service/category/find-all';
 
   Future<QueryResultCategory> loadProductCategory(int activeId) async {
     final response = await dio.get(url);
