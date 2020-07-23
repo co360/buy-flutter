@@ -1,9 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:storeFlutter/components/shopping/category-lists.dart';
 import 'package:storeFlutter/components/button/grid-button-left.dart';
 import 'package:storeFlutter/components/button/grid-button-top.dart';
+import 'package:storeFlutter/blocs/shopping/product-category-bloc.dart';
+import 'package:storeFlutter/models/shopping/category.dart';
+import 'package:storeFlutter/models/query-result-category.dart';
+import 'package:storeFlutter/util/app-theme.dart';
 
 class ProductCategoryScreen extends StatefulWidget {
   @override
@@ -13,9 +19,9 @@ class ProductCategoryScreen extends StatefulWidget {
 class _ProductCategoryScreenState extends State<ProductCategoryScreen> {
   @override
   void initState() {
-    // print("Initialize ForgotPassword Screen and State");
+    print("[ProductCategoryScreen] Initialize");
     // SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
-    // GetIt.I<ProductCategoryBloc>().add(InitProductCategoryEvent());
+    GetIt.I<ProductCategoryBloc>().add(LoadProductCategoryEvent(0));
     super.initState();
   }
 
@@ -34,14 +40,24 @@ class _ProductCategoryScreenState extends State<ProductCategoryScreen> {
                 child: SizedBox(
                   width: MediaQuery.of(context).size.width * 0.25,
                   child: SingleChildScrollView(
-                    child: Column(
-                      children: _generateDynamicList(),
-                    ),
+                    child: BlocBuilder<ProductCategoryBloc,
+                            ProductCategoryState>(
+                        bloc: GetIt.I<ProductCategoryBloc>(),
+                        builder: (context, state) {
+                          if (state is ProductCategoryLists) {
+                            return Column(
+                              children: _generateDynamicList(state.categories),
+                            );
+                          } else if (state is ProductCategoryError) {
+                            return Text("Error retrieving : ${state.error}");
+                          }
+                          return Container();
+                        }),
                   ),
                 ),
               ),
               Container(
-                color: Color(int.parse("0xFFFFFFFF")),
+                color: Colors.white,
                 padding: const EdgeInsets.only(top: 20.0),
                 alignment: Alignment.topLeft,
                 child: SizedBox(
@@ -63,23 +79,16 @@ class _ProductCategoryScreenState extends State<ProductCategoryScreen> {
     );
   }
 
-  List<Widget> _generateDynamicList() {
+  List<Widget> _generateDynamicList(QueryResultCategory categories) {
     List<Widget> list = List();
-    for (int i = 0; i < 100; i++) {
-      if (i == 5)
-        list.add(GridButtonLeft(
-            title: "left true",
-            isActive: true,
-            cb: () {
-              print("Select left button");
-            }));
-      else
-        list.add(GridButtonLeft(
-            title: "left false",
-            isActive: false,
-            cb: () {
-              print("Select left button");
-            }));
+    for (var _c in categories.layer1Category) {
+      list.add(GridButtonLeft(
+          title: _c.name,
+          isActive: _c.isActive,
+          cb: () {
+            print("Select id ${_c.id}");
+            GetIt.I<ProductCategoryBloc>().add(LoadProductCategoryEvent(_c.id));
+          }));
     }
     return list;
   }

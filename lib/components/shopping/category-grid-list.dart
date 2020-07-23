@@ -1,19 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:storeFlutter/components/button/grid-button.dart';
+import 'package:storeFlutter/components/button/grid-button-disable.dart';
+import 'package:storeFlutter/models/shopping/category.dart';
+import 'package:storeFlutter/models/query-result-category.dart';
 
 class CategoryGridList extends StatelessWidget {
+  final Layer2CategoryLists category;
+
+  CategoryGridList(this.category);
+
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(top: 20.0),
       child: Column(
-        // crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           Container(
             alignment: Alignment.topLeft,
             margin: const EdgeInsets.only(bottom: 10.0, left: 20.0),
             child: Text(
-              "Title",
+              category.name,
               textAlign: TextAlign.left,
               style: TextStyle(
                 fontSize: 17.0,
@@ -22,35 +28,45 @@ class CategoryGridList extends StatelessWidget {
               ),
             ),
           ),
-          Column(children: _generateDynamicList()),
+          Column(children: _generateDynamicList(category.layer3Category)),
         ],
       ),
     );
   }
 
-  List<Widget> _generateDynamicList() {
+  List<Widget> _generateDynamicList(List<Layer3CategoryLists> categories) {
     List<Widget> list = List();
-    for (int i = 0; i < 5; i++) {
+    print("test");
+    print(categories);
+    if (categories == null) return list;
+
+    for (int i = 1; i < categories.length; i += 3) {
       list.add(Container(
           margin: const EdgeInsets.all(5.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-              GridButton(
-                  title: "test1",
-                  cb: () {
-                    print("Select test1");
-                  }),
-              GridButton(
-                  title: "test2",
-                  cb: () {
-                    print("Select test2");
-                  }),
-              GridButton(
-                  title: "test3",
-                  cb: () {
-                    print("Select test3");
-                  }),
+              categories.length > i
+                  ? GridButton(
+                      title: categories[i].name,
+                      cb: () {
+                        print("Select ${categories[i].id}");
+                      })
+                  : GridButtonDisable(),
+              categories.length > i + 1
+                  ? GridButton(
+                      title: categories[i + 1].name,
+                      cb: () {
+                        print("Select ${categories[i + 1].id}");
+                      })
+                  : GridButtonDisable(),
+              categories.length > i + 2
+                  ? GridButton(
+                      title: categories[i + 2].name,
+                      cb: () {
+                        print("Select ${categories[i + 2].id}");
+                      })
+                  : GridButtonDisable(),
             ],
           )));
     }

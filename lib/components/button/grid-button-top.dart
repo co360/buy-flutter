@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:storeFlutter/util/app-theme.dart';
 
 class GridButtonTop extends StatelessWidget {
   final VoidCallback cb;
@@ -11,7 +12,7 @@ class GridButtonTop extends StatelessWidget {
       width: 234,
       height: 36,
       child: FlatButton(
-        color: Color(int.parse("0xFFE9ECEF")),
+        color: AppTheme.colorGray2,
         textColor: Colors.black,
         // disabledColor: Colors.grey,
         // disabledTextColor: Colors.black,
@@ -24,7 +25,7 @@ class GridButtonTop extends StatelessWidget {
           style: TextStyle(
             fontSize: 14.0,
             fontWeight: FontWeight.normal,
-            color: Color(int.parse("0xFF247BA0")),
+            color: AppTheme.colorPrimary,
           ),
         ),
         shape: RoundedRectangleBorder(

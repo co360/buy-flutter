@@ -14,6 +14,9 @@ Category _$CategoryFromJson(Map<String, dynamic> json) {
     json['variantFamily'] == null
         ? null
         : VariantFamily.fromJson(json['variantFamily'] as Map<String, dynamic>),
+    json['parentCategory'] == null
+        ? null
+        : Category.fromJson(json['parentCategory'] as Map<String, dynamic>),
     (json['properties'] as List)
         ?.map((e) =>
             e == null ? null : Property.fromJson(e as Map<String, dynamic>))
@@ -34,6 +37,7 @@ Map<String, dynamic> _$CategoryToJson(Category instance) => <String, dynamic>{
       'code': instance.code,
       'name': instance.name,
       'variantFamily': instance.variantFamily,
+      'parentCategory': instance.parentCategory,
       'properties': instance.properties,
       'characteristics': instance.characteristics,
       'image': instance.image,
