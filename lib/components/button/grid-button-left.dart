@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:storeFlutter/util/app-theme.dart';
 
 class GridButtonLeft extends StatelessWidget {
   final bool isActive;
@@ -13,9 +14,7 @@ class GridButtonLeft extends StatelessWidget {
       width: MediaQuery.of(context).size.width * 0.30,
       height: 65,
       child: FlatButton(
-        color: isActive
-            ? Color(int.parse("0xFFFFFFFF"))
-            : Color(int.parse("0xFFF3F5F8")),
+        color: isActive ? Colors.white : AppTheme.colorBg2,
         textColor: Colors.black,
         padding: EdgeInsets.all(8.0),
         onPressed: () => cb(),
@@ -30,9 +29,7 @@ class GridButtonLeft extends StatelessWidget {
         ),
         shape: RoundedRectangleBorder(
           side: BorderSide(
-              color: isActive
-                  ? Color(int.parse("0xFFFFFFFF"))
-                  : Color(int.parse("0xFFDEE2E6")),
+              color: isActive ? Colors.white : AppTheme.colorGray3,
               width: 1,
               style: BorderStyle.solid),
         ),
