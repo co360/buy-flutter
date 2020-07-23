@@ -20,10 +20,10 @@ class FilterMeta {
 @JsonSerializable()
 class FilterValue {
   String name;
-  String code;
+  String value;
   int count;
 
-  FilterValue(this.name, this.code, this.count);
+  FilterValue(this.name, this.value, this.count);
 
   factory FilterValue.fromJson(Map<String, dynamic> json) =>
       _$FilterValueFromJson(json);
