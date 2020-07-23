@@ -12,12 +12,13 @@ class Category {
   String code;
   String name;
   VariantFamily variantFamily;
+  Category parentCategory;
   List<Property> properties;
   List<Characteristic> characteristics;
   Image image;
 
-  Category(this.id, this.code, this.name, this.variantFamily, this.properties,
-      this.characteristics, this.image);
+  Category(this.id, this.code, this.name, this.variantFamily,
+      this.parentCategory, this.properties, this.characteristics, this.image);
 
   factory Category.fromJson(Map<String, dynamic> json) =>
       _$CategoryFromJson(json);

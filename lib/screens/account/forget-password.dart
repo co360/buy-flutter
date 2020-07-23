@@ -67,17 +67,17 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                               ),
                             ),
                             AppCard(
-                              BlocBuilder<ForgetPasswordBloc, ForgetPasswordState>(
-                                bloc: GetIt.I<ForgetPasswordBloc>(),
-                                builder: (context, state) {
-                                  print("current state $state");
-                                  if (state is ForgetPasswordSuccess) {
-                                    return generateConfirmationForm(context);
-                                  } else {
-                                    return buildForm(context);
-                                  }
-                                }
-                              ),                              
+                              BlocBuilder<ForgetPasswordBloc,
+                                      ForgetPasswordState>(
+                                  bloc: GetIt.I<ForgetPasswordBloc>(),
+                                  builder: (context, state) {
+                                    print("current state $state");
+                                    if (state is ForgetPasswordSuccess) {
+                                      return generateConfirmationForm(context);
+                                    } else {
+                                      return buildForm(context);
+                                    }
+                                  }),
                               padding: EdgeInsets.symmetric(
                                   horizontal: 20, vertical: 10),
                             ),
@@ -123,7 +123,6 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
   }
 
   Widget generateConfirmationForm(BuildContext context) {
-
     return Container(
       padding: const EdgeInsets.all(8.0),
       alignment: Alignment.center,
@@ -131,12 +130,12 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Center(            
+          Center(
             child: FaDuotoneIcon(
               FontAwesomeIcons.duotoneCheck,
-              secondaryColor: Color(int.parse("0xFFF37318")),
-              primaryColor: Color(int.parse("0xFFF37318")),
-              size: 60,          
+              secondaryColor: AppTheme.colorOrange,
+              primaryColor: AppTheme.colorOrange,
+              size: 60,
             ),
           ),
           Container(
@@ -144,23 +143,21 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
             child: Column(
               children: <Widget>[
                 Text(
-                  FlutterI18n.translate(
-                      context, "account.sentEmail"),
-                  textAlign: TextAlign.center,            
+                  FlutterI18n.translate(context, "account.sentEmail"),
+                  textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 16.0, 
+                    fontSize: 16.0,
                     color: Colors.black,
                   ),
                 ),
                 Text(
-                  FlutterI18n.translate(
-                      context, "account.checkEmail"),
+                  FlutterI18n.translate(context, "account.checkEmail"),
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 16.0, 
+                    fontSize: 16.0,
                     color: Colors.black,
                   ),
-                ),              
+                ),
               ],
             ),
           ),
@@ -174,9 +171,8 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
       bloc: GetIt.I<ForgetPasswordBloc>(),
       listener: (context, state) {
         print("current state $state");
-        if (state is ForgetPasswordFailed) {          
-          AppNotification(
-                  FlutterI18n.translate(context, "error.notExist"))
+        if (state is ForgetPasswordFailed) {
+          AppNotification(FlutterI18n.translate(context, "error.notExist"))
               .show(context);
           GetIt.I<ForgetPasswordBloc>().add(InitForgetPasswordEvent());
         }
@@ -213,10 +209,12 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
               if (_fbKey.currentState.saveAndValidate()) {
                 print(_fbKey.currentState.value);
                 FocusScope.of(context).requestFocus(new FocusNode());
-                ForgetPasswordBody body = ForgetPasswordBody.fromJson(_fbKey.currentState.value);
+                ForgetPasswordBody body =
+                    ForgetPasswordBody.fromJson(_fbKey.currentState.value);
                 print(body);
 
-                GetIt.I<ForgetPasswordBloc>().add(LoadForgetPasswordEvent(body, context));
+                GetIt.I<ForgetPasswordBloc>()
+                    .add(LoadForgetPasswordEvent(body, context));
               } else {
                 print(_fbKey.currentState.value);
                 print('validation failed');
