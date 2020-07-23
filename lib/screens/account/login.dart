@@ -11,6 +11,7 @@ import 'package:storeFlutter/components/app-loading-dialog.dart';
 import 'package:storeFlutter/components/app-notification.dart';
 import 'package:storeFlutter/screens/account/forget-password.dart';
 import 'package:storeFlutter/models/auth/login-body.dart';
+import 'package:storeFlutter/screens/account/signup.dart';
 import 'package:storeFlutter/util/app-theme.dart';
 import 'package:storeFlutter/util/form-util.dart';
 
@@ -74,7 +75,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                   color: AppTheme.colorLink,
                                 ),
                               ),
-                              onPressed: () {},
+                              onPressed: () => {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        SignUpScreen(),
+                                  ),
+                                )
+                              },
                             ),
                           ],
                         ),
