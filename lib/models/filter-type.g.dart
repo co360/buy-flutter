@@ -29,7 +29,7 @@ Map<String, dynamic> _$FilterMetaToJson(FilterMeta instance) =>
 FilterValue _$FilterValueFromJson(Map<String, dynamic> json) {
   return FilterValue(
     json['name'] as String,
-    json['code'] as String,
+    json['value'] as String,
     json['count'] as int,
   );
 }
@@ -37,6 +37,6 @@ FilterValue _$FilterValueFromJson(Map<String, dynamic> json) {
 Map<String, dynamic> _$FilterValueToJson(FilterValue instance) =>
     <String, dynamic>{
       'name': instance.name,
-      'code': instance.code,
+      'value': instance.value,
       'count': instance.count,
     };

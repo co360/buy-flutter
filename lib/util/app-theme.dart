@@ -22,7 +22,7 @@ class AppTheme {
   static Color colorGray8 = Color(0xFF343A40);
   static Color colorGray9 = Color(0xFF212529);
 
-  static double paddingStandard = 20;
+  static const double paddingStandard = 20;
 
   static Widget gradientBackground = Container(
     decoration: BoxDecoration(

@@ -5,6 +5,7 @@ class AppButton extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
   final bool noPadding;
+  final double bottomPadding;
 
   final AppButtonType type;
   final AppButtonSize size;
@@ -12,6 +13,7 @@ class AppButton extends StatelessWidget {
   const AppButton(this.text, this.onPressed,
       {this.type = AppButtonType.orange,
       this.noPadding = false,
+      this.bottomPadding = AppTheme.paddingStandard,
       this.size = AppButtonSize.big});
 
   @override
@@ -25,8 +27,7 @@ class AppButton extends StatelessWidget {
     }
 
     return Padding(
-      padding: EdgeInsets.only(
-          bottom: this.noPadding ? 0 : AppTheme.paddingStandard),
+      padding: EdgeInsets.only(bottom: this.noPadding ? 0 : this.bottomPadding),
       child: RaisedButton(
         onPressed: this.onPressed,
         color: this.type.backgroundColor,

@@ -1,3 +1,4 @@
+import 'package:storeFlutter/models/filter-type.dart';
 import 'package:storeFlutter/models/label-value.dart';
 import 'package:storeFlutter/models/query-result.dart';
 import 'package:storeFlutter/models/shopping/product.dart';
@@ -21,14 +22,21 @@ class ProductService extends BaseRestService {
       ProductListingQueryFilter queryFilter,
       {int page = 0,
       int pageSize = 10}) async {
-    String searchParam = queryFilter.query;
+    // TODO refactor to use search-param?
+//    String searchParam = queryFilter.query;
 
     var url = '$_endPoint/searchCombinationB2C/';
-    dynamic somedata = await dio.get<dynamic>(url, queryParameters: {
-      "keyword": searchParam,
-      "_pageSize": pageSize,
-      "_page": page
-    }).then((value) {
+    dynamic somedata = await dio
+        .get<dynamic>(
+      url,
+      queryParameters: generateQueryParameter(queryFilter, page, pageSize),
+//        queryParameters: {
+//      "keyword": searchParam,
+//      "_pageSize": pageSize,
+//      "_page": page
+//    }
+    )
+        .then((value) {
       print("Get something back from searchcombination");
       print(value);
 
@@ -38,36 +46,93 @@ class ProductService extends BaseRestService {
       result.pageSize = pageSize;
 
       if (value.data != null) {
-//        try {
-        result.items = data['results']
-            .map((e) => Product.fromJson(e))
-            .toList()
-            .cast<Product>();
+        try {
+          result.items = data['results']
+              .map((e) => Product.fromJson(e))
+              .toList()
+              .cast<Product>();
 
-        result.total = data['total'];
-//        } catch (error, stacktrace) {
-//          print("catching error here first");
-//          print(error);
-//          print(stacktrace);
-//
-//          // throw back
-//          throw error;
-//        }
+          result.total = data['total'];
+
+          // TODO parse filtered metas
+          result.filterMetas = data['filterMetas']
+              .map((e) => FilterMeta.fromJson(e))
+              .toList()
+              .cast<FilterMeta>();
+        } catch (error, stacktrace) {
+          print("catching error here first");
+          print(error);
+          print(stacktrace);
+
+          // throw back
+          throw error;
+        }
       }
-
-      // TODO parse filtered metas
 
       return result;
     });
 
     return somedata;
   }
+
+  Map<String, dynamic> generateQueryParameter(
+      ProductListingQueryFilter filter, int page, int pageSize) {
+    // TODO refactor to use search-param and FormUtil.generateQueryParameters?
+
+    Map<String, dynamic> params = {
+      "keyword": filter.query,
+      "_pageSize": pageSize,
+      "_page": page
+    };
+
+//    params
+//        .addAll(filter.filters.map((key, value) => MapEntry(key, value.value)));
+
+    params.addAll(filter.toQueryParameter());
+    return params;
+  }
 }
 
 class ProductListingQueryFilter {
   String query;
 
-  // TODO include filtering criteria
+  Map<String, FilterValue> filters = {};
 
   ProductListingQueryFilter({this.query});
+
+  ProductListingQueryFilter.copy(ProductListingQueryFilter filter) {
+    query = filter.query;
+    filters = Map.from(filter.filters);
+  }
+
+  toggleFilter(String filterCode, FilterValue value) {
+    if (filters.containsKey(filterCode)) {
+      filters.remove(filterCode);
+    } else {
+      filters[filterCode] = value;
+    }
+  }
+
+  bool hasFilter(String filterCode, FilterValue value) {
+    FilterValue val = filters[filterCode];
+
+    if (val != null && val.value == value.value) return true;
+    return false;
+  }
+
+  bool hasAnyFilter() {
+    return filters.length > 0;
+  }
+
+  Map<String, String> toQueryParameter() {
+    return filters.map((key, value) {
+      String finalKey = key;
+
+      if (key == 'CATEGORY') finalKey = "category.code";
+      if (key == 'COUNTRY') finalKey = "sellerCountryCode";
+      if (key == 'BUSINESS_TYPE') finalKey = "sellerBusinessTypes";
+
+      return MapEntry(finalKey, value.value);
+    });
+  }
 }

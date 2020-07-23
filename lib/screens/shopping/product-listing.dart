@@ -6,9 +6,11 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:storeFlutter/blocs/shopping/product-listing-bloc.dart';
 import 'package:storeFlutter/components/app-button.dart';
 import 'package:storeFlutter/components/app-general-error-info.dart';
+import 'package:storeFlutter/components/app-loading.dart';
 import 'package:storeFlutter/components/shopping/product-listing-grid.dart';
 import 'package:storeFlutter/components/shopping/shopping-cart-icon.dart';
 import 'package:storeFlutter/components/shopping/static-search-bar.dart';
+import 'package:storeFlutter/models/filter-type.dart';
 import 'package:storeFlutter/models/query-result.dart';
 import 'package:storeFlutter/models/shopping/product.dart';
 import 'package:storeFlutter/screens/shopping/search-general.dart';
@@ -22,38 +24,203 @@ class ProductListingScreen extends StatelessWidget {
         ModalRoute.of(context).settings.arguments;
     String query = args.query;
 
-    return Scaffold(
-      backgroundColor: AppTheme.colorBg2,
-      appBar: AppBar(
-        titleSpacing: 0,
-        title: Row(
+    return BlocProvider<ProductListingBloc>(
+      create: (context) => ProductListingBloc()
+        ..add(ProductListingSearch(ProductListingQueryFilter(query: query))),
+      child: Builder(
+        builder: (context) {
+          return Scaffold(
+              backgroundColor: AppTheme.colorBg2,
+              appBar: AppBar(
+                titleSpacing: 0,
+                title: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: StaticSearchBar(query),
+                    ),
+                    SizedBox(width: 10),
+                    ShoppingCartIcon(),
+                    SizedBox(width: 10),
+                  ],
+                ),
+                flexibleSpace: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: <Color>[
+                        AppTheme.colorPrimary,
+                        AppTheme.colorSuccess
+                      ],
+                    ),
+                  ),
+                ),
+                iconTheme: IconThemeData(color: Colors.white),
+                actions: <Widget>[SizedBox.shrink()],
+              ),
+              endDrawer: FilterDrawer(),
+              body: ProductListingBody());
+        },
+      ),
+    );
+  }
+}
+
+class FilterDrawer extends StatelessWidget {
+  const FilterDrawer({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Theme(
+      data: Theme.of(context).copyWith(
+        canvasColor: Colors.white,
+      ),
+      child: Drawer(
+          child: SafeArea(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             Expanded(
-              child: StaticSearchBar(query),
+              child: Padding(
+                padding: EdgeInsets.only(left: 20, right: 20, top: 20),
+                child: buildFilterInput(),
+              ),
             ),
-            SizedBox(width: 10),
-            ShoppingCartIcon(),
-            SizedBox(width: 10),
+            Container(child: buildActionButton(context)),
           ],
         ),
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: <Color>[AppTheme.colorPrimary, AppTheme.colorSuccess],
-            ),
+      )),
+    );
+  }
+
+  Widget buildFilterInput() {
+    return BlocBuilder<ProductListingBloc, ProductListingState>(
+      builder: (context, state) {
+        if (state is ProductListingSearchInProgress) {
+          // TODO should display the loading on top of the filter button like lazada etc
+          return Column(
+            children: <Widget>[
+              AppLoading(),
+              Text(
+                  "loading... should display the loading on top of the filter button like lazada etc"),
+            ],
+          );
+        } else if (state is ProductListingSearchComplete) {
+          ProductListingBloc bloc =
+              BlocProvider.of<ProductListingBloc>(context);
+
+          List<FilterMeta> metas = state.result.filterMetas;
+          return ListView.builder(
+            shrinkWrap: true,
+            itemCount: metas.length,
+            itemBuilder: (BuildContext buildContext, int index) {
+              FilterMeta meta = metas[index];
+
+              if (meta.filterValues == null || meta.filterValues.length == 0) {
+                // skip if no filter values...
+                // TODO also might skip if the values is only one value.. cause pointless to filter anyway
+                return SizedBox.shrink();
+              }
+
+              // TODO do the "View More" if filter option more than 5
+              return buildFilterMeta(
+                  meta, bloc, state.queryFilter, state.result);
+            },
+          );
+        } else if (state is ProductListingSearchError) {}
+        return Text("nothing here");
+      },
+    );
+  }
+
+  Column buildFilterMeta(FilterMeta meta, ProductListingBloc bloc,
+      ProductListingQueryFilter queryFilter, QueryResult<Product> result) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        Text(
+          meta.name,
+          style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+        ),
+        SizedBox(
+          height: 10,
+        ),
+        Wrap(
+          spacing: 10,
+          children: meta.filterValues
+              .map((e) => RaisedButton(
+                    onPressed: () {
+                      ProductListingQueryFilter newFilter =
+                          ProductListingQueryFilter.copy(queryFilter);
+                      newFilter.toggleFilter(meta.code, e);
+                      bloc.add(ProductListingSearch(newFilter, result: result));
+                    },
+                    color: queryFilter.hasFilter(meta.code, e)
+                        ? AppTheme.colorOrange
+                        : AppTheme.colorGray2,
+//            visualDensity: VisualDensity.compact,
+                    padding: EdgeInsets.all(10),
+                    child: Text(
+                      e.name != null ? e.name : e.value,
+                      style: TextStyle(
+                          color: queryFilter.hasFilter(meta.code, e)
+                              ? Colors.white
+                              : Colors.black,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400),
+                    ),
+                  ))
+              .toList(),
+        ),
+        SizedBox(
+          height: 30,
+        ),
+      ],
+    );
+  }
+
+  Widget buildActionButton(BuildContext context) {
+    return Column(
+      children: <Widget>[
+        Divider(
+          height: 1,
+        ),
+        SizedBox(height: 5),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          child: Row(
+            children: <Widget>[
+              Expanded(
+                child: AppButton(
+                  FlutterI18n.translate(context, "general.reset"),
+                  () {
+                    // TODO clear the filter and search again
+                  },
+//                  noPadding: true,
+                  bottomPadding: 5,
+                  type: AppButtonType.white,
+                  size: AppButtonSize.small,
+                ),
+              ),
+              SizedBox(width: 10),
+              Expanded(
+                child: AppButton(
+                  FlutterI18n.translate(context, "general.done"),
+                  () {
+                    Navigator.of(context).pop();
+                  },
+//                  noPadding: true,
+                  bottomPadding: 5,
+                  size: AppButtonSize.small,
+                ),
+              ),
+            ],
           ),
-        ),
-        iconTheme: IconThemeData(color: Colors.white),
-      ),
-      body: BlocProvider<ProductListingBloc>(
-        create: (context) => ProductListingBloc()
-          ..add(ProductListingSearch(ProductListingQueryFilter(query: query))),
-        child: Builder(
-          builder: (context) => ProductListingBody(),
-        ),
-      ),
+        )
+      ],
     );
   }
 }
@@ -110,13 +277,13 @@ class ProductListingResult extends StatelessWidget {
         children: <Widget>[
           FlatButton(
             materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             splashColor: Colors.transparent,
             highlightColor: Colors.transparent,
             child: Text(
               FlutterI18n.translate(context, "shopping.sort.recommended"),
               style: TextStyle(
-                fontSize: 12,
+//                fontSize: 12,
                 fontWeight: FontWeight.normal,
                 color: AppTheme.colorOrange,
               ),
@@ -125,13 +292,13 @@ class ProductListingResult extends StatelessWidget {
           ),
           FlatButton(
             materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             splashColor: Colors.transparent,
             highlightColor: Colors.transparent,
             child: Text(
               FlutterI18n.translate(context, "shopping.sort.popularity"),
               style: TextStyle(
-                fontSize: 12,
+//                fontSize: 12,
                 fontWeight: FontWeight.normal,
                 color: AppTheme.colorLink,
               ),
@@ -157,30 +324,13 @@ class FilterButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.translucent,
-      onTap: () => _tap(context),
-      child: Stack(
-        children: <Widget>[
-          Column(
-            children: <Widget>[
-              SizedBox(
-                height: iconPaddingHeight,
-              ),
-              Padding(
-                padding: EdgeInsets.only(right: 5),
-                child: FaIcon(
-                  FontAwesomeIcons.lightFilter,
-//                  color: Colors.white,
-                  size: 18,
-                ),
-              ),
-              SizedBox(
-                height: iconPaddingHeight,
-              ),
-            ],
-          ),
-          Positioned(
+    return BlocBuilder<ProductListingBloc, ProductListingState>(
+        builder: (context, state) {
+      Widget layer = Container();
+
+      if (state is ProductListingSearchComplete) {
+        if (state.queryFilter.hasAnyFilter()) {
+          layer = Positioned(
             right: 0,
             child: Container(
               decoration: BoxDecoration(
@@ -196,14 +346,42 @@ class FilterButton extends StatelessWidget {
                 ),
               ),
             ),
-          )
-        ],
-      ),
-    );
+          );
+        }
+      }
+
+      return GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: () => _tap(context),
+        child: Stack(
+          children: <Widget>[
+            Column(
+              children: <Widget>[
+                SizedBox(
+                  height: iconPaddingHeight,
+                ),
+                Padding(
+                  padding: EdgeInsets.only(right: 5),
+                  child: FaIcon(
+                    FontAwesomeIcons.lightFilter,
+//                  color: Colors.white,
+                    size: 18,
+                  ),
+                ),
+                SizedBox(
+                  height: iconPaddingHeight,
+                ),
+              ],
+            ),
+            layer
+          ],
+        ),
+      );
+    });
   }
 
   void _tap(BuildContext context) {
-    // TODO display filter
+    Scaffold.of(context).openEndDrawer();
   }
 }
 

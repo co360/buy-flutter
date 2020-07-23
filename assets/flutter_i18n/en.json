@@ -12,6 +12,8 @@
   "general": {
     "pleaseWait" : "Please Wait...",
     "cancel" : "Cancel",
+    "reset" : "Reset",
+    "done" : "Done",
     "noMoreResults" : "No More Results"
   },
   "screen" : {
