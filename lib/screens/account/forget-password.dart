@@ -1,4 +1,3 @@
-import 'package:flutter/services.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -27,7 +26,6 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
   @override
   void initState() {
     print("Initialize ForgotPassword Screen and State");
-    SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
     GetIt.I<ForgetPasswordBloc>().add(InitForgetPasswordEvent());
     super.initState();
   }
