@@ -40,7 +40,7 @@ class CategoryGridList extends StatelessWidget {
     print(categories);
     if (categories == null) return list;
 
-    for (int i = 1; i < categories.length; i += 3) {
+    for (int i = 1; i < categories.length; i += 2) {
       list.add(Container(
           margin: const EdgeInsets.all(5.0),
           child: Row(
@@ -60,13 +60,13 @@ class CategoryGridList extends StatelessWidget {
                         print("Select ${categories[i + 1].id}");
                       })
                   : GridButtonDisable(),
-              categories.length > i + 2
-                  ? GridButton(
-                      title: categories[i + 2].name,
-                      cb: () {
-                        print("Select ${categories[i + 2].id}");
-                      })
-                  : GridButtonDisable(),
+              // categories.length > i + 2
+              //     ? GridButton(
+              //         title: categories[i + 2].name,
+              //         cb: () {
+              //           print("Select ${categories[i + 2].id}");
+              //         })
+              //     : GridButtonDisable(),
             ],
           )));
     }
