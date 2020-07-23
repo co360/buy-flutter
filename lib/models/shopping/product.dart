@@ -1,5 +1,8 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:storeFlutter/models/date-type.dart';
+import 'package:storeFlutter/models/identity/company-profile.dart';
+import 'package:storeFlutter/models/identity/company.dart';
+import 'package:storeFlutter/models/image.dart';
 import 'package:storeFlutter/models/shopping/category.dart';
 import 'package:storeFlutter/models/shopping/characteristic.dart';
 import 'package:storeFlutter/models/shopping/property-value.dart';
@@ -29,7 +32,7 @@ class Product {
   DeliveryDateOption deliveryDateOption = DeliveryDateOption.DEFAULT;
 
   List<int> supplyLocations;
-//  List<Image> images;
+  List<Image> images;
   List<PropertyValue> propertyValues;
   List<Characteristic> characteristics;
   List<SpecificationValue> specificationValues;
@@ -38,6 +41,8 @@ class Product {
   Status status;
   String supplierUuid;
   int companyId;
+  Company sellerCompany;
+  CompanyProfile sellerCompanyProfile;
 
   int skuSize;
   Category category;
@@ -62,6 +67,7 @@ class Product {
       this.keyContactPersons,
       this.deliveryDateOption,
       this.supplyLocations,
+      this.images,
       this.propertyValues,
       this.characteristics,
       this.specificationValues,
@@ -69,6 +75,8 @@ class Product {
       this.status,
       this.supplierUuid,
       this.companyId,
+      this.sellerCompany,
+      this.sellerCompanyProfile,
       this.skuSize,
       this.category,
       this.uomCode,

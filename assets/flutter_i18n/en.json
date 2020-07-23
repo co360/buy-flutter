@@ -11,7 +11,8 @@
   },
   "general": {
     "pleaseWait" : "Please Wait...",
-    "cancel" : "Cancel"
+    "cancel" : "Cancel",
+    "noMoreResults" : "No More Results"
   },
   "screen" : {
     "bottomNavigation": {
@@ -26,6 +27,13 @@
     "browse": "Browse",
     "searchWith" : "Search for {query}",
     "productListing": "Product Listing",
+    "weAreSorry" : "We're sorry",
+    "cannotFindMatch" : "We cannot find any matches for your search term",
+    "tryDifferentKeywords" : "Try Different Keywords",
+    "sort" : {
+      "recommended" : "Recommended",
+      "popularity" : "Popularity"
+    },
     "productDetail": {
       "name" : "Product Detail",
       "productInformation": "Product Information"

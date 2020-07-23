@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:storeFlutter/models/image.dart';
 
 part 'company.g.dart';
 
@@ -19,7 +20,7 @@ class Company {
   String adminEmail;
   String type;
   String uuid;
-//  image: Image;
+  Image image;
   String industry;
   String totalEmployees;
   String yearRegistered;
@@ -55,6 +56,7 @@ class Company {
       this.adminEmail,
       this.type,
       this.uuid,
+      this.image,
       this.industry,
       this.totalEmployees,
       this.yearRegistered,

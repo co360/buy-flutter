@@ -33,3 +33,24 @@ Map<String, dynamic> _$LocalTimeToJson(LocalTime instance) => <String, dynamic>{
       'minute': instance.minute,
       'second': instance.second,
     };
+
+LocalDateTime _$LocalDateTimeFromJson(Map<String, dynamic> json) {
+  return LocalDateTime(
+    json['year'] as int,
+    json['month'] as int,
+    json['day'] as int,
+    json['hour'] as int,
+    json['minute'] as int,
+    json['second'] as int,
+  );
+}
+
+Map<String, dynamic> _$LocalDateTimeToJson(LocalDateTime instance) =>
+    <String, dynamic>{
+      'year': instance.year,
+      'month': instance.month,
+      'day': instance.day,
+      'hour': instance.hour,
+      'minute': instance.minute,
+      'second': instance.second,
+    };
