@@ -38,7 +38,7 @@ class _ProductCategoryScreenState extends State<ProductCategoryScreen> {
             child: Row(children: <Widget>[
               Container(
                 child: SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.25,
+                  width: MediaQuery.of(context).size.width * 0.30,
                   child: SingleChildScrollView(
                     child: BlocBuilder<ProductCategoryBloc,
                             ProductCategoryState>(
@@ -61,7 +61,7 @@ class _ProductCategoryScreenState extends State<ProductCategoryScreen> {
                 padding: const EdgeInsets.only(top: 20.0),
                 alignment: Alignment.topLeft,
                 child: SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.75,
+                  width: MediaQuery.of(context).size.width * 0.70,
                   child: SingleChildScrollView(
                     child: Column(
                       children: <Widget>[

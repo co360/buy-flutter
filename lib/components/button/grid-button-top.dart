@@ -9,7 +9,7 @@ class GridButtonTop extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 234,
+      width: MediaQuery.of(context).size.width * 0.50,
       height: 36,
       child: FlatButton(
         color: AppTheme.colorGray2,

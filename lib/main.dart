@@ -20,6 +20,7 @@ import 'package:storeFlutter/services/initial-loading-service.dart';
 import 'package:storeFlutter/services/locator.dart';
 import 'package:storeFlutter/services/storage-service.dart';
 import 'package:storeFlutter/util/app-theme.dart';
+import 'package:flutter/services.dart';
 
 // TODO to handle/test session scenario
 // 1. [DONE] no token and login as guest
@@ -34,6 +35,9 @@ void main() async {
   await setupLocator();
 
   StorageService storageService = GetIt.I<StorageService>();
+
+  SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(statusBarColor: Colors.transparent));
 
   // TODO session validation initailization should only start after runapp to prevent screen freeze
   if (storageService.accessToken != null) {
