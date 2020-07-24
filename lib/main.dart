@@ -10,6 +10,7 @@ import 'package:storeFlutter/blocs/language/language-bloc.dart';
 import 'package:storeFlutter/blocs/logging-bloc-observer.dart';
 import 'package:storeFlutter/screens/account.dart';
 import 'package:storeFlutter/screens/account/login.dart';
+import 'package:storeFlutter/screens/account/signup.dart';
 import 'package:storeFlutter/screens/home.dart';
 import 'package:storeFlutter/screens/main-layout.dart';
 import 'package:storeFlutter/screens/orders.dart';
@@ -103,6 +104,7 @@ class MyApp extends StatelessWidget {
                 '/detail': (context) => ProductDetailScreen(),
                 '/cart': (context) => ShoppingCartScreen(),
                 '/login': (context) => LoginScreen(),
+                '/signup': (context) => SignUpScreen()
               },
               localizationsDelegates: [
                 flutterI18nDelegate,

@@ -92,7 +92,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 ),
                               ),
                               onPressed: () => {
-                                Navigator.pushNamed(context, '/login'),
+                                Navigator.popAndPushNamed(context, '/login'),
                               },
                             ),
                           ],
