@@ -1,14 +1,14 @@
-import 'package:flutter/cupertino.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:storeFlutter/components/app-button.dart';
 import 'package:storeFlutter/components/shopping/static-search-bar.dart';
+import 'package:storeFlutter/screens/shopping/product-category.dart';
 import 'package:storeFlutter/screens/shopping/product-listing.dart';
 import 'package:storeFlutter/util/app-theme.dart';
-import 'package:storeFlutter/screens/shopping/product-category.dart';
 
 class HomeScreen extends StatelessWidget {
   @override
@@ -19,8 +19,9 @@ class HomeScreen extends StatelessWidget {
         title: Row(
           children: <Widget>[
             Expanded(
-              child: StaticSearchBar(FlutterI18n.translate(
-                  context, "shopping.searchProductSeller")),
+              child: StaticSearchBar(
+                  placeholder: FlutterI18n.translate(
+                      context, "shopping.searchProductSeller")),
             ),
             SizedBox(width: 10),
             BrowseButton()
@@ -222,32 +223,29 @@ class BrowseButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onTap: (){
-          Navigator.push(
-            context,
-            CupertinoPageRoute(
-              builder: (context) => ProductCategoryScreen()
-              ),
-            );
-          },
-
-        child: Column(
-          children: <Widget>[
-            FaIcon(
-              FontAwesomeIcons.lightBoxFull,
-              color: Colors.white,
-              size: 16,
-            ),
-            SizedBox(
-              height: 5,
-            ),
-            Text(
-              FlutterI18n.translate(context, "shopping.browse"),
-              style: TextStyle(
-                  color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500),
-            )
-          ],
-        ),
+      onTap: () {
+        Navigator.push(
+          context,
+          CupertinoPageRoute(builder: (context) => ProductCategoryScreen()),
+        );
+      },
+      child: Column(
+        children: <Widget>[
+          FaIcon(
+            FontAwesomeIcons.lightBoxFull,
+            color: Colors.white,
+            size: 16,
+          ),
+          SizedBox(
+            height: 5,
+          ),
+          Text(
+            FlutterI18n.translate(context, "shopping.browse"),
+            style: TextStyle(
+                color: Colors.white, fontSize: 12, fontWeight: FontWeight.w500),
+          )
+        ],
+      ),
     );
   }
 }

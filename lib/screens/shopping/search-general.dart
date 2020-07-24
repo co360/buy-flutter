@@ -12,6 +12,11 @@ import 'package:storeFlutter/util/app-theme.dart';
 import 'package:substring_highlight/substring_highlight.dart';
 
 class SearchGeneral extends StatefulWidget {
+  final String query;
+  final String placeholder;
+
+  SearchGeneral({this.query, this.placeholder});
+
   @override
   _SearchGeneralState createState() => _SearchGeneralState();
 }
@@ -39,6 +44,9 @@ class _SearchGeneralState extends State<SearchGeneral> {
                 return CustomSearchBar(
                   onSearch: (term) => search(context, term),
                   icon: null,
+                  searchQueryController:
+                      TextEditingController(text: widget.query),
+                  hintText: widget.placeholder,
                   searchBarController: searchController,
                   searchFocusNode: searchFN,
                   minimumChars: 1,
@@ -127,6 +135,10 @@ class _SearchGeneralState extends State<SearchGeneral> {
   }
 
   Widget buildPlaceHolder() {
+    return SizedBox.shrink();
+  }
+
+  Widget buildPlaceHolderBackup() {
     return Container(
       color: Colors.white,
       child: Column(

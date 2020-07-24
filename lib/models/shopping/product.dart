@@ -44,10 +44,24 @@ class Product {
   Company sellerCompany;
   CompanyProfile sellerCompanyProfile;
 
+  double consumerPrice;
+  String consumerPriceUom;
+  String consumerPriceCurrency;
+
   int skuSize;
   Category category;
   String uomCode;
   bool isContainerize;
+
+  String keywords;
+  int daysToShip;
+
+  double weight;
+  double height;
+  double width;
+  double length;
+
+  String warrantyType;
 
   Product(
       this.id,
@@ -77,10 +91,20 @@ class Product {
       this.companyId,
       this.sellerCompany,
       this.sellerCompanyProfile,
+      this.consumerPrice,
+      this.consumerPriceUom,
+      this.consumerPriceCurrency,
       this.skuSize,
       this.category,
       this.uomCode,
-      this.isContainerize);
+      this.isContainerize,
+      this.keywords,
+      this.daysToShip,
+      this.weight,
+      this.height,
+      this.width,
+      this.length,
+      this.warrantyType);
 
   factory Product.fromJson(Map<String, dynamic> json) =>
       _$ProductFromJson(json);
