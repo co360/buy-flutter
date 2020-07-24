@@ -60,12 +60,22 @@ Product _$ProductFromJson(Map<String, dynamic> json) {
         ? null
         : CompanyProfile.fromJson(
             json['sellerCompanyProfile'] as Map<String, dynamic>),
+    (json['consumerPrice'] as num)?.toDouble(),
+    json['consumerPriceUom'] as String,
+    json['consumerPriceCurrency'] as String,
     json['skuSize'] as int,
     json['category'] == null
         ? null
         : Category.fromJson(json['category'] as Map<String, dynamic>),
     json['uomCode'] as String,
     json['isContainerize'] as bool,
+    json['keywords'] as String,
+    json['daysToShip'] as int,
+    (json['weight'] as num)?.toDouble(),
+    (json['height'] as num)?.toDouble(),
+    (json['width'] as num)?.toDouble(),
+    (json['length'] as num)?.toDouble(),
+    json['warrantyType'] as String,
   );
 }
 
@@ -98,10 +108,20 @@ Map<String, dynamic> _$ProductToJson(Product instance) => <String, dynamic>{
       'companyId': instance.companyId,
       'sellerCompany': instance.sellerCompany,
       'sellerCompanyProfile': instance.sellerCompanyProfile,
+      'consumerPrice': instance.consumerPrice,
+      'consumerPriceUom': instance.consumerPriceUom,
+      'consumerPriceCurrency': instance.consumerPriceCurrency,
       'skuSize': instance.skuSize,
       'category': instance.category,
       'uomCode': instance.uomCode,
       'isContainerize': instance.isContainerize,
+      'keywords': instance.keywords,
+      'daysToShip': instance.daysToShip,
+      'weight': instance.weight,
+      'height': instance.height,
+      'width': instance.width,
+      'length': instance.length,
+      'warrantyType': instance.warrantyType,
     };
 
 T _$enumDecode<T>(

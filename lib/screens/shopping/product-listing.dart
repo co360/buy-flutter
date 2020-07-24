@@ -36,7 +36,10 @@ class ProductListingScreen extends StatelessWidget {
                 title: Row(
                   children: <Widget>[
                     Expanded(
-                      child: StaticSearchBar(query),
+                      child: StaticSearchBar(
+                          placeholder: FlutterI18n.translate(
+                              context, "shopping.searchProductSeller"),
+                          query: query),
                     ),
                     SizedBox(width: 10),
                     ShoppingCartIcon(),

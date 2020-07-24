@@ -6,6 +6,8 @@ import 'package:flappy_search_bar/scaled_tile.dart';
 import 'package:flappy_search_bar/search_bar_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:quiver/strings.dart';
 import 'package:storeFlutter/util/app-theme.dart';
 
 mixin _ControllerListener<T> on State<CustomSearchBar<T>> {
@@ -158,7 +160,7 @@ class CustomSearchBar<T> extends StatefulWidget {
   /// Text style of the text in the search bar
   final TextStyle textStyle;
 
-  /// Widget shown for cancellation
+  /// Widget shown for cancellatio
   final Widget cancellationWidget;
 
   /// Callback when cancel button is triggered
@@ -200,6 +202,8 @@ class CustomSearchBar<T> extends StatefulWidget {
 
   final FocusNode searchFocusNode;
 
+  final TextEditingController searchQueryController;
+
   final void Function(String) onSubmitText;
 
   CustomSearchBar({
@@ -234,6 +238,7 @@ class CustomSearchBar<T> extends StatefulWidget {
     this.listPadding = const EdgeInsets.all(0),
     this.searchBarPadding = const EdgeInsets.all(0),
     this.headerPadding = const EdgeInsets.all(0),
+    this.searchQueryController,
     this.onSubmitText,
   }) : super(key: key);
   @override
@@ -244,11 +249,12 @@ class _CustomSearchBarState<T> extends State<CustomSearchBar<T>>
     with TickerProviderStateMixin, _ControllerListener<T> {
   bool _loading = false;
   Widget _error;
-  final _searchQueryController = TextEditingController();
+  TextEditingController _searchQueryController;
   Timer _debounce;
   bool _animate = false;
   List<T> _list = [];
   SearchBarController searchBarController;
+  bool _showClearButton = false;
 
   @override
   void initState() {
@@ -256,6 +262,25 @@ class _CustomSearchBarState<T> extends State<CustomSearchBar<T>>
     searchBarController =
         widget.searchBarController ?? SearchBarController<T>();
     searchBarController.setListener(this);
+
+    if (widget.searchQueryController != null)
+      _searchQueryController = widget.searchQueryController;
+    else
+      _searchQueryController = TextEditingController();
+
+    // handle trigger the search function if initially have query
+    if (isNotBlank(_searchQueryController.text)) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        searchBarController._search(
+            _searchQueryController.text, widget.onSearch);
+      });
+    }
+
+    _searchQueryController.addListener(() {
+      setState(() {
+        _showClearButton = _searchQueryController.text.length > 0;
+      });
+    });
   }
 
   @override
@@ -405,11 +430,11 @@ class _CustomSearchBarState<T> extends State<CustomSearchBar<T>>
                           style: widget.textStyle,
                           onSubmitted: _onTextSubmitted,
                           decoration: InputDecoration(
-                            icon: widget.icon,
-                            border: InputBorder.none,
-                            hintText: widget.hintText,
-                            hintStyle: widget.hintStyle,
-                          ),
+                              icon: widget.icon,
+                              border: InputBorder.none,
+                              hintText: widget.hintText,
+                              hintStyle: widget.hintStyle,
+                              suffixIcon: _getClearButton()),
                         ),
                       ),
                     ),
@@ -440,6 +465,21 @@ class _CustomSearchBarState<T> extends State<CustomSearchBar<T>>
           ),
         ),
       ],
+    );
+  }
+
+  Widget _getClearButton() {
+    if (!_showClearButton) {
+      return null;
+    }
+    return IconButton(
+      alignment: Alignment.centerRight,
+      padding: EdgeInsets.only(top: 8, bottom: 8, left: 8, right: 0),
+      onPressed: () => _searchQueryController.clear(),
+      icon: FaIcon(
+        FontAwesomeIcons.solidTimesCircle,
+        size: 16,
+      ),
     );
   }
 }

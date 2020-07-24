@@ -76,13 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               ),
                               onPressed: () => {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        SignUpScreen(),
-                                  ),
-                                )
+                                Navigator.popAndPushNamed(context, '/signup'),
                               },
                             ),
                           ],

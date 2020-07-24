@@ -3,6 +3,7 @@ import 'package:quiver/strings.dart';
 import 'package:storeFlutter/models/identity/location.dart';
 import 'package:storeFlutter/models/shopping/product.dart';
 import 'package:storeFlutter/util/app-theme.dart';
+import 'package:storeFlutter/util/format-util.dart';
 import 'package:storeFlutter/util/resource-util.dart';
 
 class ProductListingGridItem extends StatelessWidget {
@@ -48,12 +49,14 @@ class ProductListingGridItem extends StatelessWidget {
                     style: TextStyle(fontSize: 13),
                   ),
                   SizedBox(height: 10),
-                  Text(
-                    "RM 22.00",
-                    style: TextStyle(
-                        color: AppTheme.colorOrange,
-                        fontWeight: FontWeight.bold),
-                  )
+                  product.consumerPrice > 0
+                      ? Text(
+                          "${product.consumerPriceCurrency} ${FormatUtil.formatPrice(product.consumerPrice)}",
+                          style: TextStyle(
+                              color: AppTheme.colorOrange,
+                              fontWeight: FontWeight.bold),
+                        )
+                      : SizedBox.shrink()
                 ],
               ),
             ),

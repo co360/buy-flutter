@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:quiver/strings.dart';
 import 'package:storeFlutter/screens/shopping/search-general.dart';
 import 'package:storeFlutter/util/app-theme.dart';
 
 class StaticSearchBar extends StatelessWidget {
-  final String title;
+  final String placeholder;
+  final String query;
 
-  const StaticSearchBar(
-    this.title, {
+  const StaticSearchBar({
+    this.placeholder,
+    this.query,
     Key key,
   }) : super(key: key);
 
@@ -31,12 +34,14 @@ class StaticSearchBar extends StatelessWidget {
             SizedBox(
               width: 10,
             ),
-            Text(
-              title,
-              style: TextStyle(
-                  color: AppTheme.colorGray5,
-                  fontSize: 14,
-                  fontWeight: FontWeight.normal),
+            Expanded(
+              child: Text(
+                isNotBlank(query) ? query : placeholder,
+                style: TextStyle(
+                    color: AppTheme.colorGray5,
+                    fontSize: 14,
+                    fontWeight: FontWeight.normal),
+              ),
             )
           ],
         ),
@@ -51,7 +56,10 @@ class StaticSearchBar extends StatelessWidget {
     Navigator.of(context).push(PageRouteBuilder(
       fullscreenDialog: true,
       opaque: false,
-      pageBuilder: (BuildContext context, _, __) => SearchGeneral(),
+      pageBuilder: (BuildContext context, _, __) => SearchGeneral(
+        query: query,
+        placeholder: placeholder,
+      ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         var begin = Offset(0.0, 1.0);
         var end = Offset.zero;
