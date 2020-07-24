@@ -38,6 +38,7 @@
     "settings": "Tetapan",
     "myAccount": "Akaun Saya",
     "myProfile": "Profil Saya",
+    "editProfile": "Kemaskini Profil",
     "changeEmailAddress": "Tukar Alamat Emel",
     "changePassword": "Tukar Kata Laluan",
     "myAddresses": "Alamat Saya",
@@ -60,7 +61,8 @@
     
     "name": "Nama",
     "mobileContact": "Nombor Telefon Bimbit",
-
+    "edit": "Ubah",
+    "save": "Simpan",
     "changeLanguageScreen" : {
       "languages" : "Bahasa",
       "languageChanged" : "Bahasa Telah Tukar"
