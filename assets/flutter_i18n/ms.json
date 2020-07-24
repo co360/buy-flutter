@@ -8,7 +8,8 @@
     "passwordPattern": "",
     "passwordNotMatch": "",
     "passwordSame": "Kata laluan telah digunakan.",
-    "oldPasswordInvalid": "Kata laluan lama salah."
+    "oldPasswordInvalid": "Kata laluan lama salah.",
+    "invalidVerificationCode": "Kod verifikasi salah."
   },
   "general": {
     "pleaseWait" : "Sila Tunggu...",
@@ -67,9 +68,18 @@
     "save": "Simpan",
     "oldPassword": "Kata Laluan Lama",
     "newPassword": "Kata Laluan Baru",
-    "changeLanguageScreen" : {
-      "languages" : "Bahasa",
-      "languageChanged" : "Bahasa Telah Tukar"
+    "currentEmail": "E-mel terkini",
+    "enterEmail": "Sila masukkan E-mel yang baharu. Kami akan menghantar verifikasi kod ke E-mel anda.",
+    "newEmail": "E-mel terbaru",
+    "sendCode": "Hantar Kod",
+    "verificationCode": "Verifikasi kod telah dihantar ke E-mel yang baru",
+    "useDiffEmail": "Tukar E-mel",
+    "checkVerificationCode": "Sila semak E-mel dan masukkan verifikasi kod yang diterima.",
+    "verifyNow": "Verifikasi Sekarang",
+    "didNotReceive": "Belum terima? Hantar semula",
+    "changeLanguageScreen": {
+      "languages": "Bahasa",
+      "languageChanged": "Bahasa Telah Tukar"
     },
 
     "passwordSuggestion" : {

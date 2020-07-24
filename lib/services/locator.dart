@@ -3,6 +3,7 @@ import 'package:storeFlutter/blocs/account/auth-bloc.dart';
 import 'package:storeFlutter/blocs/account/profile-bloc.dart';
 import 'package:storeFlutter/blocs/account/forget-password-bloc.dart';
 import 'package:storeFlutter/blocs/account/change-password-bloc.dart';
+import 'package:storeFlutter/blocs/account/change-email-bloc.dart';
 import 'package:storeFlutter/blocs/shopping/product-category-bloc.dart';
 import 'package:storeFlutter/blocs/account/signup-bloc.dart';
 import 'package:storeFlutter/blocs/language/language-bloc.dart';
@@ -10,6 +11,7 @@ import 'package:storeFlutter/services/account-service.dart';
 import 'package:storeFlutter/services/auth-service.dart';
 import 'package:storeFlutter/services/forget-password-service.dart';
 import 'package:storeFlutter/services/change-password-service.dart';
+import 'package:storeFlutter/services/change-email-service.dart';
 import 'package:storeFlutter/services/initial-loading-service.dart';
 import 'package:storeFlutter/services/product-service.dart';
 import 'package:storeFlutter/services/product-category-service.dart';
@@ -27,6 +29,7 @@ Future setupLocator() async {
   GetIt.I.registerSingleton<ProductCategoryService>(ProductCategoryService());
   GetIt.I.registerSingleton<ForgetPasswordService>(ForgetPasswordService());
   GetIt.I.registerSingleton<ChangePasswordService>(ChangePasswordService());
+  GetIt.I.registerSingleton<ChangeEmailService>(ChangeEmailService());
   GetIt.I.registerSingleton<InitialLoadingService>(InitialLoadingService());
   GetIt.I.registerSingleton<SignUpService>(SignUpService());
 
@@ -36,6 +39,7 @@ Future setupLocator() async {
   GetIt.I.registerSingleton<ProfileBloc>(ProfileBloc());
   GetIt.I.registerSingleton<ForgetPasswordBloc>(ForgetPasswordBloc());
   GetIt.I.registerSingleton<ChangePasswordBloc>(ChangePasswordBloc());
+  GetIt.I.registerSingleton<ChangeEmailBloc>(ChangeEmailBloc());
   GetIt.I.registerSingleton<ProductCategoryBloc>(ProductCategoryBloc());
   GetIt.I.registerSingleton<SignUpBloc>(SignUpBloc());
 }

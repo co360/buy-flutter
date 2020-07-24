@@ -12,6 +12,7 @@ import 'package:storeFlutter/components/app-list-title.dart';
 import 'package:storeFlutter/screens/account/change-language.dart';
 import 'package:storeFlutter/screens/account/view-profile.dart';
 import 'package:storeFlutter/screens/account/change-password.dart';
+import 'package:storeFlutter/screens/account/change-email.dart';
 import 'package:storeFlutter/services/storage-service.dart';
 import 'package:storeFlutter/util/app-theme.dart';
 
@@ -77,7 +78,16 @@ class AccountScreen extends StatelessWidget {
                 },
             topDivider: true),
         AppListTile(
-            FlutterI18n.translate(context, "account.changeEmailAddress")),
+          FlutterI18n.translate(context, "account.changeEmailAddress"),
+          onTap: () => {
+            Navigator.push(
+              context,
+              CupertinoPageRoute(
+                builder: (context) => ChangeEmailScreen(),
+              ),
+            )
+          },
+        ),
         AppListTile(
           FlutterI18n.translate(context, "account.changePassword"),
           onTap: () => {

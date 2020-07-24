@@ -12,7 +12,8 @@
     "passwordPattern": "Password does not meet the requirements.",
     "passwordNotMatch": "Passwords do not match.",
     "passwordSame": "Cannot use the same password.",
-    "oldPasswordInvalid": "Old Password is invalid."
+    "oldPasswordInvalid": "Old Password is invalid.",
+    "invalidVerificationCode": "Invalid verification code."
   },
   "general": {
     "pleaseWait" : "Please Wait...",
@@ -80,9 +81,18 @@
     "save": "Save",
     "oldPassword": "Old Password",
     "newPassword": "New Password",
-    "changeLanguageScreen" : {
-      "languages" : "Languages",
-      "languageChanged" : "Language Changed"
+    "currentEmail": "Current Email Address",
+    "enterEmail": "Please enter your new email address. We will send you a one time code for verification.",
+    "newEmail": "New Email Address",
+    "sendCode": "Send Code",
+    "verificationCode": "Verification code has been sent to your new email address",
+    "useDiffEmail": "Use Different Email Address",
+    "checkVerificationCode": "Please check the email and key in the verification code you have received.",
+    "verifyNow": "Verify Now",
+    "didNotReceive": "Didn't receive? Resend Again",
+    "changeLanguageScreen": {
+      "languages": "Languages",
+      "languageChanged": "Language Changed"
     },
 
     "passwordSuggestion" : {
