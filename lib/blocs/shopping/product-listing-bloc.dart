@@ -45,6 +45,8 @@ class ProductListingBloc
         print(stacktrace);
         yield ProductListingSearchError(_.toString());
       }
+    } else if (event is ProductListingSearchReset) {
+        yield ProductListingCategoryResetState();
     }
   }
 }
@@ -90,6 +92,8 @@ class ProductListingSearchComplete extends ProductListingState {
 //  List<Object> get props => [data];
 }
 
+class ProductListingCategoryResetState extends ProductListingState {}
+
 // event
 abstract class ProductListingEvent extends Equatable {
   @override
@@ -115,3 +119,5 @@ class ProductListingNextPage extends ProductListingEvent {
   @override
   List<Object> get props => [queryFilter, this.result];
 }
+
+class ProductListingSearchReset extends ProductListingEvent {}
