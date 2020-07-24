@@ -7,11 +7,15 @@ class ChangePasswordService extends BaseRestService {
   Future<ChangePasswordBody> changePassword(
       String username, ChangePasswordBody data) async {
     var url = '$_endPoint/update-password/$username';
-    final response = await dio.put(url, data: data.toJson());
-    print(response.data);
-    if (response.data['object'] != null) {
-      return ChangePasswordBody.fromJson(response.data['object']);
-    } else {
+    try {
+      final response = await dio.put(url, data: data.toJson());
+      print(response.data);
+      if (response.data['object'] != null) {
+        return ChangePasswordBody.fromJson(response.data['object']);
+      } else {
+        return null;
+      }
+    } catch (e) {
       return null;
     }
   }
