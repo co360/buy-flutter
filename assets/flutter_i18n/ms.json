@@ -6,7 +6,9 @@
     "notExist": "E-mel tidak didaftarkan.",
     "emailExisted": "E-mel telah digunakan.",
     "passwordPattern": "",
-    "passwordNotMatch": ""
+    "passwordNotMatch": "",
+    "passwordSame": "Kata laluan telah digunakan.",
+    "oldPasswordInvalid": "Kata laluan lama salah."
   },
   "general": {
     "pleaseWait" : "Sila Tunggu...",
@@ -63,6 +65,8 @@
     "mobileContact": "Nombor Telefon Bimbit",
     "edit": "Ubah",
     "save": "Simpan",
+    "oldPassword": "Kata Laluan Lama",
+    "newPassword": "Kata Laluan Baru",
     "changeLanguageScreen" : {
       "languages" : "Bahasa",
       "languageChanged" : "Bahasa Telah Tukar"
