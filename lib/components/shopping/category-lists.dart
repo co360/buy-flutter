@@ -33,7 +33,7 @@ class CategoryLists extends StatelessWidget {
     List<Widget> list = List();
 
     // 2nd layer
-    for (int i = 0; i < categories.layer2Category.length; i += 3) {
+    for (int i = 0; i < categories.layer2Category.length; i += 2) {
       list.add(Container(
           margin: const EdgeInsets.all(5.0),
           child: Row(
@@ -53,13 +53,13 @@ class CategoryLists extends StatelessWidget {
                         print("Select ${categories.layer2Category[i + 1].id}");
                       })
                   : GridButtonDisable(),
-              categories.layer2Category.length > i + 2
-                  ? GridButton(
-                      title: categories.layer2Category[i + 2].name,
-                      cb: () {
-                        print("Select ${categories.layer2Category[i + 2].id}");
-                      })
-                  : GridButtonDisable(),
+              // categories.layer2Category.length > i + 2
+              //     ? GridButton(
+              //         title: categories.layer2Category[i + 2].name,
+              //         cb: () {
+              //           print("Select ${categories.layer2Category[i + 2].id}");
+              //         })
+              //     : GridButtonDisable(),
             ],
           )));
     }

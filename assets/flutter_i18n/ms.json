@@ -3,7 +3,10 @@
     "required": "Bidang ini tak boleh kosong.",
     "email": "Medan ini memerlukan alamat e-mel yang sah.",
     "Bad credentials": "Log Masuk Tidak Sah",
-    "notExist": "E-mel tidak didaftarkan."
+    "notExist": "E-mel tidak didaftarkan.",
+    "emailExisted": "E-mel telah digunakan.",
+    "passwordPattern": "",
+    "passwordNotMatch": ""
   },
   "general": {
     "pleaseWait" : "Sila Tunggu...",
@@ -35,6 +38,7 @@
     "settings": "Tetapan",
     "myAccount": "Akaun Saya",
     "myProfile": "Profil Saya",
+    "editProfile": "Kemaskini Profil",
     "changeEmailAddress": "Tukar Alamat Emel",
     "changePassword": "Tukar Kata Laluan",
     "myAddresses": "Alamat Saya",
@@ -42,6 +46,10 @@
 
     "inCollaborationWith": "dengan kerjasama",
     "noAccountYet": "Belum Ada Akaun? Daftarlah Sekarang!",
+    "signup": "",
+    "goToLogin": "",
+    "confirmPassword": "",
+    "signupSpace": "",
 
     "email": "Emel",
     "password": "Kata laluan",
@@ -50,10 +58,28 @@
     "backToLogin": "Kembali ke Log Masuk",
     "sentEmail": "We've sent you an email to reset your password.",
     "checkEmail": "Sila cek e-mel anda.",
-
+    
+    "name": "Nama",
+    "mobileContact": "Nombor Telefon Bimbit",
+    "edit": "Ubah",
+    "save": "Simpan",
     "changeLanguageScreen" : {
       "languages" : "Bahasa",
       "languageChanged" : "Bahasa Telah Tukar"
+    },
+
+    "passwordSuggestion" : {
+      "title": "Password Requirements:",
+      "minimum": "1) At Least 8 characters",
+      "upper": "2) Includes 1 Upper Case Letter",
+      "lower": "3) Includes 1 Lower Case Letter",
+      "numeric": "4) Includes 1 Numeric",
+      "special": "5) Includes 1 Special Character"
+    },
+
+    "registration" : {
+      "sentRegistrationEmail" : "We've sent you an email to verify your email address. ",
+      "checkRegistrationEmail" : "Please check your email to complete the registration."
     }
   }
 }

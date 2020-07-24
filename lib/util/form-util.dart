@@ -21,4 +21,18 @@ class FormUtil {
   }) {
     return {"_pageSize": pageSize, "_page": page};
   }
+
+  static FormFieldValidator pattern(context, pattern, errorMsg) {
+    return FormBuilderValidators.pattern(pattern,
+        errorText: FlutterI18n.translate(context, errorMsg));
+  }
+
+  static FormFieldValidator match(context, fbState, field, errorMsg) {
+    String pattern = "";
+    if(fbState != null && fbState.value != null && fbState.value[field] != null){
+      pattern = fbState.value[field];
+    }
+    return FormBuilderValidators.pattern(pattern,
+        errorText: FlutterI18n.translate(context, errorMsg));
+  }
 }

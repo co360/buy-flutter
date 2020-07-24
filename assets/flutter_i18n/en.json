@@ -7,7 +7,10 @@
     "required": "This field cannot be empty.",
     "email": "This field required a valid email address.",
     "Bad credentials": "Invalid Login",
-    "notExist": "Email does not exist"
+    "notExist": "Email does not exist",
+    "emailExisted": "This email address is already being used.",
+    "passwordPattern": "Password does not meet the requirements.",
+    "passwordNotMatch": "Passwords do not match."
   },
   "general": {
     "pleaseWait" : "Please Wait...",
@@ -49,12 +52,17 @@
     "settings": "Settings",
     "myAccount": "My Account",
     "myProfile": "My Profile",
+    "editProfile": "Edit Profile",
     "changeEmailAddress": "Change Email Address",
     "changePassword": "Change Password",
     "myAddresses": "My Addresses",
     "bankAccounts": "Bank Accounts / Cards",
     "inCollaborationWith": "in collaboration with",
     "noAccountYet": "No Account Yet? Signup Now!",
+    "signup": "Signup",
+    "goToLogin": "Go To Login",
+    "confirmPassword": "Confirm Password",
+    "signupSpace": "Sign Up",
 
     "email": "Email",
     "password": "Password",
@@ -64,9 +72,27 @@
     "sentEmail": "We've sent you an email to reset your password.",
     "checkEmail": "Please check your email.",
 
+    "name": "Name",
+    "mobileContact": "Mobile Phone No",
+    "edit": "Edit",
+    "save": "Save",
     "changeLanguageScreen" : {
       "languages" : "Languages",
       "languageChanged" : "Language Changed"
+    },
+
+    "passwordSuggestion" : {
+      "title": "Password Requirements:",
+      "minimum": "1) At Least 8 characters",
+      "upper": "2) Includes 1 Upper Case Letter",
+      "lower": "3) Includes 1 Lower Case Letter",
+      "numeric": "4) Includes 1 Numeric",
+      "special": "5) Includes 1 Special Character"
+    },
+
+    "registration" : {
+      "sentRegistrationEmail" : "We've sent you an email to verify your email address. ",
+      "checkRegistrationEmail" : "Please check your email to complete the registration."
     }
   }
 }
