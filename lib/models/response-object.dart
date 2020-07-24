@@ -44,7 +44,7 @@ class ResponseObject<T> {
             ? null
             : ResponseMessage.fromJson(e as Map<String, dynamic>))
         .toList()
-        .cast<ResponseMessage>() : json['messages'];
+        .cast<ResponseMessage>() : null;
 
     return ResponseObject<T>(results, messages);
   }

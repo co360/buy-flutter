@@ -13,6 +13,7 @@ import 'package:storeFlutter/components/app-loading-dialog.dart';
 import 'package:storeFlutter/components/app-notification.dart';
 import 'package:storeFlutter/models/auth/login-body.dart';
 import 'package:storeFlutter/models/identity/signup-body.dart';
+import 'package:storeFlutter/services/account-service.dart';
 import 'package:storeFlutter/util/app-theme.dart';
 import 'package:storeFlutter/util/form-util.dart';
 
@@ -136,15 +137,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
         if (state is SignUpInProgress) {
 //          dialog = AppLoadingDialog(context);
-          AppLoadingDialog(context);
+//          AppLoadingDialog(context);
           hasDialog = true;
         } else {
           if (hasDialog) {
-            Navigator.of(context).pop();
+//            Navigator.of(context).pop();
             hasDialog = false;
           }
           if (state is SignUpFailure) {
-            hasDialog = false;
             AppNotification(
                     FlutterI18n.translate(context, "error.emailExisted"))
                 .show(context);
@@ -201,6 +201,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     FormUtil.required(context),
                     FormUtil.email(context),
                   ],
+
                   keyboardType: TextInputType.emailAddress,
                 ),
                 FormBuilderTextField(

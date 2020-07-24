@@ -7,7 +7,7 @@ import 'package:storeFlutter/models/response-object.dart';
 import 'package:storeFlutter/services/signup-service.dart';
 
 class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
-  final SignUpService _authService = GetIt.I<SignUpService>();
+  final SignUpService _signUpService = GetIt.I<SignUpService>();
 
   SignUpBloc() : super(SignUpInitial());
 
@@ -16,7 +16,7 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
     if (event is RegisterEvent) {
       yield SignUpInProgress();
 
-      ResponseMessage msg = await _authService.registerBuyer(event.body);
+      ResponseMessage msg = await _signUpService.registerBuyer(event.body);
 
       if(msg != null && msg.type == "ERROR") {
         yield SignUpFailure(msg.message);
