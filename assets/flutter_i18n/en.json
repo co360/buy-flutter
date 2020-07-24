@@ -52,6 +52,7 @@
     "settings": "Settings",
     "myAccount": "My Account",
     "myProfile": "My Profile",
+    "editProfile": "Edit Profile",
     "changeEmailAddress": "Change Email Address",
     "changePassword": "Change Password",
     "myAddresses": "My Addresses",
@@ -73,7 +74,8 @@
 
     "name": "Name",
     "mobileContact": "Mobile Phone No",
-
+    "edit": "Edit",
+    "save": "Save",
     "changeLanguageScreen" : {
       "languages" : "Languages",
       "languageChanged" : "Language Changed"

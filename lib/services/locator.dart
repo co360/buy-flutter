@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:storeFlutter/blocs/account/auth-bloc.dart';
+import 'package:storeFlutter/blocs/account/profile-bloc.dart';
 import 'package:storeFlutter/blocs/account/forget-password-bloc.dart';
 import 'package:storeFlutter/blocs/shopping/product-category-bloc.dart';
 import 'package:storeFlutter/blocs/account/signup-bloc.dart';
@@ -29,6 +30,7 @@ Future setupLocator() async {
   // Bloc
   GetIt.I.registerSingleton<LanguageBloc>(LanguageBloc());
   GetIt.I.registerSingleton<AuthBloc>(AuthBloc());
+  GetIt.I.registerSingleton<ProfileBloc>(ProfileBloc());
   GetIt.I.registerSingleton<ForgetPasswordBloc>(ForgetPasswordBloc());
   GetIt.I.registerSingleton<ProductCategoryBloc>(ProductCategoryBloc());
   GetIt.I.registerSingleton<SignUpBloc>(SignUpBloc());
