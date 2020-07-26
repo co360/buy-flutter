@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:quiver/strings.dart';
 import 'package:storeFlutter/models/identity/location.dart';
 import 'package:storeFlutter/models/shopping/product.dart';
+import 'package:storeFlutter/screens/shopping/product-detail.dart';
 import 'package:storeFlutter/util/app-theme.dart';
 import 'package:storeFlutter/util/format-util.dart';
 import 'package:storeFlutter/util/resource-util.dart';
@@ -13,91 +14,98 @@ class ProductListingGridItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(top: 4.0),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border.all(color: AppTheme.colorGray4, width: 0.5),
-          borderRadius: BorderRadius.all(
-            Radius.circular(5),
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: () => {
+        Navigator.pushNamed(context, '/product-detail',
+            arguments: ProductDetailScreenParams(product: product))
+      },
+      child: Padding(
+        padding: EdgeInsets.only(top: 4.0),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(color: AppTheme.colorGray4, width: 0.5),
+            borderRadius: BorderRadius.all(
+              Radius.circular(5),
+            ),
           ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            ClipRRect(
-              borderRadius: BorderRadius.vertical(
-                top: Radius.circular(5),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              ClipRRect(
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(5),
+                ),
+                child: Image.network(
+                  ResourceUtil.fullPath(product.images[0].imageUrl),
+                  fit: BoxFit.cover,
+                  height: 180,
+                ),
               ),
-              child: Image.network(
-                ResourceUtil.fullPath(product.images[0].imageUrl),
-                fit: BoxFit.cover,
-                height: 180,
+              Padding(
+                padding: EdgeInsets.all(4.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    Text(
+                      product.name,
+                      textAlign: TextAlign.start,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontSize: 13),
+                    ),
+                    SizedBox(height: 10),
+                    product.consumerPrice > 0
+                        ? Text(
+                            "${product.consumerPriceCurrency} ${FormatUtil.formatPrice(product.consumerPrice)}",
+                            style: TextStyle(
+                                color: AppTheme.colorOrange,
+                                fontWeight: FontWeight.bold),
+                          )
+                        : SizedBox.shrink()
+                  ],
+                ),
               ),
-            ),
-            Padding(
-              padding: EdgeInsets.all(4.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  Text(
-                    product.name,
-                    textAlign: TextAlign.start,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 13),
-                  ),
-                  SizedBox(height: 10),
-                  product.consumerPrice > 0
-                      ? Text(
-                          "${product.consumerPriceCurrency} ${FormatUtil.formatPrice(product.consumerPrice)}",
-                          style: TextStyle(
-                              color: AppTheme.colorOrange,
-                              fontWeight: FontWeight.bold),
-                        )
-                      : SizedBox.shrink()
-                ],
+              Divider(
+                color: AppTheme.colorGray4,
+                height: 1,
               ),
-            ),
-            Divider(
-              color: AppTheme.colorGray4,
-              height: 1,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(4.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      getSellerLogo(),
-                      Expanded(
-                        child: Text(
-                          product.sellerCompany.name,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 12,
+              Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    Row(
+                      children: <Widget>[
+                        getSellerLogo(),
+                        Expanded(
+                          child: Text(
+                            product.sellerCompany.name,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 12,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    getLocationInfo(),
-                    style: TextStyle(
-                      color: AppTheme.colorPrimary,
-                      fontSize: 12,
+                      ],
                     ),
-                  )
-                ],
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      getLocationInfo(),
+                      style: TextStyle(
+                        color: AppTheme.colorPrimary,
+                        fontSize: 12,
+                      ),
+                    )
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

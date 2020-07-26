@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:storeFlutter/util/app-theme.dart';
 
@@ -7,11 +8,21 @@ class AppButton extends StatelessWidget {
   final bool noPadding;
   final double bottomPadding;
 
+  final Widget widget;
+
   final AppButtonType type;
   final AppButtonSize size;
 
   const AppButton(this.text, this.onPressed,
       {this.type = AppButtonType.orange,
+      this.widget,
+      this.noPadding = false,
+      this.bottomPadding = AppTheme.paddingStandard,
+      this.size = AppButtonSize.big});
+
+  const AppButton.widget(this.widget, this.onPressed,
+      {this.type = AppButtonType.orange,
+      this.text,
       this.noPadding = false,
       this.bottomPadding = AppTheme.paddingStandard,
       this.size = AppButtonSize.big});
@@ -36,12 +47,15 @@ class AppButton extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(80.0),
         ),
-        child: Text(this.text,
-            style: TextStyle(
-              color: this.type.textColor,
-              fontSize: fontSize,
-              fontWeight: FontWeight.bold,
-            )),
+        child: widget != null
+            ? widget
+            : AutoSizeText(this.text,
+                minFontSize: 12,
+                style: TextStyle(
+                  color: this.type.textColor,
+                  fontSize: fontSize,
+                  fontWeight: FontWeight.bold,
+                )),
       ),
     );
   }

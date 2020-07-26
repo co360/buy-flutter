@@ -205,7 +205,7 @@ class _SearchGeneralState extends State<SearchGeneral> {
 
     // TODO also need to handle only pop until product detail page
     Navigator.pushNamedAndRemoveUntil(
-        context, '/listing', ModalRoute.withName('/'),
+        context, '/product-listing', ModalRoute.withName('/'),
         arguments: ProductListingScreenParams(query: term));
 //    if (focus == true || focus == null) {
 //      FocusScope.of(context).requestFocus(searchFN);

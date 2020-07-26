@@ -7,10 +7,12 @@ import 'package:storeFlutter/util/app-theme.dart';
 class StaticSearchBar extends StatelessWidget {
   final String placeholder;
   final String query;
+  final Color borderColor;
 
   const StaticSearchBar({
     this.placeholder,
     this.query,
+    this.borderColor,
     Key key,
   }) : super(key: key);
 
@@ -22,6 +24,9 @@ class StaticSearchBar extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.all(Radius.circular(5)),
+          border: borderColor != null
+              ? Border.all(color: borderColor, width: 1)
+              : null,
         ),
         padding: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
         child: Row(

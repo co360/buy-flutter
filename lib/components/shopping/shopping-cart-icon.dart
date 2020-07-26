@@ -3,6 +3,10 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:storeFlutter/util/app-theme.dart';
 
 class ShoppingCartIcon extends StatelessWidget {
+  final bool dark;
+
+  ShoppingCartIcon({this.dark = false});
+
   final double iconPaddingHeight = 5;
   @override
   Widget build(BuildContext context) {
@@ -20,7 +24,7 @@ class ShoppingCartIcon extends StatelessWidget {
                 padding: EdgeInsets.only(right: 5),
                 child: FaIcon(
                   FontAwesomeIcons.lightShoppingCart,
-                  color: Colors.white,
+                  color: dark ? Colors.black : Colors.white,
                   size: 25,
                 ),
               ),

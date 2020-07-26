@@ -71,7 +71,7 @@ class HomeScreen extends StatelessWidget {
           AppButton(
             "Push Named Route",
             () => {
-              Navigator.pushNamed(context, '/listing'),
+              Navigator.pushNamed(context, '/product-listing'),
             },
           )
         ],

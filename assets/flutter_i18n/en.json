@@ -38,6 +38,9 @@
     "weAreSorry" : "We're sorry",
     "cannotFindMatch" : "We cannot find any matches for your search term",
     "tryDifferentKeywords" : "Try Different Keywords",
+    "sellerStore" : "Seller Store",
+    "addToCart" : "Add To Cart",
+    "buyNow" : "Buy Now",
     "sort" : {
       "recommended" : "Recommended",
       "popularity" : "Popularity"
