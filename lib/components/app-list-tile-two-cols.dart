@@ -21,7 +21,7 @@ class AppListTileTwoCols extends StatelessWidget {
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
         subtitle: Text(content, style: TextStyle(fontSize: 15)),
       ),
-      topDivider
+      bottomDivider
           ? Divider(
               color: AppTheme.colorGray3,
               height: 1,
