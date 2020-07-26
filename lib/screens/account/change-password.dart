@@ -43,13 +43,15 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           child: LayoutBuilder(
             builder:
                 (BuildContext context, BoxConstraints viewportConstraints) {
-              return SizedBox(
-                height: 550,
-                child: Container(
-                  margin: const EdgeInsets.only(top: 20.0),
-                  padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-                  color: Colors.white,
-                  child: buildForm(context),
+              return SingleChildScrollView(
+                child: SizedBox(
+                  height: 550,
+                  child: Container(
+                    margin: const EdgeInsets.only(top: 20.0),
+                    padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+                    color: Colors.white,
+                    child: buildForm(context),
+                  ),
                 ),
               );
             },
