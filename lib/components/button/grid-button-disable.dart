@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:storeFlutter/util/app-theme.dart';
 
 class GridButtonDisable extends StatelessWidget {
   @override
@@ -8,6 +7,7 @@ class GridButtonDisable extends StatelessWidget {
       width: MediaQuery.of(context).size.width * 0.30,
       height: 65,
       child: FlatButton(
+        onPressed: () => {},
         color: Colors.white,
         textColor: Colors.black,
         padding: EdgeInsets.all(8.0),
