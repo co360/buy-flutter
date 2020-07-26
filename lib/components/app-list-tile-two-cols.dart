@@ -6,8 +6,10 @@ class AppListTileTwoCols extends StatelessWidget {
   final String title;
   final String content;
   final bool topDivider;
+  final bool bottomDivider;
 
-  AppListTileTwoCols(this.title, this.content, {this.topDivider: false});
+  AppListTileTwoCols(this.title, this.content,
+      {this.topDivider: false, this.bottomDivider: true});
 
   @override
   Widget build(BuildContext context) {
@@ -19,10 +21,12 @@ class AppListTileTwoCols extends StatelessWidget {
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
         subtitle: Text(content, style: TextStyle(fontSize: 15)),
       ),
-      Divider(
-        color: AppTheme.colorGray3,
-        height: 1,
-      )
+      topDivider
+          ? Divider(
+              color: AppTheme.colorGray3,
+              height: 1,
+            )
+          : Container()
     ];
 
     if (topDivider) {
