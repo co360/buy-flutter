@@ -53,12 +53,15 @@ class _ChangeEmailScreenState extends State<ChangeEmailScreen> {
                       bloc: GetIt.I<ChangeEmailBloc>(),
                       builder: (context, state) {
                         print("current state $state");
-                        if (state is ChangeEmailSuccess) {
-                          return ChangeEmailSecondLayer(state.email);
-                        } else if (state is ConfirmCodeSuccess) {
-                          return ChangeEmailSecondLayer(state.email);
-                        } else {
-                          return ChangeEmailFirstLayer();
+                        switch (state.runtimeType) {
+                          case ChangeEmailSuccess:
+                          case ConfirmCodeSuccess:
+                            {
+                              print(state.props);
+                              return ChangeEmailSecondLayer(state.props[0]);
+                            }
+                          default:
+                            return ChangeEmailFirstLayer();
                         }
                       }),
                 ]),
