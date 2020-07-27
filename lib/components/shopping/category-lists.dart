@@ -5,7 +5,6 @@ import 'package:storeFlutter/components/shopping/category-grid-list.dart';
 import 'package:storeFlutter/components/button/grid-button.dart';
 import 'package:storeFlutter/components/button/grid-button-disable.dart';
 import 'package:storeFlutter/blocs/shopping/product-category-bloc.dart';
-import 'package:storeFlutter/models/shopping/category.dart';
 import 'package:storeFlutter/models/query-result-category.dart';
 
 class CategoryLists extends StatelessWidget {

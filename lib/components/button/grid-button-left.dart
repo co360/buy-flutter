@@ -27,11 +27,12 @@ class GridButtonLeft extends StatelessWidget {
             color: Colors.black,
           ),
         ),
-        shape: RoundedRectangleBorder(
-          side: BorderSide(
-              color: isActive ? Colors.white : AppTheme.colorGray3,
-              width: 1,
-              style: BorderStyle.solid),
+        shape: Border(
+          top: BorderSide(width: 0.5, color: AppTheme.colorGray3),
+          left: BorderSide(width: 1.0, color: AppTheme.colorGray3),
+          right: BorderSide(
+              width: 1.0, color: isActive ? Colors.white : AppTheme.colorGray3),
+          bottom: BorderSide(width: 0.5, color: AppTheme.colorGray3),
         ),
       ),
     );
