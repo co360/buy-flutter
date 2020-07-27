@@ -14,7 +14,7 @@ class ProductCategoryService extends BaseRestService {
 
       if (fullList.length == 0) return null;
 
-      return searchOp(fullList, activeId);
+      return searchOp(activeId);
     } else {
       return null;
     }
@@ -22,13 +22,13 @@ class ProductCategoryService extends BaseRestService {
 
   Future<QueryResultCategory> switchProductCategory(int activeId) async {
     if (fullList != null && fullList.length > 0) {
-      return searchOp(fullList, activeId);
+      return searchOp(activeId);
     } else {
       return null;
     }
   }
 
-  Future<QueryResultCategory> searchOp(data, activeId) async {
+  Future<QueryResultCategory> searchOp(int activeId) async {
     List<int> categoryIdsList = [];
     List<Layer1CategoryLists> layer1Categories = [];
     List<Layer2CategoryLists> layer2Categories = [];
