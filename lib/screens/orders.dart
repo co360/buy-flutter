@@ -1,64 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
-import 'package:storeFlutter/blocs/account/auth-bloc.dart';
-import 'package:storeFlutter/components/app-button.dart';
-import 'package:storeFlutter/models/auth/login-body.dart';
+import 'package:flutter_i18n/flutter_i18n.dart';
+import 'package:storeFlutter/components/account/check-session.dart';
+import 'package:storeFlutter/util/app-theme.dart';
 
 class OrdersScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("test login"),
+        title: Text(
+          FlutterI18n.translate(context, "screen.bottomNavigation.orders"),
+          style: TextStyle(color: Colors.white),
+        ),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: <Color>[AppTheme.colorPrimary, AppTheme.colorSuccess],
+            ),
+          ),
+        ),
       ),
-      body: Center(
-        child: BlocBuilder<AuthBloc, AuthState>(
-            bloc: GetIt.I<AuthBloc>(),
-            builder: (context, state) {
-              if (state is LoginInProgress) {
-                return Text("Login In Progress");
-              } else if (state is LoginFailure) {
-                return Column(
-                  children: <Widget>[
-                    Text("Login Failure ${state.error}"),
-                    buildSuccessLogin(context),
-                    buildFailLogin(context),
-                  ],
-                );
-              } else if (state is LoginSuccess) {
-                return Text("Login Success");
-              } else if (state is AuthInitial) {
-                return Column(
-                  children: <Widget>[
-                    buildSuccessLogin(context),
-                    buildFailLogin(context),
-                  ],
-                );
-              }
-              return Container();
-            }),
-      ),
+      body: CheckSession(child: buildContent()),
     );
   }
 
-  AppButton buildFailLogin(BuildContext context) {
-    return AppButton("Login (Wrong Password)", () {
-      AuthBloc bloc = GetIt.I<AuthBloc>();
-      bloc.add(LoginEvent(LoginBody('abc', 'def'), context));
-    }, type: AppButtonType.white);
-  }
-
-  AppButton buildSuccessLogin(BuildContext context) {
-    return AppButton(
-      "Login (Correct Password)",
-      () {
-        AuthBloc bloc = GetIt.I<AuthBloc>();
-        bloc.add(LoginEvent(
-            LoginBody('smarttradzt.petronas@acceval-intl.com', 'Password@123'),
-            context));
-      },
-      type: AppButtonType.orange,
-    );
+  Widget buildContent() {
+    return Text("order contents here");
   }
 }

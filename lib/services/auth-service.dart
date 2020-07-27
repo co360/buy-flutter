@@ -8,6 +8,7 @@ import 'package:storeFlutter/models/auth/current-user.dart';
 import 'package:storeFlutter/models/auth/login-body.dart';
 import 'package:storeFlutter/models/auth/login-status.dart';
 import 'package:storeFlutter/models/auth/refresh-token.dart';
+import 'package:storeFlutter/models/auth/saved-login.dart';
 import 'package:storeFlutter/services/base-rest-service.dart';
 import 'package:storeFlutter/services/storage-service.dart';
 
@@ -64,8 +65,10 @@ class AuthService extends BaseRestService {
 
       print("setting new token ${_storageService.accessToken}");
 
+      // TODO to skip if it's production.. for easy testing purpose only
       if (loginBody.username != 'guest') {
-        // load all the thing here...
+        _storageService
+            .addSavedLogin(SavedLogin(loginBody.username, loginBody.password));
       }
 
       return LoginStatus.success();

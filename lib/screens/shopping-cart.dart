@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:get_it/get_it.dart';
+import 'package:storeFlutter/components/account/check-session.dart';
 import 'package:storeFlutter/components/app-button.dart';
 import 'package:storeFlutter/services/storage-service.dart';
 import 'package:storeFlutter/util/app-theme.dart';
@@ -17,8 +18,9 @@ class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
     return Scaffold(
       backgroundColor: AppTheme.colorBg2,
       appBar: AppBar(
-        title: I18nText(
-          "screen.bottomNavigation.cart",
+        title: Text(
+          FlutterI18n.translate(context, "screen.bottomNavigation.cart"),
+          style: TextStyle(color: Colors.white),
         ),
         flexibleSpace: Container(
           decoration: BoxDecoration(
@@ -30,18 +32,20 @@ class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
           ),
         ),
       ),
-      body: Center(
-        child: Column(
-          children: <Widget>[
-            Text(" ${storageService.accessToken}"),
-            Text("${storageService.refreshToken}"),
-            Text("${storageService.language}"),
-            Text("${storageService.loginUser}"),
-            Text("${storageService.loginCompany}"),
-            AppButton("Refresh", () {
-              setState(() {});
-            })
-          ],
+      body: CheckSession(
+        child: Center(
+          child: Column(
+            children: <Widget>[
+              Text(" ${storageService.accessToken}"),
+              Text("${storageService.refreshToken}"),
+              Text("${storageService.language}"),
+              Text("${storageService.loginUser}"),
+              Text("${storageService.loginCompany}"),
+              AppButton("Refresh", () {
+                setState(() {});
+              })
+            ],
+          ),
         ),
       ),
     );

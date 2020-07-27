@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,9 +10,9 @@ import 'package:storeFlutter/components/app-button.dart';
 import 'package:storeFlutter/components/app-card.dart';
 import 'package:storeFlutter/components/app-loading-dialog.dart';
 import 'package:storeFlutter/components/app-notification.dart';
-import 'package:storeFlutter/screens/account/forget-password.dart';
 import 'package:storeFlutter/models/auth/login-body.dart';
-import 'package:storeFlutter/screens/account/signup.dart';
+import 'package:storeFlutter/screens/account/forget-password.dart';
+import 'package:storeFlutter/services/storage-service.dart';
 import 'package:storeFlutter/util/app-theme.dart';
 import 'package:storeFlutter/util/form-util.dart';
 
@@ -23,7 +24,8 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<FormBuilderState> _fbKey = GlobalKey<FormBuilderState>();
 
-//  AppLoadingDialog dialog;
+  final StorageService _storageService = GetIt.I<StorageService>();
+
   bool hasDialog = false;
 
   @override
@@ -79,6 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 Navigator.popAndPushNamed(context, '/signup'),
                               },
                             ),
+                            buildSavedLogin(context),
                           ],
                         ),
                         Column(
@@ -109,27 +112,13 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget buildForm(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
       bloc: GetIt.I<AuthBloc>(),
-//      condition: (prevState, currentState) {
-//        if (prevState is LoginInProgress) {
-//          if (hasDialog) {
-//            Navigator.pop(context);
-//          }
-//        }
-//        return true;
-//      },
       listener: (context, state) {
-        print("current state $state , hasDialog $hasDialog");
         if (state is LoginInProgress) {
-          print("we wang wang");
-//          dialog = AppLoadingDialog(context);
           AppLoadingDialog(context);
           hasDialog = true;
         } else {
           if (hasDialog) {
-            print("try to pop");
             Navigator.of(context).pop();
-//            dialog.pop();
-//            dialog = null;
             hasDialog = false;
           }
 
@@ -193,13 +182,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 print(body);
 
                 GetIt.I<AuthBloc>().add(LoginEvent(body, context));
-
-//              pop3();
-              } else {
-                print(_fbKey.currentState.value);
-                print('validation failed');
-//              pop3();
-//                AppLoadingDialog(context);
               }
             },
             size: AppButtonSize.small,
@@ -213,108 +195,92 @@ class _LoginScreenState extends State<LoginScreen> {
               style: TextStyle(color: AppTheme.colorLink),
             ),
             onPressed: () {
-                Navigator.push(
-                  context,
-                  CupertinoPageRoute(
-                    builder: (context) => ForgetPasswordScreen()
-                    ),
-                  );
-                },
+              Navigator.push(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => ForgetPasswordScreen()),
+              );
+            },
           ),
         ],
       ),
     );
   }
 
-  pop() {
-    showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return WillPopScope(
-            onWillPop: () {},
-            child: new AlertDialog(
-              content: ConstrainedBox(
-                constraints: BoxConstraints(maxHeight: 200),
-                child: Column(
-                  children: <Widget>[
-                    CircularProgressIndicator(),
-                    Text("Please wait...")
-                  ],
-                ),
-              ),
-              actions: <Widget>[
-                new FlatButton(
-                  onPressed: () {
-                    //Function called
-                  },
-                  child: new Text('Ok Done!'),
-                ),
-                new FlatButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: new Text('Go Back'),
-                ),
-              ],
+  Widget buildSavedLogin(BuildContext context) {
+    // TODO display only if it's dev/test environment
+    if (_storageService.savedLogins != null &&
+        _storageService.savedLogins.length > 0) {
+      return Padding(
+        padding: EdgeInsets.symmetric(vertical: 20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Divider(
+              thickness: 1,
+//              color: AppTheme.colorDanger,
             ),
-          );
-        });
+            Text(
+              "Previously Saved Login",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+//                color: AppTheme.colorGray5,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            SizedBox(height: 10),
+            ...buildSavedLoginItem(),
+            FlatButton(
+              child: Text(
+                "Clear All Saved Login",
+                style: TextStyle(color: AppTheme.colorDanger),
+              ),
+              onPressed: () {
+                _storageService.clearAllSavedLogin();
+                setState(() {});
+              },
+            ),
+            Divider(
+              thickness: 1,
+//              color: AppTheme.colorDanger,
+            ),
+          ],
+        ),
+      );
+    } else {
+      return SizedBox.shrink();
+    }
   }
 
-  pop3() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return WillPopScope(
-          onWillPop: () {},
-          child: new AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(10)),
+  List<Widget> buildSavedLoginItem() {
+    return _storageService.savedLogins.map((e) {
+      return Dismissible(
+        direction: DismissDirection.endToStart,
+        key: Key(e.username),
+        background: Container(
+          color: AppTheme.colorDanger,
+        ),
+        onDismissed: (direction) {
+          _storageService.removeSavedLogin(e.username);
+          setState(() {});
+        },
+        child: Card(
+          color: AppTheme.colorSuccess,
+          child: ListTile(
+            title: AutoSizeText(
+              e.username,
+              style:
+                  TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+              minFontSize: 10,
+              maxLines: 1,
             ),
-            content: Row(
-              children: <Widget>[
-                CircularProgressIndicator(
-                  strokeWidth: 2,
-                ),
-                SizedBox(
-                  width: 20,
-                ),
-                Expanded(
-                  child: Text(
-                    "Please wait ",
-                    maxLines: 3,
-                  ),
-                )
-              ],
-            ),
-            actions: <Widget>[
-              new FlatButton(
-                onPressed: () {
-                  //Function called
-                },
-                child: new Text('Ok Done!'),
-              ),
-              new FlatButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: new Text('Go Back'),
-              ),
-            ],
+            onTap: () {
+              LoginBody body = LoginBody(e.username, e.password);
+              GetIt.I<AuthBloc>().add(LoginEvent(body, context));
+            },
           ),
-        );
-      },
-    );
-  }
-
-  pop2() {
-    showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return Text("123");
-        });
+        ),
+      );
+    }).toList();
   }
 }

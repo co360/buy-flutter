@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:storeFlutter/models/auth/saved-login.dart';
 import 'package:storeFlutter/models/identity/account.dart';
 import 'package:storeFlutter/models/identity/company.dart';
 
@@ -13,12 +14,15 @@ class StorageService {
   static const String _keyLoginUser = 'loginUser';
   static const String _keyLoginCompany = 'loginCompany';
   static const String _keyLanguage = 'language';
+  static const String _keySavedLogins = 'savedLogins';
 
   Account _loginUser;
   Company _loginCompany;
   String _accessToken;
   String _refreshToken;
   String _language;
+
+  List<SavedLogin> _savedLogins = [];
 
   StorageService._();
 
@@ -30,7 +34,6 @@ class StorageService {
       _sharedPreferences = await SharedPreferences.getInstance();
 
       // init from local storage
-      // TODO revert later
       _instance._accessToken = _instance.getString(_keyAccessToken);
       _instance._refreshToken = _instance.getString(_keyRefreshToken);
       _instance._language = _instance.getString(_keyLanguage);
@@ -38,6 +41,17 @@ class StorageService {
       try {
         _instance.loginUser =
             Account.fromJson(json.decode(_instance.getString(_keyLoginUser)));
+      } catch (_) {
+        print(_);
+      }
+
+      // IMPORTANT : Only for Dev, Test environment
+      // TODO need to by pass to read/save the SavedLogin info into local storage in production
+      try {
+        List<String> temps = _instance.getStringList(_keySavedLogins);
+
+        _instance._savedLogins =
+            temps.map((e) => SavedLogin.fromJson(json.decode(e))).toList();
       } catch (_) {
         print(_);
       }
@@ -79,6 +93,33 @@ class StorageService {
   set language(String value) {
     _language = value;
     putString(_keyLanguage, value);
+  }
+
+  List<SavedLogin> get savedLogins => _savedLogins;
+
+  Future<bool> addSavedLogin(SavedLogin login) {
+    _savedLogins.removeWhere((element) => element.username == login.username);
+
+    _savedLogins.insert(0, login);
+
+    List<String> temps =
+        _savedLogins.map((e) => json.encode(e.toJson())).toList();
+    print("saved login list ${temps}");
+
+    return _sharedPreferences.setStringList(_keySavedLogins, temps);
+  }
+
+  Future<bool> clearAllSavedLogin() {
+    _savedLogins = [];
+    return _sharedPreferences.remove(_keySavedLogins);
+  }
+
+  Future<bool> removeSavedLogin(String username) {
+    _savedLogins.removeWhere((element) => element.username == username);
+
+    List<String> temps = _savedLogins.map((e) => json.encode(e.toJson()));
+
+    return _sharedPreferences.setStringList(_keySavedLogins, temps);
   }
 
   Future<bool> putBool(String key, bool value) =>

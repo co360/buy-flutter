@@ -93,6 +93,9 @@
     "checkVerificationCode": "Please check the email and key in the verification code you have received.",
     "verifyNow": "Verify Now",
     "didNotReceive": "Didn't receive? Resend Again",
+
+    "pleaseLoginToSeeMore": "Please login to see your account details",
+
     "changeLanguageScreen": {
       "languages": "Languages",
       "languageChanged": "Language Changed"
