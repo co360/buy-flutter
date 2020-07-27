@@ -27,6 +27,17 @@ class ProductCategoryBloc
         print(stacktrace);
         yield ProductCategoryError(_.toString());
       }
+    } else if (event is SwitchProductCategoryEvent) {
+      try {
+        QueryResultCategory result =
+            await _productCategory.switchProductCategory(event.id);
+        print("ProductCategoryBloc");
+        print(result);
+        yield ProductCategoryLists(result);
+      } catch (_, stacktrace) {
+        print(stacktrace);
+        yield ProductCategoryError(_.toString());
+      }
     }
   }
 }
@@ -67,6 +78,15 @@ class LoadProductCategoryEvent extends ProductCategoryEvent {
   final int id;
 
   LoadProductCategoryEvent(this.id);
+
+  @override
+  List<Object> get props => [id];
+}
+
+class SwitchProductCategoryEvent extends ProductCategoryEvent {
+  final int id;
+
+  SwitchProductCategoryEvent(this.id);
 
   @override
   List<Object> get props => [id];

@@ -7,9 +7,7 @@ import 'package:storeFlutter/components/shopping/category-lists.dart';
 import 'package:storeFlutter/components/button/grid-button-left.dart';
 import 'package:storeFlutter/components/button/grid-button-top.dart';
 import 'package:storeFlutter/blocs/shopping/product-category-bloc.dart';
-import 'package:storeFlutter/models/shopping/category.dart';
 import 'package:storeFlutter/models/query-result-category.dart';
-import 'package:storeFlutter/util/app-theme.dart';
 
 class ProductCategoryScreen extends StatefulWidget {
   @override
@@ -87,7 +85,8 @@ class _ProductCategoryScreenState extends State<ProductCategoryScreen> {
           isActive: _c.isActive,
           cb: () {
             print("Select id ${_c.id}");
-            GetIt.I<ProductCategoryBloc>().add(LoadProductCategoryEvent(_c.id));
+            GetIt.I<ProductCategoryBloc>()
+                .add(SwitchProductCategoryEvent(_c.id));
           }));
     }
     return list;
