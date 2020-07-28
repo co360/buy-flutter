@@ -133,7 +133,6 @@
     "newAddress": "New Addresses",
     "editAddress": "Edit Addresses",
     "addAddressNow": "Add Address Now",
-    "addAddress": "Add Address",
     "defaultShippingAddress": "Default Shipping Address",
     "defaultBillingAddress": "Default Billing Address",
     "address": {
@@ -152,7 +151,9 @@
       "office": "Office",
       "makeDefaultShipping": "Make Default Shipping Address",
       "makeDefaultBillingAddress": "Make Default Billing Address",
-      "deleteAddress": "Delete Address"
+      "deleteAddress": "Delete Address",
+      "addAddress": "Add Address",
+      "editAddress": "Edit Address"
     },
     
     "changeLanguageScreen": {

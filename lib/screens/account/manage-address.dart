@@ -5,6 +5,7 @@ import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:get_it/get_it.dart';
 import 'package:storeFlutter/blocs/account/address-bloc.dart';
 import 'package:storeFlutter/components/account/address-manage.dart';
+import 'package:storeFlutter/models/date-type.dart';
 import 'package:storeFlutter/models/label-value.dart';
 import 'package:storeFlutter/models/identity/location.dart';
 import 'package:storeFlutter/services/storage-service.dart';
@@ -42,6 +43,7 @@ class _ManageAddressScreenState extends State<ManageAddressScreen> {
       print("widget id: ${widget.id}");
       GetIt.I<AddressBloc>().add(GetAddressByIDEvent(widget.id));
     } else {
+      print("call this");
       GetIt.I<AddressBloc>().add(GetCountryListEvent());
     }
     super.initState();
@@ -65,9 +67,16 @@ class _ManageAddressScreenState extends State<ManageAddressScreen> {
                   case GetCountryListSuccess:
                     {
                       print("State GetCountryListSuccess");
+                      print("call this4");
                       print(state.props);
                       countries = state.props[0];
-                      GetIt.I<AddressBloc>().add(InitAddressEvent());
+                      selectCountry = "MY";
+                      if (states.length == 0 && selectCountry != null) {
+                        GetIt.I<AddressBloc>()
+                            .add(GetStateListEvent(selectCountry));
+                      } else {
+                        GetIt.I<AddressBloc>().add(InitAddressEvent());
+                      }
 
                       break;
                     }
@@ -80,6 +89,7 @@ class _ManageAddressScreenState extends State<ManageAddressScreen> {
                       selectCountry = location.countryCode;
                       selectState = location.state;
                       selectCity = location.city;
+                      isHome = location.name == "Home" ? true : false;
                       if (states.length == 0 && selectCountry != null) {
                         GetIt.I<AddressBloc>()
                             .add(GetStateListEvent(selectCountry));

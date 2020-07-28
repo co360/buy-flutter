@@ -19,7 +19,6 @@ import 'package:auto_size_text/auto_size_text.dart';
 class AddressManage extends StatelessWidget {
   final GlobalKey<FormBuilderState> _fbAddress = GlobalKey<FormBuilderState>();
   final StorageService storageService = GetIt.I<StorageService>();
-  final AddressService addressService = GetIt.I<AddressService>();
   final bool isNew;
   final Location location;
   final List<Country> countries;
@@ -30,6 +29,8 @@ class AddressManage extends StatelessWidget {
   final String _state;
   final String _city;
   final Function(int, String) setParams;
+
+  String countryName = "";
 
   AddressManage(
       this.isNew,
@@ -53,6 +54,10 @@ class AddressManage extends StatelessWidget {
           AppNotification(FlutterI18n.translate(context, "error.notExist"))
               .show(context);
           GetIt.I<AddressBloc>().add(InitAddressEvent());
+        } else if (state is SetAddressSuccess) {
+          Navigator.pop(context);
+        } else if (state is DeleteAddressSuccess) {
+          Navigator.pop(context);
         }
       },
       child: FormBuilder(
@@ -106,7 +111,7 @@ class AddressManage extends StatelessWidget {
                   SizedBox(height: 10),
                   FormBuilderDropdown(
                     attribute: "countryCode",
-                    initialValue: countries == null
+                    initialValue: countries == null || countries.length == 0
                         ? "None"
                         : _country != null ? _country : "MY",
                     elevation: 16,
@@ -121,7 +126,7 @@ class AddressManage extends StatelessWidget {
                       setParams(0, val);
                       GetIt.I<AddressBloc>().add(GetStateListEvent(val));
                     },
-                    items: countries == null
+                    items: countries == null || countries.length == 0
                         ? [DropdownMenuItem(value: "None", child: Text("None"))]
                         : [
                             DropdownMenuItem(
@@ -136,7 +141,8 @@ class AddressManage extends StatelessWidget {
                   SizedBox(height: 10),
                   FormBuilderDropdown(
                     attribute: "state",
-                    initialValue: states == null ? "None" : _state,
+                    initialValue:
+                        states == null || states.length == 0 ? "None" : _state,
                     decoration: InputDecoration(
                         labelText: FlutterI18n.translate(
                             context, "account.address.state")),
@@ -148,7 +154,7 @@ class AddressManage extends StatelessWidget {
                       setParams(1, val);
                       GetIt.I<AddressBloc>().add(GetCityListEvent(val));
                     },
-                    items: states == null
+                    items: states == null || states.length == 0
                         ? [DropdownMenuItem(value: "None", child: Text("None"))]
                         : [
                             DropdownMenuItem(
@@ -163,7 +169,8 @@ class AddressManage extends StatelessWidget {
                   SizedBox(height: 10),
                   FormBuilderDropdown(
                     attribute: "city",
-                    initialValue: cities == null ? "None" : _city,
+                    initialValue:
+                        cities == null || cities.length == 0 ? "None" : _city,
                     elevation: 16,
                     decoration: InputDecoration(
                         labelText: FlutterI18n.translate(
@@ -174,7 +181,7 @@ class AddressManage extends StatelessWidget {
                     onChanged: (val) {
                       setParams(2, val);
                     },
-                    items: cities == null
+                    items: cities == null || cities.length == 0
                         ? [DropdownMenuItem(value: "None", child: Text("None"))]
                         : [
                             DropdownMenuItem(
@@ -317,24 +324,30 @@ class AddressManage extends StatelessWidget {
                         label: Text(FlutterI18n.translate(
                             context, "account.address.makeDefaultShipping")),
                         attribute: "defaultShipping",
-                        initialValue: false,
+                        initialValue:
+                            location == null || location.defaultShipping == null
+                                ? false
+                                : location.defaultShipping,
                         decoration: InputDecoration(
                           border: InputBorder.none,
                         ),
                       ),
                     ),
+                    Divider(
+                      color: AppTheme.colorGray3,
+                      height: 1,
+                    ),
                     Container(
                       height: 50,
-                      decoration: const BoxDecoration(
-                        border: Border(
-                          top: BorderSide(width: 0.5, color: Color(0xFFDEE2E6)),
-                        ),
-                      ),
+                      margin: const EdgeInsets.only(bottom: 10),
                       child: FormBuilderSwitch(
                         label: Text(FlutterI18n.translate(context,
                             "account.address.makeDefaultBillingAddress")),
                         attribute: "defaultBilling",
-                        initialValue: false,
+                        initialValue:
+                            location == null || location.defaultBilling == null
+                                ? false
+                                : location.defaultBilling,
                         decoration: InputDecoration(
                           border: InputBorder.none,
                         ),
@@ -351,7 +364,25 @@ class AddressManage extends StatelessWidget {
                     alignment: Alignment.centerLeft,
                     child: FlatButton(
                       textColor: AppTheme.colorDanger,
-                      onPressed: () => {},
+                      onPressed: () {
+                        if (_fbAddress.currentState.saveAndValidate()) {
+                          print(_fbAddress.currentState.value);
+                          FocusScope.of(context).requestFocus(new FocusNode());
+
+                          Location body =
+                              Location.fromJson(_fbAddress.currentState.value);
+                          body.name = _isHome ? "Home" : "Office";
+                          body.id = location.id;
+                          print(body);
+                          print(body.id);
+                          print(body.countryCode);
+
+                          GetIt.I<AddressBloc>().add(DeleteAddressEvent(body));
+                        } else {
+                          print(_fbAddress.currentState.value);
+                          print('validation failed');
+                        }
+                      },
                       child: Text(FlutterI18n.translate(
                           context, "account.address.deleteAddress")),
                       shape: CircleBorder(
@@ -361,16 +392,27 @@ class AddressManage extends StatelessWidget {
             SizedBox(
               width: 264,
               child: AppButton(
-                FlutterI18n.translate(context, "account.addAddress"),
+                isNew
+                    ? FlutterI18n.translate(
+                        context, "account.address.addAddress")
+                    : FlutterI18n.translate(
+                        context, "account.address.editAddress"),
                 () {
                   if (_fbAddress.currentState.saveAndValidate()) {
                     print(_fbAddress.currentState.value);
                     FocusScope.of(context).requestFocus(new FocusNode());
-                    var companyProfile = addressService.getCompanyProfile();
-                    print(companyProfile);
-                    print(companyProfile);
 
-                    // GetIt.I<AddressBloc>().add(LoadAddressEvent(body, context));
+                    Location body =
+                        Location.fromJson(_fbAddress.currentState.value);
+                    body.name = _isHome ? "Home" : "Office";
+                    body.id = location != null && location.id != null
+                        ? location.id
+                        : null;
+                    print(body);
+                    print(body.id);
+                    print(body.countryCode);
+
+                    GetIt.I<AddressBloc>().add(SetAddressEvent(body));
                   } else {
                     print(_fbAddress.currentState.value);
                     print('validation failed');
@@ -380,6 +422,7 @@ class AddressManage extends StatelessWidget {
                 noPadding: true,
               ),
             ),
+            SizedBox(height: 10)
           ],
         ),
       ),

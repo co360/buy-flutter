@@ -154,7 +154,7 @@ class AddressView extends StatelessWidget {
                 ],
               ),
               SizedBox(height: 10),
-              !_addresses[i].defaultShipping
+              _addresses[i].defaultShipping
                   ? Row(
                       children: <Widget>[
                         SizedBox(
@@ -181,7 +181,7 @@ class AddressView extends StatelessWidget {
                       ],
                     )
                   : Container(),
-              !_addresses[i].defaultBilling
+              _addresses[i].defaultBilling
                   ? Row(
                       children: <Widget>[
                         SizedBox(

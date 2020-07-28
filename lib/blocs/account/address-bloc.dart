@@ -2,7 +2,6 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:storeFlutter/services/address-service.dart';
-import 'package:storeFlutter/models/identity/company-profile.dart';
 import 'package:storeFlutter/models/identity/location.dart';
 import 'package:storeFlutter/models/label-value.dart';
 import 'package:country_provider/country_provider.dart';
@@ -16,6 +15,7 @@ class AddressBloc extends Bloc<AddressEvent, AddressState> {
   @override
   Stream<AddressState> mapEventToState(AddressEvent event) async* {
     yield AddressInProgress();
+    print("EVENTTTTTTTTTTTT $event");
     try {
       if (event is GetAddressEvent) {
         List<Location> status = await _addressService.getAddress(event.id);
@@ -23,10 +23,14 @@ class AddressBloc extends Bloc<AddressEvent, AddressState> {
           yield GetAddressSuccess(status);
         }
       } else if (event is SetAddressEvent) {
-        List<Location> status =
-            await _addressService.setAddress(event.id, event.body);
+        List<Location> status = await _addressService.setAddress(event.body);
         if (status != null) {
           yield SetAddressSuccess(status);
+        }
+      } else if (event is DeleteAddressEvent) {
+        List<Location> status = await _addressService.deleteAddress(event.body);
+        if (status != null) {
+          yield DeleteAddressSuccess(status);
         }
       } else if (event is GetAddressByIDEvent) {
         Location status = await _addressService.getAddressByID(event.id);
@@ -45,8 +49,11 @@ class AddressBloc extends Bloc<AddressEvent, AddressState> {
         print(status);
         yield GetStateListSuccess(status);
       } else if (event is GetCountryListEvent) {
+        print("call this1");
         List<Country> status = await _addressService.getCountryList();
+        print("call this2");
         yield GetCountryListSuccess(status);
+        print("call this3");
       }
     } catch (e) {
       print("Error");
@@ -123,6 +130,14 @@ class SetAddressSuccess extends AddressState {
   List<Object> get props => [addresses];
 }
 
+class DeleteAddressSuccess extends AddressState {
+  final List<Location> addresses;
+  DeleteAddressSuccess(this.addresses);
+
+  @override
+  List<Object> get props => [addresses];
+}
+
 class ManageAddressFailed extends AddressState {}
 
 // Event
@@ -168,13 +183,21 @@ class GetCityListEvent extends AddressEvent {
 class GetCountryListEvent extends AddressEvent {}
 
 class SetAddressEvent extends AddressEvent {
-  final int id;
-  final CompanyProfile body;
+  final Location body;
 
-  SetAddressEvent(this.id, this.body);
+  SetAddressEvent(this.body);
 
   @override
-  List<Object> get props => [id, body];
+  List<Object> get props => [body];
+}
+
+class DeleteAddressEvent extends AddressEvent {
+  final Location body;
+
+  DeleteAddressEvent(this.body);
+
+  @override
+  List<Object> get props => [body];
 }
 
 class InitAddressEvent extends AddressEvent {}
