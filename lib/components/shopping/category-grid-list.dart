@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:storeFlutter/components/button/grid-button.dart';
 import 'package:storeFlutter/components/button/grid-button-disable.dart';
+import 'package:storeFlutter/models/filter-type.dart';
 import 'package:storeFlutter/models/shopping/category.dart';
 import 'package:storeFlutter/models/query-result-category.dart';
+import 'package:storeFlutter/screens/shopping/product-listing.dart';
 
 class CategoryGridList extends StatelessWidget {
   final Layer2CategoryLists category;
@@ -28,13 +30,13 @@ class CategoryGridList extends StatelessWidget {
               ),
             ),
           ),
-          Column(children: _generateDynamicList(category.layer3Category)),
+          Column(children: _generateDynamicList(category.layer3Category, context)),
         ],
       ),
     );
   }
 
-  List<Widget> _generateDynamicList(List<Layer3CategoryLists> categories) {
+  List<Widget> _generateDynamicList(List<Layer3CategoryLists> categories, BuildContext context) {
     List<Widget> list = List();
     print("test");
     print(categories);
@@ -51,6 +53,9 @@ class CategoryGridList extends StatelessWidget {
                       title: categories[i].name,
                       cb: () {
                         print("Select ${categories[i].id}");
+                        Navigator.pushNamedAndRemoveUntil(
+                            context, '/product-listing', ModalRoute.withName('/'),
+                            arguments: ProductListingScreenParams(filter: {"CATEGORY":FilterValue(categories[i].name,categories[i].code,0)}));
                       })
                   : GridButtonDisable(),
               categories.length > i + 1
@@ -58,6 +63,9 @@ class CategoryGridList extends StatelessWidget {
                       title: categories[i + 1].name,
                       cb: () {
                         print("Select ${categories[i + 1].id}");
+                        Navigator.pushNamedAndRemoveUntil(
+                            context, '/product-listing', ModalRoute.withName('/'),
+                            arguments: ProductListingScreenParams(filter: {"CATEGORY":FilterValue(categories[i+1].name,categories[i+1].code,0)}));
                       })
                   : GridButtonDisable(),
               // categories.length > i + 2

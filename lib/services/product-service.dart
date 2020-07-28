@@ -88,7 +88,9 @@ class ProductService extends BaseRestService {
 //    params
 //        .addAll(filter.filters.map((key, value) => MapEntry(key, value.value)));
 
-    params.addAll(filter.toQueryParameter());
+    if(filter.filters != null) {
+      params.addAll(filter.toQueryParameter());
+    }
     return params;
   }
 }
@@ -98,7 +100,7 @@ class ProductListingQueryFilter {
 
   Map<String, FilterValue> filters = {};
 
-  ProductListingQueryFilter({this.query});
+  ProductListingQueryFilter({this.query,this.filters});
 
   ProductListingQueryFilter.copy(ProductListingQueryFilter filter) {
     query = filter.query;
@@ -131,6 +133,8 @@ class ProductListingQueryFilter {
       if (key == 'CATEGORY') finalKey = "category.code";
       if (key == 'COUNTRY') finalKey = "sellerCountryCode";
       if (key == 'BUSINESS_TYPE') finalKey = "sellerBusinessTypes";
+      if (key == 'MIN_PRICE') finalKey = "minPrice";
+      if (key == 'MAX_PRICE') finalKey = "maxPrice";
 
       return MapEntry(finalKey, value.value);
     });

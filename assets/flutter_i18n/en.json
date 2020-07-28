@@ -46,6 +46,11 @@
       "popularity" : "Popularity"
     },
     "productDetail": {
+      "name" : "Product Detail",
+      "productInformation": "Product Information"
+    },
+    "filter": {
+      "priceRange": "Price Range (RM)",
       "delivery" : "Delivery",
       "cost" : "Cost",
       "Received By" : "Received By",
