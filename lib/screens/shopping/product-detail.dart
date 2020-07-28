@@ -168,7 +168,18 @@ class ProductDetailBody extends StatelessWidget {
         children: <Widget>[
           ProductImageSlider(product),
           buildBasicProductInfoPanel(),
-          AppListTitle.noTopPadding("Product Information"),
+          AppListTitle.noTopPadding(FlutterI18n.translate(
+              context, "shopping.productDetail.delivery")),
+          AppPanel(
+            child: Text("delivery info"),
+          ),
+          AppListTitle.noTopPadding(FlutterI18n.translate(
+              context, "shopping.productDetail.productOption")),
+          AppPanel(
+            child: Text("delivery info"),
+          ),
+          AppListTitle.noTopPadding(FlutterI18n.translate(
+              context, "shopping.productDetail.productDetail")),
           AppPanel(
             children: <Widget>[
               Text("abc"),

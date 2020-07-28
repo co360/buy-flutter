@@ -46,9 +46,31 @@
       "popularity" : "Popularity"
     },
     "productDetail": {
-      "name" : "Product Detail",
-      "productInformation": "Product Information"
+      "delivery" : "Delivery",
+      "cost" : "Cost",
+      "Received By" : "Received By",
+
+      "productOption": "Product Option",
+      "productDetail": "Product Detail",
+      "overview": "Overview",
+      "productDescription": "Product Description",
+      "productSpecifications": "Product Specifications",
+      "keyContactPerson": "Key Contact Person",
+      "name": "Name",
+      "position": "position",
+
+      "keyProductAdvantage": "Key Product Advantage",
+
+      "ratingsReviews": "Ratings & Reviews",
+      "ratings": "Ratings",
+      "reviews": "Reviews"
+
     }
+  },
+  "cart": {
+    "shoppingCartEmpty": "Your shopping cart is empty",
+    "shoppingCartEmptyMsg": "Looks like you have not adding anything into your cart yet",
+    "goShoppingNow": "Go Shopping Now"
   },
   "account" : {
     "login": "Login",

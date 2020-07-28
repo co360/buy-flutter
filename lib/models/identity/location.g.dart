@@ -8,22 +8,22 @@ part of 'location.dart';
 
 Location _$LocationFromJson(Map<String, dynamic> json) {
   return Location(
-    json['id'] as int,
-    json['name'] as String,
-    json['code'] as String,
-    (json['latitude'] as num)?.toDouble(),
-    (json['longitude'] as num)?.toDouble(),
-    json['address'] as String,
-    json['countryCode'] as String,
-    json['nearestPortCountry'] as String,
-    json['portCode'] as String,
-    json['deliveryLocation'] as bool,
-    json['supplyLocation'] as bool,
-    json['postcode'] as String,
-    json['state'] as String,
-    json['city'] as String,
-    json['portName'] as String,
-    json['countryName'] as String,
+    id: json['id'] as int,
+    name: json['name'] as String,
+    code: json['code'] as String,
+    latitude: (json['latitude'] as num)?.toDouble(),
+    longitude: (json['longitude'] as num)?.toDouble(),
+    address: json['address'] as String,
+    countryCode: json['countryCode'] as String,
+    nearestPortCountry: json['nearestPortCountry'] as String,
+    portCode: json['portCode'] as String,
+    deliveryLocation: json['deliveryLocation'] as bool,
+    supplyLocation: json['supplyLocation'] as bool,
+    postcode: json['postcode'] as String,
+    state: json['state'] as String,
+    city: json['city'] as String,
+    portName: json['portName'] as String,
+    countryName: json['countryName'] as String,
   );
 }
 

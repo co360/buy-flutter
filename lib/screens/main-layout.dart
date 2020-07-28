@@ -1,48 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:storeFlutter/components/navigator/bottom_app_bar.dart';
+import 'package:get_it/get_it.dart';
+import 'package:storeFlutter/blocs/navigation/bottom-navigation-bloc.dart';
+import 'package:storeFlutter/components/navigator/custom-bottom-app-bar.dart';
 import 'package:storeFlutter/util/app-theme.dart';
 
-class MainLayout extends StatefulWidget {
+class MainLayout extends StatelessWidget {
   final List<Widget> screens;
 
   MainLayout(this.screens);
 
   @override
-  _MainLayoutState createState() => _MainLayoutState();
-}
-
-class _MainLayoutState extends State<MainLayout> {
-  int _selectedIndex = 0;
-
-  void _selectedTab(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-//    print('<<< this should be rebuild only when change language');
-    // have to move into here so all of the screen is rebuilt when change language
-//    List<Widget> allDestinations = <Widget>[
-//      HomeScreen(),
-//      OrdersScreen(),
-//      ShoppingCartScreen(),
-//      AccountScreen()
-//    ];
-
     return Scaffold(
-//      body: allDestinations.elementAt(_selectedIndex),
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: widget.screens,
+      body: BlocBuilder<BottomNavigationBloc, int>(
+        bloc: GetIt.I<BottomNavigationBloc>(),
+        builder: (context, state) {
+          return IndexedStack(
+            index: state,
+            children: this.screens,
+          );
+        },
       ),
       bottomNavigationBar: CustomBottomAppBar(
         selectedColor: AppTheme.colorPrimary,
         color: AppTheme.colorGray5,
-        onTabSelected: _selectedTab,
+//        onTabSelected: _selectedTab,
         items: [
           CustomBottomAppBarItem(
             iconData: FontAwesomeIcons.lightStore,
