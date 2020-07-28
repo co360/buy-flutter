@@ -48,7 +48,39 @@
     "productDetail": {
       "name" : "Product Detail",
       "productInformation": "Product Information"
+    },
+    "filter": {
+      "priceRange": "Price Range (RM)",
+      "delivery" : "Delivery",
+      "cost" : "Cost",
+      "Received By" : "Received By",
+
+      "productOption": "Product Option",
+      "productDetail": "Product Detail",
+      "overview": "Overview",
+      "productDescription": "Product Description",
+      "productSpecifications": "Product Specifications",
+      "productApplication": "Product Application",
+      "contactPerson": "Contact Person",
+      "name": "Name",
+      "position": "position",
+
+      "keyProductAdvantage": "Key Product Advantage",
+
+      "companyProfile": "Company Profile",
+      "companyIntroduction": "Company Introduction",
+      "basicInformation": "Basic Information",
+
+      "ratingsReviews": "Ratings & Reviews",
+      "ratings": "Ratings",
+      "reviews": "Reviews"
+
     }
+  },
+  "cart": {
+    "shoppingCartEmpty": "Your shopping cart is empty",
+    "shoppingCartEmptyMsg": "Looks like you have not adding anything into your cart yet",
+    "goShoppingNow": "Go Shopping Now"
   },
   "account" : {
     "login": "Login",
@@ -80,6 +112,7 @@
 
     "name": "Name",
     "mobileContact": "Mobile Phone No",
+    "add": "Add",
     "edit": "Edit",
     "save": "Save",
     "oldPassword": "Old Password",
@@ -95,7 +128,33 @@
     "didNotReceive": "Didn't receive? Resend Again",
 
     "pleaseLoginToSeeMore": "Please login to see your account details",
-
+    "noAddress": "You have not setup any address yet",
+    
+    "newAddress": "New Addresses",
+    "editAddress": "Edit Addresses",
+    "addAddressNow": "Add Address Now",
+    "addAddress": "Add Address",
+    "defaultShippingAddress": "Default Shipping Address",
+    "defaultBillingAddress": "Default Billing Address",
+    "address": {
+      "fullName": "Full Name",
+      "phoneNumber": "Phone Number",
+      "country": "Country",
+      "selectCountry": "Select Country",
+      "state": "State / Province",
+      "selectState": "Select State",
+      "city": "City",
+      "selectCity": "Select City",
+      "postcode": "Postal Code",
+      "address": "Address",
+      "selectLabel": "Select a label for effective delivery:",
+      "home": "Home",
+      "office": "Office",
+      "makeDefaultShipping": "Make Default Shipping Address",
+      "makeDefaultBillingAddress": "Make Default Billing Address",
+      "deleteAddress": "Delete Address"
+    },
+    
     "changeLanguageScreen": {
       "languages": "Languages",
       "languageChanged": "Language Changed"

@@ -13,6 +13,7 @@ import 'package:storeFlutter/screens/account/change-language.dart';
 import 'package:storeFlutter/screens/account/view-profile.dart';
 import 'package:storeFlutter/screens/account/change-password.dart';
 import 'package:storeFlutter/screens/account/change-email.dart';
+import 'package:storeFlutter/screens/account/address.dart';
 import 'package:storeFlutter/services/storage-service.dart';
 import 'package:storeFlutter/util/app-theme.dart';
 
@@ -99,7 +100,17 @@ class AccountScreen extends StatelessWidget {
             )
           },
         ),
-        AppListTile(FlutterI18n.translate(context, "account.myAddresses")),
+        AppListTile(
+          FlutterI18n.translate(context, "account.myAddresses"),
+          onTap: () => {
+            Navigator.push(
+              context,
+              CupertinoPageRoute(
+                builder: (context) => AddressScreen(),
+              ),
+            )
+          },
+        ),
         AppListTile(FlutterI18n.translate(context, "account.bankAccounts")),
         AppListTitle(FlutterI18n.translate(context, "account.settings")),
         AppListTile(FlutterI18n.translate(context, "account.changeLanguage"),

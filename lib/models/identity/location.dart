@@ -18,6 +18,11 @@ class Location {
   String postcode;
   String state;
   String city;
+  String fullName;
+  String phoneNo;
+  String locationType;
+  bool defaultShipping;
+  bool defaultBilling;
 
   //transient fields
   String portName;
@@ -38,6 +43,11 @@ class Location {
       this.postcode,
       this.state,
       this.city,
+      this.fullName,
+      this.phoneNo,
+      this.locationType,
+      this.defaultShipping,
+      this.defaultBilling,
       this.portName,
       this.countryName);
 

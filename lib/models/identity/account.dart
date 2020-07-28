@@ -9,6 +9,7 @@ part 'account.g.dart';
 @JsonSerializable()
 class Account {
   int id;
+  int companyId;
   String userName;
   String password;
   String name;

@@ -38,13 +38,16 @@ Account _$AccountFromJson(Map<String, dynamic> json) {
         ?.toList(),
     json['accountType'] as String,
     json['isMember'] as bool,
-  )..profilePic = json['profilePic'] == null
-      ? null
-      : Image.fromJson(json['profilePic'] as Map<String, dynamic>);
+  )
+    ..companyId = json['companyId'] as int
+    ..profilePic = json['profilePic'] == null
+        ? null
+        : Image.fromJson(json['profilePic'] as Map<String, dynamic>);
 }
 
 Map<String, dynamic> _$AccountToJson(Account instance) => <String, dynamic>{
       'id': instance.id,
+      'companyId': instance.companyId,
       'userName': instance.userName,
       'password': instance.password,
       'name': instance.name,

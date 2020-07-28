@@ -77,6 +77,35 @@
     "checkVerificationCode": "Sila semak E-mel dan masukkan verifikasi kod yang diterima.",
     "verifyNow": "Verifikasi Sekarang",
     "didNotReceive": "Belum terima? Hantar semula",
+    
+    "pleaseLoginToSeeMore": "Sila login untuk lihat semua",
+    "noAddress": "Tiada alamat yang didaftarkan lagi",
+    
+    "addAddressNow": "Tambah alamat baru",
+    "editAddress": "Edit Addresses",
+    "addAddressNow": "Add Address Now",
+    "addAddress": "Add Address",
+    "defaultShippingAddress": "Default Shipping Address",
+    "defaultBillingAddress": "Default Billing Address",
+    "address": {
+      "fullName": "Full Name",
+      "phoneNumber": "Phone Number",
+      "country": "Country",
+      "selectCountry": "Select Country",
+      "state": "State / Province",
+      "selectState": "Select State",
+      "city": "City",
+      "selectCity": "Select City",
+      "postcode": "Postal Code",
+      "address": "Address",
+      "selectLabel": "Select a label for effective delivery:",
+      "home": "Home",
+      "office": "Office",
+      "makeDefaultShipping": "Make Default Shipping Address",
+      "makeDefaultBillingAddress": "Make Default Billing Address",
+      "deleteAddress": "Delete Address"
+    },
+    
     "changeLanguageScreen": {
       "languages": "Bahasa",
       "languageChanged": "Bahasa Telah Tukar"

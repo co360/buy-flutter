@@ -22,6 +22,11 @@ Location _$LocationFromJson(Map<String, dynamic> json) {
     json['postcode'] as String,
     json['state'] as String,
     json['city'] as String,
+    json['fullName'] as String,
+    json['phoneNo'] as String,
+    json['locationType'] as String,
+    json['defaultShipping'] as bool,
+    json['defaultBilling'] as bool,
     json['portName'] as String,
     json['countryName'] as String,
   );
@@ -42,6 +47,11 @@ Map<String, dynamic> _$LocationToJson(Location instance) => <String, dynamic>{
       'postcode': instance.postcode,
       'state': instance.state,
       'city': instance.city,
+      'fullName': instance.fullName,
+      'phoneNo': instance.phoneNo,
+      'locationType': instance.locationType,
+      'defaultShipping': instance.defaultShipping,
+      'defaultBilling': instance.defaultBilling,
       'portName': instance.portName,
       'countryName': instance.countryName,
     };
