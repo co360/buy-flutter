@@ -55,11 +55,16 @@
       "overview": "Overview",
       "productDescription": "Product Description",
       "productSpecifications": "Product Specifications",
-      "keyContactPerson": "Key Contact Person",
+      "productApplication": "Product Application",
+      "contactPerson": "Contact Person",
       "name": "Name",
       "position": "position",
 
       "keyProductAdvantage": "Key Product Advantage",
+
+      "companyProfile": "Company Profile",
+      "companyIntroduction": "Company Introduction",
+      "basicInformation": "Basic Information",
 
       "ratingsReviews": "Ratings & Reviews",
       "ratings": "Ratings",

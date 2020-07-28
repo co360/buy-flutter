@@ -37,6 +37,7 @@ class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
             ),
           ),
         ),
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       body: CheckSession(
         child: ShoppingCartBody(),

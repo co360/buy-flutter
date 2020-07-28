@@ -5,7 +5,7 @@ import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:storeFlutter/blocs/shopping/product-listing-bloc.dart';
 import 'package:storeFlutter/components/app-loading.dart';
-import 'package:storeFlutter/components/shopping/product-listing-grid-item.dart';
+import 'package:storeFlutter/components/shopping/product-listing/product-listing-grid-item.dart';
 import 'package:storeFlutter/models/query-result.dart';
 import 'package:storeFlutter/models/shopping/product.dart';
 import 'package:storeFlutter/util/app-theme.dart';

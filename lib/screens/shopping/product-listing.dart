@@ -7,7 +7,7 @@ import 'package:storeFlutter/blocs/shopping/product-listing-bloc.dart';
 import 'package:storeFlutter/components/app-button.dart';
 import 'package:storeFlutter/components/app-general-error-info.dart';
 import 'package:storeFlutter/components/app-loading.dart';
-import 'package:storeFlutter/components/shopping/product-listing-grid.dart';
+import 'package:storeFlutter/components/shopping/product-listing/product-listing-grid.dart';
 import 'package:storeFlutter/components/shopping/shopping-cart-icon.dart';
 import 'package:storeFlutter/components/shopping/static-search-bar.dart';
 import 'package:storeFlutter/models/filter-type.dart';
@@ -102,8 +102,7 @@ class FilterDrawer extends StatelessWidget {
   Widget buildFilterInput() {
     return BlocBuilder<ProductListingBloc, ProductListingState>(
       builder: (context, state) {
-        ProductListingBloc bloc =
-        BlocProvider.of<ProductListingBloc>(context);
+        ProductListingBloc bloc = BlocProvider.of<ProductListingBloc>(context);
         if (state is ProductListingSearchInProgress) {
           // TODO should display the loading on top of the filter button like lazada etc
           return Column(
@@ -114,7 +113,6 @@ class FilterDrawer extends StatelessWidget {
             ],
           );
         } else if (state is ProductListingSearchComplete) {
-
           List<FilterMeta> metas = state.result.filterMetas;
           return ListView.builder(
             shrinkWrap: true,
@@ -133,7 +131,7 @@ class FilterDrawer extends StatelessWidget {
                   meta, bloc, state.queryFilter, state.result);
             },
           );
-        } else if(state is ProductListingCategoryResetState) {
+        } else if (state is ProductListingCategoryResetState) {
           bloc.add(ProductListingSearch(ProductListingQueryFilter(query: "")));
         } else if (state is ProductListingSearchError) {}
         return Text("nothing here");
@@ -202,7 +200,8 @@ class FilterDrawer extends StatelessWidget {
                 child: AppButton(
                   FlutterI18n.translate(context, "general.reset"),
                   () {
-                    BlocProvider.of<ProductListingBloc>(context).add(ProductListingSearchReset());
+                    BlocProvider.of<ProductListingBloc>(context)
+                        .add(ProductListingSearchReset());
                   },
 //                  noPadding: true,
                   bottomPadding: 5,

@@ -21,6 +21,7 @@ class OrdersScreen extends StatelessWidget {
             ),
           ),
         ),
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       body: CheckSession(child: buildContent()),
     );

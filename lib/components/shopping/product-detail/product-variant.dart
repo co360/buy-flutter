@@ -32,18 +32,20 @@ class ProductVariant extends StatelessWidget {
   List<Widget> buildVariantOptionWidget(List<VariantOption> options) {
     List<Widget> items = [];
 
-    items = options.map((e) => VariantOptionWidget(e)).toList();
+    if (options != null) {
+      items = options.map((e) => VariantOptionWidget(e)).toList();
 
-    items = items
-        .expand((e) => [
-              e,
-              SizedBox(
-                height: 20,
-              )
-            ])
-        .toList();
+      items = items
+          .expand((e) => [
+                e,
+                SizedBox(
+                  height: 20,
+                )
+              ])
+          .toList();
 
-    items.removeLast();
+      items.removeLast();
+    }
 
     return items;
   }
@@ -152,7 +154,10 @@ class VariantOptionValueWidget extends StatelessWidget {
           vertical: 8.0,
           horizontal: 10,
         ),
-        child: Text(value),
+        child: Text(
+          value,
+          style: TextStyle(color: AppTheme.colorGray6),
+        ),
       ),
     );
   }
