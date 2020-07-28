@@ -20,6 +20,7 @@ import 'package:storeFlutter/services/product-service.dart';
 import 'package:storeFlutter/services/sales-cart-service.dart';
 import 'package:storeFlutter/services/signup-service.dart';
 import 'package:storeFlutter/services/storage-service.dart';
+import 'package:storeFlutter/services/variant-type-service.dart';
 
 Future setupLocator() async {
   // Service
@@ -36,6 +37,7 @@ Future setupLocator() async {
   GetIt.I.registerSingleton<InitialLoadingService>(InitialLoadingService());
   GetIt.I.registerSingleton<SignUpService>(SignUpService());
   GetIt.I.registerSingleton<SalesCartService>(SalesCartService());
+  GetIt.I.registerSingleton<VariantTypeService>(VariantTypeService());
 
   // Bloc
   GetIt.I.registerSingleton<BottomNavigationBloc>(BottomNavigationBloc());

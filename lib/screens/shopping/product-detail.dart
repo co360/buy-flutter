@@ -8,6 +8,7 @@ import 'package:quiver/strings.dart';
 import 'package:storeFlutter/components/app-button.dart';
 import 'package:storeFlutter/components/app-list-title.dart';
 import 'package:storeFlutter/components/app-panel.dart';
+import 'package:storeFlutter/components/shopping/product-variant.dart';
 import 'package:storeFlutter/components/shopping/shopping-cart-icon.dart';
 import 'package:storeFlutter/components/shopping/static-search-bar.dart';
 import 'package:storeFlutter/models/identity/company-profile.dart';
@@ -173,11 +174,7 @@ class ProductDetailBody extends StatelessWidget {
           AppPanel(
             child: Text("delivery info"),
           ),
-          AppListTitle.noTopPadding(FlutterI18n.translate(
-              context, "shopping.productDetail.productOption")),
-          AppPanel(
-            child: Text("delivery info"),
-          ),
+          ...buildProductOption(context),
           AppListTitle.noTopPadding(FlutterI18n.translate(
               context, "shopping.productDetail.productDetail")),
           AppPanel(
@@ -198,6 +195,25 @@ class ProductDetailBody extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  List<Widget> buildProductOption(BuildContext context) {
+    List<Widget> widgets = [];
+    if (product.productType == ProductType.SKU && product.hasVariants) {
+      widgets.add(
+        AppListTitle.noTopPadding(
+          FlutterI18n.translate(
+              context, "shopping.productDetail.productOption"),
+        ),
+      );
+      widgets.add(
+        AppPanel(
+          child: ProductVariant(product),
+        ),
+      );
+    }
+
+    return widgets;
   }
 
   AppPanel buildBasicProductInfoPanel() {
