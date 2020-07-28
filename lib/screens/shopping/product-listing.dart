@@ -23,10 +23,13 @@ class ProductListingScreen extends StatelessWidget {
     final ProductListingScreenParams args =
         ModalRoute.of(context).settings.arguments;
     String query = args.query;
+    Map<String, FilterValue> filter = args.filter;
+    cacheMinPrice = null;
+    cacheMaxPrice = null;
 
     return BlocProvider<ProductListingBloc>(
       create: (context) => ProductListingBloc()
-        ..add(ProductListingSearch(ProductListingQueryFilter(query: query))),
+        ..add(ProductListingSearch(ProductListingQueryFilter(query: query, filters: filter != null ? filter : {}))),
       child: Builder(
         builder: (context) {
           return Scaffold(
@@ -69,10 +72,15 @@ class ProductListingScreen extends StatelessWidget {
   }
 }
 
+final GlobalKey<FormBuilderState> _fbKey = GlobalKey<FormBuilderState>();
+ProductListingSearchComplete cacheState;
+String cacheMinPrice;
+String cacheMaxPrice;
+
 class FilterDrawer extends StatelessWidget {
-  const FilterDrawer({
-    Key key,
-  }) : super(key: key);
+//  const FilterDrawer({
+//    Key key,
+//  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +110,8 @@ class FilterDrawer extends StatelessWidget {
   Widget buildFilterInput() {
     return BlocBuilder<ProductListingBloc, ProductListingState>(
       builder: (context, state) {
-        ProductListingBloc bloc = BlocProvider.of<ProductListingBloc>(context);
+        ProductListingBloc bloc =
+        BlocProvider.of<ProductListingBloc>(context);
         if (state is ProductListingSearchInProgress) {
           // TODO should display the loading on top of the filter button like lazada etc
           return Column(
@@ -114,25 +123,34 @@ class FilterDrawer extends StatelessWidget {
           );
         } else if (state is ProductListingSearchComplete) {
           List<FilterMeta> metas = state.result.filterMetas;
-          return ListView.builder(
-            shrinkWrap: true,
-            itemCount: metas.length,
-            itemBuilder: (BuildContext buildContext, int index) {
-              FilterMeta meta = metas[index];
+          return ListView(children: <Widget>[
+            Container(
+              child: ListView.builder(
+                physics: ScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: metas.length,
+                itemBuilder: (BuildContext buildContext, int index) {
+                  FilterMeta meta = metas[index];
 
-              if (meta.filterValues == null || meta.filterValues.length == 0) {
-                // skip if no filter values...
-                // TODO also might skip if the values is only one value.. cause pointless to filter anyway
-                return SizedBox.shrink();
-              }
-
-              // TODO do the "View More" if filter option more than 5
-              return buildFilterMeta(
-                  meta, bloc, state.queryFilter, state.result);
-            },
-          );
+                  if (meta.filterValues == null ||
+                      meta.filterValues.length == 0) {
+                    // skip if no filter values...
+                    // TODO also might skip if the values is only one value.. cause pointless to filter anyway
+                    return SizedBox.shrink();
+                  }
+                  cacheState = state;
+                  // TODO do the "View More" if filter option more than 5
+                  return buildFilterMeta(
+                      meta, bloc, state.queryFilter, state.result);
+                },
+              ),
+            ),
+            buildPriceRangeInput(context)
+          ]);
         } else if (state is ProductListingCategoryResetState) {
-          bloc.add(ProductListingSearch(ProductListingQueryFilter(query: "")));
+          bloc.add(ProductListingSearch(ProductListingQueryFilter(query: "", filters: {})));
+          cacheMaxPrice = null;
+          cacheMinPrice = null;
         } else if (state is ProductListingSearchError) {}
         return Text("nothing here");
       },
@@ -214,6 +232,24 @@ class FilterDrawer extends StatelessWidget {
                 child: AppButton(
                   FlutterI18n.translate(context, "general.done"),
                   () {
+                    //TODO refactor price range filter
+                    if(cacheState != null) {
+                      if (_fbKey.currentState.saveAndValidate()) {
+                        cacheMaxPrice = _fbKey.currentState.value['maxPrice'];
+                        cacheMinPrice = _fbKey.currentState.value['minPrice'];
+                        if(cacheMinPrice != null || cacheMaxPrice != null) {
+                          ProductListingQueryFilter newFilter =
+                          ProductListingQueryFilter.copy(cacheState.queryFilter);
+                          newFilter.toggleFilter(
+                              "MIN_PRICE", FilterValue("MIN_PRICE",_fbKey.currentState.value['minPrice'],1));
+                          newFilter.toggleFilter(
+                              "MAX_PRICE",  FilterValue("MAX_PRICE",_fbKey.currentState.value['maxPrice'],1));
+                          BlocProvider.of<ProductListingBloc>(context).add(
+                              ProductListingSearch(
+                                  newFilter, result: cacheState.result));
+                        }
+                      }
+                    }
                     Navigator.of(context).pop();
                   },
 //                  noPadding: true,
@@ -226,6 +262,84 @@ class FilterDrawer extends StatelessWidget {
         )
       ],
     );
+  }
+}
+
+Widget buildPriceRangeInput(BuildContext context) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: <Widget>[
+      Text(
+        FlutterI18n.translate(context, "shopping.filter.priceRange"),
+        style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+      ),
+      SizedBox(
+        height: 10,
+      ),
+      FormBuilder(
+        key: _fbKey,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Expanded(flex: 4, child: DecoratedPriceField("Min", "minPrice")),
+            Expanded(
+              flex: 1,
+              child: Text(
+                "-",
+                style: TextStyle(fontSize: 14),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            Expanded(flex: 4, child: DecoratedPriceField("Max", "maxPrice")),
+          ],
+        ),
+      ),
+      SizedBox(
+        height: 30,
+      ),
+    ],
+  );
+}
+
+class DecoratedPriceField extends StatelessWidget {
+  final String hint;
+  final String attribute;
+
+  DecoratedPriceField(this.hint, this.attribute);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 40,
+      child: FormBuilderTextField(
+          attribute: attribute,
+//          initialValue: attribute == "minPrice" ?
+//                  cacheMinPrice > 0? cacheMinPrice.toString() : "" :
+//                  cacheMaxPrice > 0? cacheMaxPrice.toString() : "",
+          initialValue: _defaultValue(),
+          textAlign: TextAlign.center,
+          keyboardType: TextInputType.number,
+          decoration: new InputDecoration(
+            contentPadding: EdgeInsets.all(10.0),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.grey, width: 0.5),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.blue, width: 1),
+            ),
+            hintText: hint,
+          )),
+    );
+  }
+
+  String _defaultValue(){
+    String defValue = "";
+    if(attribute == "minPrice") {
+      defValue = cacheMinPrice != null? cacheMinPrice : "";
+    } else {
+      defValue = cacheMaxPrice != null? cacheMaxPrice : "";
+    }
+    return defValue;
   }
 }
 
@@ -464,6 +578,7 @@ class ProductNotFound extends StatelessWidget {
 
 class ProductListingScreenParams {
   final String query;
+  final Map<String, FilterValue> filter;
 
-  ProductListingScreenParams({this.query});
+  ProductListingScreenParams({this.query, this.filter});
 }
