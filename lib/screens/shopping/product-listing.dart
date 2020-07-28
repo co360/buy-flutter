@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:storeFlutter/blocs/shopping/product-listing-bloc.dart';
@@ -29,7 +30,8 @@ class ProductListingScreen extends StatelessWidget {
 
     return BlocProvider<ProductListingBloc>(
       create: (context) => ProductListingBloc()
-        ..add(ProductListingSearch(ProductListingQueryFilter(query: query, filters: filter != null ? filter : {}))),
+        ..add(ProductListingSearch(ProductListingQueryFilter(
+            query: query, filters: filter != null ? filter : {}))),
       child: Builder(
         builder: (context) {
           return Scaffold(
@@ -110,8 +112,7 @@ class FilterDrawer extends StatelessWidget {
   Widget buildFilterInput() {
     return BlocBuilder<ProductListingBloc, ProductListingState>(
       builder: (context, state) {
-        ProductListingBloc bloc =
-        BlocProvider.of<ProductListingBloc>(context);
+        ProductListingBloc bloc = BlocProvider.of<ProductListingBloc>(context);
         if (state is ProductListingSearchInProgress) {
           // TODO should display the loading on top of the filter button like lazada etc
           return Column(
@@ -148,7 +149,8 @@ class FilterDrawer extends StatelessWidget {
             buildPriceRangeInput(context)
           ]);
         } else if (state is ProductListingCategoryResetState) {
-          bloc.add(ProductListingSearch(ProductListingQueryFilter(query: "", filters: {})));
+          bloc.add(ProductListingSearch(
+              ProductListingQueryFilter(query: "", filters: {})));
           cacheMaxPrice = null;
           cacheMinPrice = null;
         } else if (state is ProductListingSearchError) {}
@@ -233,20 +235,25 @@ class FilterDrawer extends StatelessWidget {
                   FlutterI18n.translate(context, "general.done"),
                   () {
                     //TODO refactor price range filter
-                    if(cacheState != null) {
+                    if (cacheState != null) {
                       if (_fbKey.currentState.saveAndValidate()) {
                         cacheMaxPrice = _fbKey.currentState.value['maxPrice'];
                         cacheMinPrice = _fbKey.currentState.value['minPrice'];
-                        if(cacheMinPrice != null || cacheMaxPrice != null) {
+                        if (cacheMinPrice != null || cacheMaxPrice != null) {
                           ProductListingQueryFilter newFilter =
-                          ProductListingQueryFilter.copy(cacheState.queryFilter);
+                              ProductListingQueryFilter.copy(
+                                  cacheState.queryFilter);
                           newFilter.toggleFilter(
-                              "MIN_PRICE", FilterValue("MIN_PRICE",_fbKey.currentState.value['minPrice'],1));
+                              "MIN_PRICE",
+                              FilterValue("MIN_PRICE",
+                                  _fbKey.currentState.value['minPrice'], 1));
                           newFilter.toggleFilter(
-                              "MAX_PRICE",  FilterValue("MAX_PRICE",_fbKey.currentState.value['maxPrice'],1));
+                              "MAX_PRICE",
+                              FilterValue("MAX_PRICE",
+                                  _fbKey.currentState.value['maxPrice'], 1));
                           BlocProvider.of<ProductListingBloc>(context).add(
-                              ProductListingSearch(
-                                  newFilter, result: cacheState.result));
+                              ProductListingSearch(newFilter,
+                                  result: cacheState.result));
                         }
                       }
                     }
@@ -332,12 +339,12 @@ class DecoratedPriceField extends StatelessWidget {
     );
   }
 
-  String _defaultValue(){
+  String _defaultValue() {
     String defValue = "";
-    if(attribute == "minPrice") {
-      defValue = cacheMinPrice != null? cacheMinPrice : "";
+    if (attribute == "minPrice") {
+      defValue = cacheMinPrice != null ? cacheMinPrice : "";
     } else {
-      defValue = cacheMaxPrice != null? cacheMaxPrice : "";
+      defValue = cacheMaxPrice != null ? cacheMaxPrice : "";
     }
     return defValue;
   }
