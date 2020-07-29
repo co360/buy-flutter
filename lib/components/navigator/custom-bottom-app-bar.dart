@@ -5,9 +5,10 @@ import 'package:get_it/get_it.dart';
 import 'package:storeFlutter/blocs/navigation/bottom-navigation-bloc.dart';
 
 class CustomBottomAppBarItem {
-  CustomBottomAppBarItem({this.iconData, this.text});
+  CustomBottomAppBarItem({this.iconData, this.text, this.stacked});
   IconData iconData;
   String text;
+  Widget stacked;
 }
 
 class CustomBottomAppBar extends StatelessWidget {
@@ -78,10 +79,19 @@ class CustomBottomAppBar extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              Container(
-                  margin: EdgeInsets.only(top: 3, bottom: 7),
-                  child:
-                      FaIcon(item.iconData, color: color, size: this.iconSize)),
+              Stack(
+                children: <Widget>[
+                  Container(
+                    width: 50,
+                    margin: EdgeInsets.only(top: 3, bottom: 7),
+                    child: Center(
+                      child: FaIcon(item.iconData,
+                          color: color, size: this.iconSize),
+                    ),
+                  ),
+                  item.stacked != null ? item.stacked : SizedBox.shrink(),
+                ],
+              ),
               Text(
                 item.text,
                 style: TextStyle(color: color, fontSize: 12),
