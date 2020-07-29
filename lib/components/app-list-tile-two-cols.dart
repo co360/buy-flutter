@@ -17,9 +17,13 @@ class AppListTileTwoCols extends StatelessWidget {
 
     widgets = <Widget>[
       ListTile(
-        title: Text(title,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-        subtitle: Text(content, style: TextStyle(fontSize: 15)),
+        title: Padding(
+            padding: EdgeInsets.only(top: 10.0),
+            child: Text(title,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15))),
+        subtitle: Padding(
+            padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
+            child: Text(content, style: TextStyle(fontSize: 15))),
       ),
       bottomDivider
           ? Divider(

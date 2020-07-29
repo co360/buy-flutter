@@ -64,7 +64,8 @@ class SellerStoreOverview extends StatelessWidget {
             sellerCompany.businessType == null ||
                     sellerCompany.businessType.length == 0
                 ? "-"
-                : sellerCompany.businessType[0]),
+                : sellerCompany.businessType[0],
+            topDivider: true),
         AppListTileTwoCols(
             FlutterI18n.translate(context, "shopping.sellerStorePage.location"),
             sellerCompany.address1 == null
