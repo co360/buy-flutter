@@ -1,9 +1,14 @@
 import 'dart:convert';
 
+import 'package:country_provider/country_provider.dart';
+import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:storeFlutter/models/auth/saved-login.dart';
 import 'package:storeFlutter/models/identity/account.dart';
 import 'package:storeFlutter/models/identity/company.dart';
+import 'package:storeFlutter/models/label-value.dart';
+
+import 'countries-datasource-service.dart';
 
 class StorageService {
   static StorageService _instance;
@@ -15,6 +20,7 @@ class StorageService {
   static const String _keyLoginCompany = 'loginCompany';
   static const String _keyLanguage = 'language';
   static const String _keySavedLogins = 'savedLogins';
+  static const String _countriesList = 'countriesList';
 
   Account _loginUser;
   Company _loginCompany;
@@ -147,6 +153,16 @@ class StorageService {
 
   List<String> getStringList(String key) =>
       _sharedPreferences.getStringList(key);
+
+  //TODO cache as local storage item
+  //cache datasource
+  List<Country> _countries;
+  List<Country> get countries => _countries;
+
+  set countries(List<Country> value) {
+    _countries = value;
+    putString(_countriesList, json.encode(value));
+  }
 
   bool isKeyExists(String key) => _sharedPreferences.containsKey(key);
 

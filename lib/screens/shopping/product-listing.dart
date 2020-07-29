@@ -1,9 +1,11 @@
+import 'package:country_provider/country_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get_it/get_it.dart';
 import 'package:storeFlutter/blocs/shopping/product-listing-bloc.dart';
 import 'package:storeFlutter/components/app-button.dart';
 import 'package:storeFlutter/components/app-general-error-info.dart';
@@ -16,7 +18,9 @@ import 'package:storeFlutter/models/query-result.dart';
 import 'package:storeFlutter/models/shopping/product.dart';
 import 'package:storeFlutter/screens/shopping/search-general.dart';
 import 'package:storeFlutter/services/product-service.dart';
+import 'package:storeFlutter/services/storage-service.dart';
 import 'package:storeFlutter/util/app-theme.dart';
+import 'package:country_icons/country_icons.dart';
 
 class ProductListingScreen extends StatelessWidget {
   @override
@@ -186,7 +190,7 @@ class FilterDrawer extends StatelessWidget {
                         : AppTheme.colorGray2,
 //            visualDensity: VisualDensity.compact,
                     padding: EdgeInsets.all(10),
-                    child: Text(
+                    child: meta.code != 'COUNTRY' ? Text(
                       e.name != null ? e.name : e.value,
                       style: TextStyle(
                           color: queryFilter.hasFilter(meta.code, e)
@@ -194,6 +198,21 @@ class FilterDrawer extends StatelessWidget {
                               : Colors.black,
                           fontSize: 14,
                           fontWeight: FontWeight.w400),
+                    ) : Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Container(
+                            width: 30,
+                            height: 20,
+                            decoration: BoxDecoration(border: Border.all(width: 1)),
+                            child: Image.asset('icons/flags/png/${e.value.toLowerCase()}.png', package: 'country_icons',fit: BoxFit.cover,)
+                        ),
+                        SizedBox( width: 5,),
+                        Text(
+                          getCountryFullName(e.value),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),),
+                      ],
                     ),
                   ))
               .toList(),
@@ -588,4 +607,10 @@ class ProductListingScreenParams {
   final Map<String, FilterValue> filter;
 
   ProductListingScreenParams({this.query, this.filter});
+}
+
+String getCountryFullName(String code) {
+  List<Country> countries = GetIt.I<StorageService>().countries.where((element) => element.alpha2Code == code).toList();
+  String name = countries[0].name;
+  return name != null ? name : code;
 }
