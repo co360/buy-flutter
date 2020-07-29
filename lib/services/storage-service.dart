@@ -8,8 +8,6 @@ import 'package:storeFlutter/models/identity/account.dart';
 import 'package:storeFlutter/models/identity/company.dart';
 import 'package:storeFlutter/models/label-value.dart';
 
-import 'countries-datasource-service.dart';
-
 class StorageService {
   static StorageService _instance;
   static SharedPreferences _sharedPreferences;
