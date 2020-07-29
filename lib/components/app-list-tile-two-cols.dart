@@ -29,6 +29,7 @@ class AppListTileTwoCols extends StatelessWidget {
           ? Divider(
               color: AppTheme.colorGray3,
               height: 1,
+              thickness: 1,
             )
           : Container()
     ];
@@ -39,6 +40,7 @@ class AppListTileTwoCols extends StatelessWidget {
         Divider(
           color: AppTheme.colorGray3,
           height: 1,
+          thickness: 1,
         ),
       );
     }

@@ -102,7 +102,6 @@ class AddressService extends BaseRestService {
     for (var i = 0; i < _companyProfile.locations.length; i++) {
       if (_companyProfile.locations[i].id != data.id) {
         locs.add(_companyProfile.locations[i]);
-        break;
       }
     }
 

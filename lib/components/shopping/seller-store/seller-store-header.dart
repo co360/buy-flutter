@@ -32,7 +32,10 @@ class SellerStoreHeader extends StatelessWidget {
                         _company.name,
                         minFontSize: 14,
                         textAlign: TextAlign.left,
-                        style: TextStyle(color: Colors.white, fontSize: 16),
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold),
                       ),
                     ),
                     Container(
@@ -42,7 +45,10 @@ class SellerStoreHeader extends StatelessWidget {
                         "25 Products",
                         minFontSize: 12,
                         textAlign: TextAlign.left,
-                        style: TextStyle(color: Colors.white, fontSize: 14),
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.normal),
                       ),
                     ),
                   ]),

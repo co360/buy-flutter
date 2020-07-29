@@ -45,7 +45,8 @@ class SellerStoreBodyNav extends StatelessWidget {
                             color: active == enumSellerStore.OVERVIEW
                                 ? AppTheme.colorOrange
                                 : Colors.black,
-                            fontSize: 14),
+                            fontSize: 14,
+                            fontWeight: FontWeight.normal),
                       ),
                       shape: CircleBorder(
                           side: BorderSide(color: Colors.transparent)),
@@ -64,7 +65,8 @@ class SellerStoreBodyNav extends StatelessWidget {
                             color: active == enumSellerStore.PRODUCTS
                                 ? AppTheme.colorOrange
                                 : Colors.black,
-                            fontSize: 14),
+                            fontSize: 14,
+                            fontWeight: FontWeight.normal),
                       ),
                       shape: CircleBorder(
                           side: BorderSide(color: Colors.transparent)),
@@ -83,7 +85,8 @@ class SellerStoreBodyNav extends StatelessWidget {
                             color: active == enumSellerStore.RATINGS
                                 ? AppTheme.colorOrange
                                 : Colors.black,
-                            fontSize: 14),
+                            fontSize: 14,
+                            fontWeight: FontWeight.normal),
                       ),
                       shape: CircleBorder(
                           side: BorderSide(color: Colors.transparent)),
