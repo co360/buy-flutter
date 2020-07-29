@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:storeFlutter/components/app-button.dart';
 import 'package:get_it/get_it.dart';
 import 'package:storeFlutter/screens/account/manage-address.dart';
 import 'package:storeFlutter/models/identity/location.dart';
@@ -29,6 +28,7 @@ class AddressView extends StatelessWidget {
     if (_addresses == null) return list;
 
     for (int i = 0; i < _addresses.length; i++) {
+      if (_addresses[i] == null) continue;
       list.add(Container(
           margin: const EdgeInsets.only(top: 20),
           padding: const EdgeInsets.only(bottom: 10),

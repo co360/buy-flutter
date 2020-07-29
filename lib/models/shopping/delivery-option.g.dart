@@ -32,7 +32,12 @@ DeliveryOption _$DeliveryOptionFromJson(Map<String, dynamic> json) {
     ..supplyLocation = json['supplyLocation'] as bool
     ..postcode = json['postcode'] as String
     ..state = json['state'] as String
-    ..city = json['city'] as String;
+    ..city = json['city'] as String
+    ..fullName = json['fullName'] as String
+    ..phoneNo = json['phoneNo'] as String
+    ..locationType = json['locationType'] as String
+    ..defaultShipping = json['defaultShipping'] as bool
+    ..defaultBilling = json['defaultBilling'] as bool;
 }
 
 Map<String, dynamic> _$DeliveryOptionToJson(DeliveryOption instance) =>
@@ -51,6 +56,11 @@ Map<String, dynamic> _$DeliveryOptionToJson(DeliveryOption instance) =>
       'postcode': instance.postcode,
       'state': instance.state,
       'city': instance.city,
+      'fullName': instance.fullName,
+      'phoneNo': instance.phoneNo,
+      'locationType': instance.locationType,
+      'defaultShipping': instance.defaultShipping,
+      'defaultBilling': instance.defaultBilling,
       'portName': instance.portName,
       'portAddress': instance.portAddress,
       'countryName': instance.countryName,
