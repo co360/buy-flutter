@@ -11,7 +11,7 @@ class CompanyProfile {
   List<Document> taxCertificates;
   List<Document> registrationDocuements;
   String businessNature;
-  int paidUpCapital;
+  double paidUpCapital;
   String currencyCode;
   List<Location> locations;
   List<Document> annualReports;

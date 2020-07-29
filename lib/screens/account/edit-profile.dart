@@ -77,7 +77,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 .show(context);
             GetIt.I<ProfileBloc>().add(InitProfileEvent());
           } else if (state is ProfileSuccess) {
-            Navigator.pop(context);
+            Navigator.pop(context, true);
           }
         }
       },

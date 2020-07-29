@@ -22,7 +22,7 @@ CompanyProfile _$CompanyProfileFromJson(Map<String, dynamic> json) {
             e == null ? null : Document.fromJson(e as Map<String, dynamic>))
         ?.toList(),
     json['businessNature'] as String,
-    json['paidUpCapital'] as int,
+    (json['paidUpCapital'] as num)?.toDouble(),
     json['currencyCode'] as String,
     (json['locations'] as List)
         ?.map((e) =>
