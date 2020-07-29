@@ -3,9 +3,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:quiver/strings.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:storeFlutter/models/identity/company-profile.dart';
 import 'package:storeFlutter/models/identity/company.dart';
+import 'package:storeFlutter/models/filter-type.dart';
+import 'package:storeFlutter/blocs/shopping/product-listing-bloc.dart';
 import 'package:storeFlutter/components/shopping/static-search-bar.dart';
 import 'package:storeFlutter/components/shopping/shopping-cart-icon.dart';
 import 'package:storeFlutter/components/shopping/seller-store/seller-store-header.dart';
@@ -21,6 +24,7 @@ import 'package:storeFlutter/components/app-panel.dart';
 import 'package:storeFlutter/util/app-theme.dart';
 import 'package:storeFlutter/util/resource-util.dart';
 import 'package:storeFlutter/util/enums-util.dart';
+import 'package:storeFlutter/services/product-service.dart';
 
 class SellerStore extends StatefulWidget {
   final Company sellerCompany;
@@ -42,6 +46,21 @@ class _SellerStoreState extends State<SellerStore> {
 
   @override
   Widget build(BuildContext context) {
+    Map<String, FilterValue> filter = {
+      "companyId": FilterValue(widget.sellerCompany.id.toString(),
+          widget.sellerCompany.id.toString(), 0)
+    };
+    return BlocProvider<ProductListingBloc>(
+      create: (context) => ProductListingBloc()
+        ..add(ProductListingSearch(ProductListingQueryFilter(
+            query: "", filters: filter != null ? filter : {}))),
+      child: Builder(builder: (context) {
+        return buildChild(context);
+      }),
+    );
+  }
+
+  Widget buildChild(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.colorBg2,
       appBar: PreferredSize(
@@ -91,7 +110,7 @@ class _SellerStoreState extends State<SellerStore> {
             widget.sellerCompany, widget.sellerCompanyProfile);
         break;
       case enumSellerStore.RATINGS:
-        return SellerStoreProducts(
+        return SellerStoreReview(
             widget.sellerCompany, widget.sellerCompanyProfile);
         break;
       default:

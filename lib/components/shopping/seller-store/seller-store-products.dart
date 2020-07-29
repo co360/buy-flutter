@@ -20,23 +20,23 @@ class SellerStoreProducts extends StatelessWidget {
     Key key,
   }) : super(key: key);
 
+  // @override
+  // Widget build(BuildContext context) {
+  //   Map<String, FilterValue> filter = {
+  //     "companyId": FilterValue(
+  //         sellerCompany.id.toString(), sellerCompany.id.toString(), 0)
+  //   };
+  //   return BlocProvider<ProductListingBloc>(
+  //     create: (context) => ProductListingBloc()
+  //       ..add(ProductListingSearch(ProductListingQueryFilter(
+  //           query: "", filters: filter != null ? filter : {}))),
+  //     child: Builder(builder: (context) {
+  //       return buildChild(context);
+  //     }),
+  //   );
+  // }
   @override
   Widget build(BuildContext context) {
-    Map<String, FilterValue> filter = {
-      "companyId": FilterValue(
-          sellerCompany.id.toString(), sellerCompany.id.toString(), 0)
-    };
-    return BlocProvider<ProductListingBloc>(
-      create: (context) => ProductListingBloc()
-        ..add(ProductListingSearch(ProductListingQueryFilter(
-            query: "", filters: filter != null ? filter : {}))),
-      child: Builder(builder: (context) {
-        return buildChild(context);
-      }),
-    );
-  }
-
-  Widget buildChild(BuildContext context) {
     return BlocBuilder<ProductListingBloc, ProductListingState>(
       builder: (context, state) {
         if (state is ProductListingSearchInProgress) {
