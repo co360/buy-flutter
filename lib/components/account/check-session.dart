@@ -59,4 +59,14 @@ class CheckSession extends StatelessWidget {
       ),
     );
   }
+
+  static void checkSession(BuildContext context, Function func) {
+    AuthBloc authBloc = GetIt.I<AuthBloc>();
+
+    if (authBloc.state is LoginSuccess) {
+      func();
+    } else {
+      Navigator.pushNamed(context, '/login');
+    }
+  }
 }

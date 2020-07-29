@@ -10,19 +10,22 @@ class AppPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<Widget> items = getItems();
-    return Padding(
-      padding: EdgeInsets.only(bottom: AppTheme.paddingStandard),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border.all(color: AppTheme.colorGray3),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: getItems(),
-        ),
-      ),
-    );
+
+    return (items.length == 0)
+        ? SizedBox.shrink()
+        : Padding(
+            padding: EdgeInsets.only(bottom: AppTheme.paddingStandard),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(color: AppTheme.colorGray3),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: items,
+              ),
+            ),
+          );
   }
 
   List<Widget> getItems() {
@@ -32,10 +35,10 @@ class AppPanel extends StatelessWidget {
     if (child != null) items.add(child);
     if (children != null) items.addAll(children);
 
-    if (items.isEmpty) return [];
-
     // remove null
     items.removeWhere((element) => element == null);
+
+    if (items.isEmpty) return [];
 
     items = items
         .expand(

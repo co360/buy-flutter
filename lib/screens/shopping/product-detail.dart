@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:quiver/strings.dart';
+import 'package:storeFlutter/components/account/check-session.dart';
 import 'package:storeFlutter/components/app-button.dart';
 import 'package:storeFlutter/components/app-html.dart';
 import 'package:storeFlutter/components/app-label-value.dart';
@@ -105,8 +106,13 @@ class ProductDetailScreen extends StatelessWidget {
                     )
                   ],
                 ),
-                () => showBottomSheet(context,
-                    action: ProductActionModalAction.addToCart),
+                () => CheckSession.checkSession(
+                  context,
+                  () {
+                    ProductDetailScreen.showProductDetailBottomSheet(context,
+                        action: ProductActionModalAction.addToCart);
+                  },
+                ),
                 size: AppButtonSize.small,
                 type: AppButtonType.success,
                 noPadding: true,
@@ -118,8 +124,13 @@ class ProductDetailScreen extends StatelessWidget {
             Expanded(
               child: AppButton(
                 FlutterI18n.translate(context, "shopping.buyNow"),
-                () => showBottomSheet(context,
-                    action: ProductActionModalAction.buyNow),
+                () => CheckSession.checkSession(
+                  context,
+                  () {
+                    ProductDetailScreen.showProductDetailBottomSheet(context,
+                        action: ProductActionModalAction.buyNow);
+                  },
+                ),
                 size: AppButtonSize.small,
                 noPadding: true,
               ),
@@ -130,7 +141,7 @@ class ProductDetailScreen extends StatelessWidget {
     );
   }
 
-  void showBottomSheet(BuildContext context,
+  static void showProductDetailBottomSheet(BuildContext context,
       {ProductActionModalAction action: ProductActionModalAction.both}) {
     showModalBottomSheet<void>(
       context: context,
@@ -531,7 +542,14 @@ class ProductDetailBody extends StatelessWidget {
       widgets.add(
         AppPanel(
           child: buildPanelContentWithAction(
-              ProductVariant(product), () => {showBottomSheet(context)}),
+            ProductVariant(product),
+            () => CheckSession.checkSession(
+              context,
+              () {
+                ProductDetailScreen.showProductDetailBottomSheet(context);
+              },
+            ),
+          ),
         ),
       );
     }
@@ -640,22 +658,6 @@ class ProductDetailBody extends StatelessWidget {
     }
 
     return locationInfo;
-  }
-
-  void showBottomSheet(BuildContext context,
-      {ProductActionModalAction action: ProductActionModalAction.both}) {
-    showModalBottomSheet<void>(
-      context: context,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10.0),
-      ),
-      backgroundColor: Colors.white,
-      builder: (BuildContext context) {
-        return ProductActionModalBody(
-          action: action,
-        );
-      },
-    );
   }
 }
 
