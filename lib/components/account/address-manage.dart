@@ -12,13 +12,15 @@ import 'package:storeFlutter/models/identity/location.dart';
 import 'package:storeFlutter/util/app-theme.dart';
 import 'package:storeFlutter/util/form-util.dart';
 import 'package:storeFlutter/services/storage-service.dart';
-import 'package:storeFlutter/services/address-service.dart';
+import 'package:storeFlutter/components/app-loading-dialog.dart';
 import 'package:country_provider/country_provider.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 
 class AddressManage extends StatelessWidget {
   final GlobalKey<FormBuilderState> _fbAddress = GlobalKey<FormBuilderState>();
   final StorageService storageService = GetIt.I<StorageService>();
+  final BuildContext context;
+  final bool hasDialog;
   final bool isNew;
   final Location location;
   final List<Country> countries;
@@ -30,9 +32,9 @@ class AddressManage extends StatelessWidget {
   final String _city;
   final Function(int, String) setParams;
 
-  String countryName = "";
-
   AddressManage(
+      this.context,
+      this.hasDialog,
       this.isNew,
       this.location,
       this.countries,
@@ -49,15 +51,32 @@ class AddressManage extends StatelessWidget {
     return BlocListener<AddressBloc, AddressState>(
       bloc: GetIt.I<AddressBloc>(),
       listener: (context, state) {
-        print("current state $state");
-        if (state is ManageAddressFailed) {
-          AppNotification(FlutterI18n.translate(context, "error.notExist"))
-              .show(context);
-          GetIt.I<AddressBloc>().add(InitAddressEvent());
-        } else if (state is SetAddressSuccess) {
-          Navigator.pop(context);
-        } else if (state is DeleteAddressSuccess) {
-          Navigator.pop(context);
+        print("[AddressManage] current state $state, $hasDialog");
+        if (state is AddressInProgress) {
+          AppLoadingDialog(context);
+          if (!hasDialog) {
+            setParams(4, "true");
+          }
+        } else if (state is AddressInitial) {
+          if (hasDialog) {
+            Navigator.of(context).pop();
+            setParams(4, "false");
+          }
+        } else {
+          if (hasDialog) {
+            Navigator.of(context).pop();
+            setParams(4, "false");
+          }
+          if (state is ManageAddressFailed) {
+            AppNotification(
+                    FlutterI18n.translate(context, "error.pleaseTryAgain"))
+                .show(context);
+            GetIt.I<AddressBloc>().add(InitAddressEvent());
+          } else if (state is SetAddressSuccess) {
+            Navigator.pop(context);
+          } else if (state is DeleteAddressSuccess) {
+            Navigator.pop(context);
+          }
         }
       },
       child: FormBuilder(
@@ -210,7 +229,7 @@ class AddressManage extends StatelessWidget {
                     validators: [
                       FormUtil.required(context),
                     ],
-                    keyboardType: TextInputType.text,
+                    keyboardType: TextInputType.number,
                   ),
                   SizedBox(height: 10),
                   FormBuilderTextField(
@@ -427,5 +446,41 @@ class AddressManage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  pop() {
+    showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return WillPopScope(
+            onWillPop: () {},
+            child: new AlertDialog(
+              content: ConstrainedBox(
+                constraints: BoxConstraints(maxHeight: 200),
+                child: Column(
+                  children: <Widget>[
+                    CircularProgressIndicator(),
+                    Text("Please wait...")
+                  ],
+                ),
+              ),
+              actions: <Widget>[
+                new FlatButton(
+                  onPressed: () {
+                    //Function called
+                  },
+                  child: new Text('Ok Done!'),
+                ),
+                new FlatButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: new Text('Go Back'),
+                ),
+              ],
+            ),
+          );
+        });
   }
 }

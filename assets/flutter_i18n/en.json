@@ -13,7 +13,8 @@
     "passwordNotMatch": "Passwords do not match.",
     "passwordSame": "Cannot use the same password.",
     "oldPasswordInvalid": "Old Password is invalid.",
-    "invalidVerificationCode": "Invalid verification code."
+    "invalidVerificationCode": "Invalid verification code.",
+	"pleaseTryAgain": "Please try again"
   },
   "general": {
     "pleaseWait" : "Please Wait...",

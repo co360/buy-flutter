@@ -9,7 +9,8 @@
     "passwordNotMatch": "",
     "passwordSame": "Kata laluan telah digunakan.",
     "oldPasswordInvalid": "Kata laluan lama salah.",
-    "invalidVerificationCode": "Kod verifikasi salah."
+    "invalidVerificationCode": "Kod verifikasi salah.",
+	"pleaseTryAgain" : "Sila cuba lagi"
   },
   "general": {
     "pleaseWait" : "Sila Tunggu...",

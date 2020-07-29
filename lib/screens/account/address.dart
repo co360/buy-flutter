@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:get_it/get_it.dart';
 import 'package:storeFlutter/blocs/account/address-bloc.dart';
@@ -18,7 +17,6 @@ class AddressScreen extends StatefulWidget {
 }
 
 class _AddressScreenState extends State<AddressScreen> {
-  // final GlobalKey<FormBuilderState> _fbKey = GlobalKey<FormBuilderState>();
   final StorageService storageService = GetIt.I<StorageService>();
   List<Location> lists = [];
 

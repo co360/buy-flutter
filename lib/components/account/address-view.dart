@@ -64,7 +64,7 @@ class AddressView extends StatelessWidget {
                       child: FlatButton(
                         textColor: AppTheme.colorLink,
                         onPressed: () => {
-                          Navigator.push(
+                          Navigator.pushReplacement(
                             _context,
                             CupertinoPageRoute(
                               builder: (context) =>

@@ -10,50 +10,58 @@ import 'package:country_provider/country_provider.dart';
 class AddressBloc extends Bloc<AddressEvent, AddressState> {
   final AddressService _addressService = GetIt.I<AddressService>();
 
-  AddressBloc() : super(AddressInitial(null));
+  AddressBloc() : super(AddressInitial());
 
   @override
   Stream<AddressState> mapEventToState(AddressEvent event) async* {
-    yield AddressInProgress();
-    print("EVENTTTTTTTTTTTT $event");
     try {
       if (event is GetAddressEvent) {
+        yield AddressInProgress();
         List<Location> status = await _addressService.getAddress(event.id);
         if (status != null) {
           yield GetAddressSuccess(status);
         }
       } else if (event is SetAddressEvent) {
+        yield AddressInProgress();
         List<Location> status = await _addressService.setAddress(event.body);
         if (status != null) {
           yield SetAddressSuccess(status);
         }
       } else if (event is DeleteAddressEvent) {
+        yield AddressInProgress();
         List<Location> status = await _addressService.deleteAddress(event.body);
         if (status != null) {
           yield DeleteAddressSuccess(status);
         }
       } else if (event is GetAddressByIDEvent) {
+        yield AddressInProgress();
         Location status = await _addressService.getAddressByID(event.id);
         List<Country> statusCountries = await _addressService.getCountryList();
+        List<LabelValue> statusStates =
+            await _addressService.getStateList(status.countryCode);
+        List<LabelValue> statusCities =
+            await _addressService.getCityList(status.state);
         if (status != null) {
-          yield GetAddressByIDSuccess(status, statusCountries);
+          yield GetAddressByIDSuccess(
+              status, statusCountries, statusStates, statusCities);
         }
       } else if (event is GetCityListEvent) {
+        yield AddressInProgress();
         List<LabelValue> status =
             await _addressService.getCityList(event.state);
         yield GetCityListSuccess(status);
       } else if (event is GetStateListEvent) {
+        yield AddressInProgress();
         List<LabelValue> status =
             await _addressService.getStateList(event.country);
-        print("GetStateListEvent");
         print(status);
         yield GetStateListSuccess(status);
       } else if (event is GetCountryListEvent) {
-        print("call this1");
+        yield AddressInProgress();
         List<Country> status = await _addressService.getCountryList();
-        print("call this2");
         yield GetCountryListSuccess(status);
-        print("call this3");
+      } else {
+        yield AddressInitial();
       }
     } catch (e) {
       print("Error");
@@ -71,13 +79,7 @@ abstract class AddressState extends Equatable {
   List<Object> get props => [];
 }
 
-class AddressInitial extends AddressState {
-  final List<Country> countries;
-  AddressInitial(this.countries);
-
-  @override
-  List<Object> get props => [countries];
-}
+class AddressInitial extends AddressState {}
 
 class AddressInProgress extends AddressState {}
 
@@ -92,10 +94,12 @@ class GetAddressSuccess extends AddressState {
 class GetAddressByIDSuccess extends AddressState {
   final Location address;
   final List<Country> countries;
-  GetAddressByIDSuccess(this.address, this.countries);
+  final List<LabelValue> states;
+  final List<LabelValue> cities;
+  GetAddressByIDSuccess(this.address, this.countries, this.states, this.cities);
 
   @override
-  List<Object> get props => [address, countries];
+  List<Object> get props => [address, countries, this.states, this.cities];
 }
 
 class GetCityListSuccess extends AddressState {

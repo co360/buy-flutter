@@ -35,6 +35,7 @@ class _ManageAddressScreenState extends State<ManageAddressScreen> {
   String selectCountry = "None";
   String selectState = "None";
   String selectCity = "None";
+  bool hasDialog = false;
 
   @override
   void initState() {
@@ -64,14 +65,31 @@ class _ManageAddressScreenState extends State<ManageAddressScreen> {
               builder: (context, state) {
                 print("current state $state");
                 switch (state.runtimeType) {
-                  case GetCountryListSuccess:
+                  case GetAddressByIDSuccess:
+                    {
+                      print("State GetAddressByIDSuccess");
+                      print(state.props);
+                      location = state.props[0];
+                      countries = state.props[1];
+                      states = state.props[2];
+                      cities = state.props[3];
+                      selectCountry = location.countryCode;
+                      selectState = location.state;
+                      selectCity = location.city;
+                      isHome = location.name == "Home" ? true : false;
+                      GetIt.I<AddressBloc>().add(InitAddressEvent());
+                      break;
+                    }
+                  case GetCountryListSuccess: // Get Country
                     {
                       print("State GetCountryListSuccess");
                       print("call this4");
                       print(state.props);
                       countries = state.props[0];
                       selectCountry = "MY";
-                      if (states.length == 0 && selectCountry != null) {
+                      if (states.length == 0 &&
+                          selectCountry != null &&
+                          selectCountry != "None") {
                         GetIt.I<AddressBloc>()
                             .add(GetStateListEvent(selectCountry));
                       } else {
@@ -80,29 +98,14 @@ class _ManageAddressScreenState extends State<ManageAddressScreen> {
 
                       break;
                     }
-                  case GetAddressByIDSuccess:
-                    {
-                      print("State GetAddressByIDSuccess");
-                      print(state.props);
-                      location = state.props[0];
-                      countries = state.props[1];
-                      selectCountry = location.countryCode;
-                      selectState = location.state;
-                      selectCity = location.city;
-                      isHome = location.name == "Home" ? true : false;
-                      if (states.length == 0 && selectCountry != null) {
-                        GetIt.I<AddressBloc>()
-                            .add(GetStateListEvent(selectCountry));
-                      } else {
-                        GetIt.I<AddressBloc>().add(InitAddressEvent());
-                      }
-                      break;
-                    }
-                  case GetStateListSuccess:
+
+                  case GetStateListSuccess: // Get State
                     {
                       print(state.props);
                       states = state.props[0];
-                      if (cities.length == 0 && selectState != null) {
+                      if (cities.length == 0 &&
+                          selectState != null &&
+                          selectState != "None") {
                         GetIt.I<AddressBloc>()
                             .add(GetCityListEvent(selectState));
                       } else {
@@ -110,7 +113,7 @@ class _ManageAddressScreenState extends State<ManageAddressScreen> {
                       }
                       break;
                     }
-                  case GetCityListSuccess:
+                  case GetCityListSuccess: // Get City
                     {
                       print(state.props);
                       cities = state.props[0];
@@ -124,6 +127,8 @@ class _ManageAddressScreenState extends State<ManageAddressScreen> {
                 print(selectState);
                 print(selectCity);
                 return AddressManage(
+                    context,
+                    hasDialog,
                     widget.id != null && widget.id == 0,
                     location,
                     countries,
@@ -169,6 +174,11 @@ class _ManageAddressScreenState extends State<ManageAddressScreen> {
       case 3:
         setState(() {
           isHome = param == "true" ? true : false;
+        });
+        break;
+      case 4:
+        setState(() {
+          hasDialog = param == "true" ? true : false;
         });
         break;
       default:
