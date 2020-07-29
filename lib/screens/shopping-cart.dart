@@ -78,6 +78,12 @@ class ShoppingCartBody extends StatelessWidget {
           SizedBox(
             height: 30,
           ),
+          FlatButton(
+            child: Text("RELOAD - to be removed"),
+            onPressed: () {
+              GetIt.I<SalesCartBloc>().add(SalesCartRefresh());
+            },
+          ),
           Text(
             FlutterI18n.translate(context, "cart.shoppingCartEmpty"),
             textAlign: TextAlign.center,
@@ -117,6 +123,13 @@ class ShoppingCartBodyWithContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text("not empty really");
+    return Column(
+      children: <Widget>[
+        Text("not empty really"),
+        ...salesCart.cartDocs.map((e) {
+          return Text(e.quoteItems[0].product.name);
+        }).toList()
+      ],
+    );
   }
 }

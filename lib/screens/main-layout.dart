@@ -4,6 +4,7 @@ import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:storeFlutter/blocs/navigation/bottom-navigation-bloc.dart';
+import 'package:storeFlutter/blocs/shopping/sales-cart-bloc.dart';
 import 'package:storeFlutter/components/navigator/custom-bottom-app-bar.dart';
 import 'package:storeFlutter/util/app-theme.dart';
 
@@ -43,6 +44,7 @@ class MainLayout extends StatelessWidget {
             iconData: FontAwesomeIcons.lightShoppingCart,
             text:
                 FlutterI18n.translate(context, 'screen.bottomNavigation.cart'),
+            stacked: buildShoppingCartStacked(),
           ),
           CustomBottomAppBarItem(
             iconData: FontAwesomeIcons.lightUserCircle,
@@ -51,6 +53,43 @@ class MainLayout extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  BlocBuilder<SalesCartBloc, SalesCartState> buildShoppingCartStacked() {
+    return BlocBuilder<SalesCartBloc, SalesCartState>(
+      bloc: GetIt.I<SalesCartBloc>(),
+      builder: (context, state) {
+        int total = 0;
+        if (state is SalesCartRefreshComplete) {
+          total = state.cart.cartDocs.length;
+        }
+
+        if (total > 0) {
+          return Positioned(
+            right: 0,
+            child: Container(
+              decoration: BoxDecoration(
+                color: AppTheme.colorOrange,
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+              ),
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 2, horizontal: 6.0),
+                child: Text(
+                  total.toString(),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ),
+          );
+        } else {
+          return SizedBox.shrink();
+        }
+      },
     );
   }
 }
