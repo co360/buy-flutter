@@ -76,7 +76,7 @@ class _ManageAddressScreenState extends State<ManageAddressScreen> {
                       selectCountry = location.countryCode;
                       selectState = location.state;
                       selectCity = location.city;
-                      isHome = location.name == "Home" ? true : false;
+                      isHome = location.locationType == "HOME" ? true : false;
                       GetIt.I<AddressBloc>().add(InitAddressEvent());
                       break;
                     }
