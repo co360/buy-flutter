@@ -68,12 +68,17 @@ class SellerStoreOverview extends StatelessWidget {
             topDivider: true),
         AppListTileTwoCols(
             FlutterI18n.translate(context, "shopping.sellerStorePage.location"),
-            sellerCompany.address1 == null
-                ? ""
-                : (sellerCompany.address1 +
-                    (sellerCompany.countryName == null
-                        ? ""
-                        : ", " + sellerCompany.countryName))),
+            (sellerCompany.address1 == null ? "" : sellerCompany.address1) +
+                (sellerCompany.city == null ? "" : ", " + sellerCompany.city) +
+                (sellerCompany.postcode == null
+                    ? ""
+                    : ", " + sellerCompany.postcode) +
+                (sellerCompany.state == null
+                    ? ""
+                    : ", " + sellerCompany.state) +
+                (sellerCompany.countryName == null
+                    ? ""
+                    : ", " + sellerCompany.countryName)),
         AppListTileTwoCols(
             FlutterI18n.translate(
                 context, "shopping.sellerStorePage.totalEmployees"),
