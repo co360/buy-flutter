@@ -26,8 +26,8 @@ class Company {
   String yearRegistered;
 
 //  suppliers: Company[];
-//  businessType: string[];
-//  businessActivity: string[];
+  List<String> businessType;
+  List<String> businessActivity;
 //  businessModel;
 //  subsidiaries: Subsidiary[] = [];
 //  productCategories: string[] = [];
@@ -60,6 +60,8 @@ class Company {
       this.industry,
       this.totalEmployees,
       this.yearRegistered,
+      this.businessType,
+      this.businessActivity,
       this.postcode,
       this.state,
       this.city,

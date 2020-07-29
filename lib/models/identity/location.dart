@@ -29,7 +29,7 @@ class Location {
   String countryName;
 
   Location(
-      this.id,
+      {this.id,
       this.name,
       this.code,
       this.latitude,
@@ -49,7 +49,7 @@ class Location {
       this.defaultShipping,
       this.defaultBilling,
       this.portName,
-      this.countryName);
+      this.countryName});
 
   factory Location.fromJson(Map<String, dynamic> json) =>
       _$LocationFromJson(json);

@@ -24,10 +24,11 @@ import 'package:storeFlutter/util/app-theme.dart';
 
 // TODO to handle/test session scenario
 // 1. [DONE] no token and login as guest
-// 2. got token but invalid/expired.. can renew and event set to LoginSuccess after renew
-// 3. got token but invalid/expired.. cannot renew and Login as guest.. set event as LogoutSuccess
-// 4. got token but invalid/expired... cannot renew and cannot login as guest.. set event as LoginFailed
+// 2. [DONE] got token but invalid/expired.. can renew and event set to LoginSuccess after renew
+// 3. [DONE] got token but invalid/expired.. cannot renew and Login as guest.. set event as LogoutSuccess
+// 4. [DONE] got token but invalid/expired... cannot renew and cannot login as guest.. set event as LoginFailed
 
+// TODO ResponseUnwrapperInterceptor to parse massage automatically like angular
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -118,15 +119,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
 class RootContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -141,93 +133,6 @@ class RootContainer extends StatelessWidget {
         ];
 
         return MainLayout(allScreens);
-      },
-    );
-  }
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-//  Locale currentLang;
-  int _counter = 0;
-
-//  @override
-//  void initState() {
-//    super.initState();
-//    Future.delayed(Duration.zero, () async {
-//      setState(() {
-//        currentLang = FlutterI18n.currentLocale(context);
-//      });
-//    });
-//  }
-
-//  changeLanguage() async {
-//    currentLang =
-//        currentLang.languageCode == 'en' ? Locale('ms') : Locale('en');
-//    await FlutterI18n.refresh(context, currentLang);
-//    setState(() {});
-//  }
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<LanguageBloc, LanguageState>(
-      bloc: GetIt.I<LanguageBloc>(),
-      builder: (context, state) {
-        return Scaffold(
-          appBar: AppBar(
-            title: I18nText(
-              "label.main",
-              translationParams: {"user": "Yoke Harn"},
-            ),
-          ),
-          body: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                I18nText("shopping.productDetail.productInformation"),
-                RaisedButton(
-                  key: Key('changeLanguage'),
-                  onPressed: () async {
-                    GetIt.I<LanguageBloc>().add(SwitchLanguage(context));
-//                    await GetIt.I<LanguageUtil>().switchLanguage(context);
-//                    setState(() {});
-//                    Scaffold.of(context).showSnackBar(SnackBar(
-//                      content: Text(FlutterI18n.translate(
-//                          context, "button.toastMessage")),
-//                    ));
-                  },
-//              onPressed: () async {
-//                await changeLanguage();
-//                Scaffold.of(context).showSnackBar(SnackBar(
-//                  content: Text(
-//                      FlutterI18n.translate(context, "button.toastMessage")),
-//                ));
-//              },
-                  child: Text(
-                    FlutterI18n.translate(context, "button.label.language"),
-                  ),
-                ),
-                Text(
-                  'You have pushed the button this many times:',
-                ),
-                Text(
-                  '$_counter',
-                  style: Theme.of(context).textTheme.headline4,
-                ),
-              ],
-            ),
-          ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: _incrementCounter,
-            tooltip: 'Increment',
-            child: Icon(Icons.add),
-          ),
-        );
       },
     );
   }

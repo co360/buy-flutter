@@ -34,11 +34,14 @@ class AppPanel extends StatelessWidget {
 
     if (items.isEmpty) return [];
 
+    // remove null
+    items.removeWhere((element) => element == null);
+
     items = items
         .expand(
           (e) => [
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+              padding: EdgeInsets.all(15),
               child: e,
             ),
             border

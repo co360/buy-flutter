@@ -8,7 +8,7 @@ class LocalDate {
   int month;
   int day;
 
-  LocalDate(this.year, this.month, this.day);
+  LocalDate({this.year, this.month, this.day});
 
   factory LocalDate.fromJson(Map<String, dynamic> json) =>
       _$LocalDateFromJson(json);
@@ -22,7 +22,7 @@ class LocalTime {
   int minute;
   int second;
 
-  LocalTime(this.hour, this.minute, this.second);
+  LocalTime({this.hour, this.minute, this.second});
 
   factory LocalTime.fromJson(Map<String, dynamic> json) =>
       _$LocalTimeFromJson(json);
@@ -41,10 +41,23 @@ class LocalDateTime {
   int second;
 
   LocalDateTime(
-      this.year, this.month, this.day, this.hour, this.minute, this.second);
+      {this.year, this.month, this.day, this.hour, this.minute, this.second});
 
   factory LocalDateTime.fromJson(Map<String, dynamic> json) =>
       _$LocalDateTimeFromJson(json);
 
   Map<String, dynamic> toJson() => _$LocalDateTimeToJson(this);
+}
+
+@JsonSerializable()
+class LocalDateRange {
+  LocalDate from;
+  LocalDate to;
+
+  LocalDateRange({this.from, this.to});
+
+  factory LocalDateRange.fromJson(Map<String, dynamic> json) =>
+      _$LocalDateRangeFromJson(json);
+
+  Map<String, dynamic> toJson() => _$LocalDateRangeToJson(this);
 }

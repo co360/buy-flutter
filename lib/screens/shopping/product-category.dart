@@ -7,7 +7,9 @@ import 'package:storeFlutter/components/shopping/category-lists.dart';
 import 'package:storeFlutter/components/button/grid-button-left.dart';
 import 'package:storeFlutter/components/button/grid-button-top.dart';
 import 'package:storeFlutter/blocs/shopping/product-category-bloc.dart';
+import 'package:storeFlutter/models/filter-type.dart';
 import 'package:storeFlutter/models/query-result-category.dart';
+import 'package:storeFlutter/screens/shopping/product-listing.dart';
 
 class ProductCategoryScreen extends StatefulWidget {
   @override
@@ -22,6 +24,8 @@ class _ProductCategoryScreenState extends State<ProductCategoryScreen> {
     GetIt.I<ProductCategoryBloc>().add(LoadProductCategoryEvent(0));
     super.initState();
   }
+
+  ProductCategoryLists cacheState;
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +47,7 @@ class _ProductCategoryScreenState extends State<ProductCategoryScreen> {
                         bloc: GetIt.I<ProductCategoryBloc>(),
                         builder: (context, state) {
                           if (state is ProductCategoryLists) {
+                            cacheState = state;
                             return Column(
                               children: _generateDynamicList(state.categories),
                             );
@@ -65,6 +70,10 @@ class _ProductCategoryScreenState extends State<ProductCategoryScreen> {
                       children: <Widget>[
                         GridButtonTop(cb: () {
                           print("Select top button");
+                          int index = cacheState.layerOneIndex >= 0 ? cacheState.layerOneIndex : 0;
+                          Navigator.pushNamedAndRemoveUntil(
+                              context, '/product-listing', ModalRoute.withName('/'),
+                              arguments: ProductListingScreenParams(filter: {"CATEGORY":FilterValue(cacheState.categories.layer1Category[index].name,cacheState.categories.layer1Category[index].code,0)}));
                         }),
                         CategoryLists()
                       ],

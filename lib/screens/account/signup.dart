@@ -5,15 +5,11 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
-import 'package:storeFlutter/blocs/account/auth-bloc.dart';
 import 'package:storeFlutter/blocs/account/signup-bloc.dart';
 import 'package:storeFlutter/components/app-button.dart';
 import 'package:storeFlutter/components/app-card.dart';
-import 'package:storeFlutter/components/app-loading-dialog.dart';
 import 'package:storeFlutter/components/app-notification.dart';
-import 'package:storeFlutter/models/auth/login-body.dart';
 import 'package:storeFlutter/models/identity/signup-body.dart';
-import 'package:storeFlutter/services/account-service.dart';
 import 'package:storeFlutter/util/app-theme.dart';
 import 'package:storeFlutter/util/form-util.dart';
 
@@ -134,7 +130,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
 //        return true;
 //      },
       listener: (context, state) {
-
         if (state is SignUpInProgress) {
 //          dialog = AppLoadingDialog(context);
 //          AppLoadingDialog(context);
@@ -201,7 +196,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     FormUtil.required(context),
                     FormUtil.email(context),
                   ],
-
                   keyboardType: TextInputType.emailAddress,
                 ),
                 FormBuilderTextField(
@@ -234,7 +228,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                   validators: [
                     FormUtil.required(context),
-                    FormUtil.match(context, _fbKey.currentState, 'password', 'error.passwordNotMatch')
+                    FormUtil.match(context, _fbKey.currentState, 'password',
+                        'error.passwordNotMatch')
                   ],
                 ),
                 Padding(
@@ -297,7 +292,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 print(body);
 
                 GetIt.I<SignUpBloc>().add(RegisterEvent(body, context));
-
               } else {
                 print(_fbKey.currentState.value);
                 print('validation failed');
@@ -372,7 +366,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
             child: Column(
               children: <Widget>[
                 Text(
-                  FlutterI18n.translate(context, "account.registration.sentRegistrationEmail"),
+                  FlutterI18n.translate(
+                      context, "account.registration.sentRegistrationEmail"),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 16.0,
@@ -380,7 +375,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                 ),
                 Text(
-                  FlutterI18n.translate(context, "account.registration.checkRegistrationEmail"),
+                  FlutterI18n.translate(
+                      context, "account.registration.checkRegistrationEmail"),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 16.0,

@@ -22,7 +22,8 @@ class ProductCategoryBloc
             await _productCategory.loadProductCategory(event.id);
         print("ProductCategoryBloc");
         print(result);
-        yield ProductCategoryLists(result);
+        int index = result.layer1Category.indexWhere((c) => c.id == event.id);
+        yield ProductCategoryLists(result, index);
       } catch (_, stacktrace) {
         print(stacktrace);
         yield ProductCategoryError(_.toString());
@@ -33,7 +34,8 @@ class ProductCategoryBloc
             await _productCategory.switchProductCategory(event.id);
         print("ProductCategoryBloc");
         print(result);
-        yield ProductCategoryLists(result);
+        int index = result.layer1Category.indexWhere((c) => c.id == event.id);
+        yield ProductCategoryLists(result, index);
       } catch (_, stacktrace) {
         print(stacktrace);
         yield ProductCategoryError(_.toString());
@@ -52,8 +54,9 @@ class ProductCategoryInitial extends ProductCategoryState {}
 
 class ProductCategoryLists extends ProductCategoryState {
   final QueryResultCategory categories;
+  final int layerOneIndex;
 
-  ProductCategoryLists(this.categories);
+  ProductCategoryLists(this.categories, this.layerOneIndex);
 
   @override
   List<Object> get props => [categories];

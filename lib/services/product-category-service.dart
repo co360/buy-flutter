@@ -44,6 +44,7 @@ class ProductCategoryService extends BaseRestService {
         layer1Categories.add(Layer1CategoryLists(
             data.parentCategory.id,
             data.parentCategory.name,
+            data.parentCategory.code,
             data.parentCategory.id == activeId ? true : false));
       }
     }
@@ -55,9 +56,9 @@ class ProductCategoryService extends BaseRestService {
       if (data.parentCategory != null && data.parentCategory.id == activeId) {
         // Add itself to the 3rd layer
         List<Layer3CategoryLists> layer3Category = [];
-        layer3Category.add(Layer3CategoryLists(data.id, data.name));
+        layer3Category.add(Layer3CategoryLists(data.id, data.name, data.code));
         layer2Categories
-            .add(Layer2CategoryLists(data.id, data.name, layer3Category));
+            .add(Layer2CategoryLists(data.id, data.name, data.code, layer3Category));
       }
     }
 
@@ -70,7 +71,7 @@ class ProductCategoryService extends BaseRestService {
           data.parentCategory.parentCategory.id == activeId) {
         for (var c in layer2Categories) {
           if (c.id == data.parentCategory.id) {
-            c.layer3Category.add(Layer3CategoryLists(data.id, data.name));
+            c.layer3Category.add(Layer3CategoryLists(data.id, data.name, data.code));
             break;
           }
         }
@@ -87,7 +88,7 @@ class ProductCategoryService extends BaseRestService {
           data.parentCategory.parentCategory.parentCategory.id == activeId) {
         for (var c in layer2Categories) {
           if (c.id == data.parentCategory.parentCategory.id) {
-            c.layer3Category.add(Layer3CategoryLists(data.id, data.name));
+            c.layer3Category.add(Layer3CategoryLists(data.id, data.name, data.code));
             break;
           }
         }

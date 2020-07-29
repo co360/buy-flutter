@@ -106,6 +106,14 @@ class Product {
       this.length,
       this.warrantyType);
 
+  bool get hasVariants {
+    if (this.category != null && this.category.variantFamily != null) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   factory Product.fromJson(Map<String, dynamic> json) =>
       _$ProductFromJson(json);
 

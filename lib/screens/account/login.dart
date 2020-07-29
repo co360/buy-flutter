@@ -6,6 +6,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:get_it/get_it.dart';
 import 'package:storeFlutter/blocs/account/auth-bloc.dart';
+import 'package:storeFlutter/blocs/navigation/bottom-navigation-bloc.dart';
 import 'package:storeFlutter/components/app-button.dart';
 import 'package:storeFlutter/components/app-card.dart';
 import 'package:storeFlutter/components/app-loading-dialog.dart';
@@ -123,8 +124,10 @@ class _LoginScreenState extends State<LoginScreen> {
           }
 
           if (state is LoginSuccess) {
-            // TODO should navigate back to the home page
             Navigator.pop(context);
+
+            // navigate back to the home page
+            GetIt.I<BottomNavigationBloc>().add(0);
           } else if (state is LoginFailure) {
             AppNotification(
                     FlutterI18n.translate(context, "error.${state.error}"))

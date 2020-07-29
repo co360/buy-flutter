@@ -8,9 +8,9 @@ part of 'date-type.dart';
 
 LocalDate _$LocalDateFromJson(Map<String, dynamic> json) {
   return LocalDate(
-    json['year'] as int,
-    json['month'] as int,
-    json['day'] as int,
+    year: json['year'] as int,
+    month: json['month'] as int,
+    day: json['day'] as int,
   );
 }
 
@@ -22,9 +22,9 @@ Map<String, dynamic> _$LocalDateToJson(LocalDate instance) => <String, dynamic>{
 
 LocalTime _$LocalTimeFromJson(Map<String, dynamic> json) {
   return LocalTime(
-    json['hour'] as int,
-    json['minute'] as int,
-    json['second'] as int,
+    hour: json['hour'] as int,
+    minute: json['minute'] as int,
+    second: json['second'] as int,
   );
 }
 
@@ -36,12 +36,12 @@ Map<String, dynamic> _$LocalTimeToJson(LocalTime instance) => <String, dynamic>{
 
 LocalDateTime _$LocalDateTimeFromJson(Map<String, dynamic> json) {
   return LocalDateTime(
-    json['year'] as int,
-    json['month'] as int,
-    json['day'] as int,
-    json['hour'] as int,
-    json['minute'] as int,
-    json['second'] as int,
+    year: json['year'] as int,
+    month: json['month'] as int,
+    day: json['day'] as int,
+    hour: json['hour'] as int,
+    minute: json['minute'] as int,
+    second: json['second'] as int,
   );
 }
 
@@ -53,4 +53,21 @@ Map<String, dynamic> _$LocalDateTimeToJson(LocalDateTime instance) =>
       'hour': instance.hour,
       'minute': instance.minute,
       'second': instance.second,
+    };
+
+LocalDateRange _$LocalDateRangeFromJson(Map<String, dynamic> json) {
+  return LocalDateRange(
+    from: json['from'] == null
+        ? null
+        : LocalDate.fromJson(json['from'] as Map<String, dynamic>),
+    to: json['to'] == null
+        ? null
+        : LocalDate.fromJson(json['to'] as Map<String, dynamic>),
+  );
+}
+
+Map<String, dynamic> _$LocalDateRangeToJson(LocalDateRange instance) =>
+    <String, dynamic>{
+      'from': instance.from,
+      'to': instance.to,
     };
