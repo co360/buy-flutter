@@ -56,17 +56,12 @@ class SellerStoreHeader extends StatelessWidget {
   Widget getSellerLogo() {
     return Padding(
       padding: EdgeInsets.only(left: 10, right: 10),
-      child: SizedBox(
-        width: 50,
-        height: 50,
-        child: Container(
-            child: ClipRRect(
-          borderRadius: BorderRadius.circular(50.0),
-          child: Image.network(
-            ResourceUtil.fullPath(_company.image.imageUrl),
-            fit: BoxFit.fill,
-          ),
-        )),
+      child: CircleAvatar(
+        backgroundImage: NetworkImage(
+          ResourceUtil.fullPath(_company.image.imageUrl),
+        ),
+        radius: 25,
+        backgroundColor: Colors.transparent,
       ),
     );
   }

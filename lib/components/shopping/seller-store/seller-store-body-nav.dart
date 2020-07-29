@@ -1,13 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
-import 'package:storeFlutter/screens/shopping/seller-store.dart';
 import 'package:storeFlutter/util/app-theme.dart';
 import 'package:storeFlutter/util/enums-util.dart';
 
 class SellerStoreBodyNav extends StatelessWidget {
-  final Function(enumSelections) cb;
-  final enumSelections active;
+  final Function(enumSellerStore) cb;
+  final enumSellerStore active;
 
   const SellerStoreBodyNav(
     this.cb,
@@ -19,7 +18,17 @@ class SellerStoreBodyNav extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Container(
-            color: Colors.white,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 2,
+                  blurRadius: 4,
+                  offset: Offset(0, 3), // changes position of shadow
+                ),
+              ],
+            ),
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
@@ -27,13 +36,13 @@ class SellerStoreBodyNav extends StatelessWidget {
                     width: MediaQuery.of(context).size.width * 0.30,
                     child: FlatButton(
                       textColor: Colors.black,
-                      onPressed: () => cb(enumSelections.OVERVIEW),
+                      onPressed: () => cb(enumSellerStore.OVERVIEW),
                       child: Text(
                         FlutterI18n.translate(
                             context, "shopping.sellerStorePage.overview"),
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                            color: active == enumSelections.OVERVIEW
+                            color: active == enumSellerStore.OVERVIEW
                                 ? AppTheme.colorOrange
                                 : Colors.black,
                             fontSize: 14),
@@ -46,13 +55,13 @@ class SellerStoreBodyNav extends StatelessWidget {
                     width: MediaQuery.of(context).size.width * 0.30,
                     child: FlatButton(
                       textColor: Colors.black,
-                      onPressed: () => cb(enumSelections.PRODUCTS),
+                      onPressed: () => cb(enumSellerStore.PRODUCTS),
                       child: Text(
                         FlutterI18n.translate(
                             context, "shopping.sellerStorePage.products"),
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                            color: active == enumSelections.PRODUCTS
+                            color: active == enumSellerStore.PRODUCTS
                                 ? AppTheme.colorOrange
                                 : Colors.black,
                             fontSize: 14),
@@ -65,13 +74,13 @@ class SellerStoreBodyNav extends StatelessWidget {
                     width: MediaQuery.of(context).size.width * 0.30,
                     child: FlatButton(
                       textColor: Colors.black,
-                      onPressed: () => cb(enumSelections.RATINGS),
+                      onPressed: () => cb(enumSellerStore.RATINGS),
                       child: Text(
                         FlutterI18n.translate(
                             context, "shopping.sellerStorePage.ratings"),
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                            color: active == enumSelections.RATINGS
+                            color: active == enumSellerStore.RATINGS
                                 ? AppTheme.colorOrange
                                 : Colors.black,
                             fontSize: 14),

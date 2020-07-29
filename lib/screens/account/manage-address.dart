@@ -11,6 +11,7 @@ import 'package:storeFlutter/models/identity/location.dart';
 import 'package:storeFlutter/services/storage-service.dart';
 import 'package:storeFlutter/services/address-service.dart';
 import 'package:country_provider/country_provider.dart';
+import 'package:storeFlutter/util/enums-util.dart';
 
 class ManageAddressScreen extends StatefulWidget {
   final int id;
@@ -145,9 +146,9 @@ class _ManageAddressScreenState extends State<ManageAddressScreen> {
     );
   }
 
-  void _setParams(int sel, var param) {
+  void _setParams(enumManageAddress sel, var param) {
     switch (sel) {
-      case 0:
+      case enumManageAddress.COUNTRY:
         if (param != selectCountry) {
           setState(() {
             selectCountry = param;
@@ -156,7 +157,7 @@ class _ManageAddressScreenState extends State<ManageAddressScreen> {
           });
         }
         break;
-      case 1:
+      case enumManageAddress.STATE:
         if (param != selectState) {
           setState(() {
             selectState = param;
@@ -164,19 +165,19 @@ class _ManageAddressScreenState extends State<ManageAddressScreen> {
           });
         }
         break;
-      case 2:
+      case enumManageAddress.CITY:
         if (param != selectCity) {
           setState(() {
             selectCity = param;
           });
         }
         break;
-      case 3:
+      case enumManageAddress.HOME:
         setState(() {
           isHome = param == "true" ? true : false;
         });
         break;
-      case 4:
+      case enumManageAddress.DIALOG:
         setState(() {
           hasDialog = param == "true" ? true : false;
         });

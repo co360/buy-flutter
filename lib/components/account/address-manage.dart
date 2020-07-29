@@ -15,6 +15,7 @@ import 'package:storeFlutter/services/storage-service.dart';
 import 'package:storeFlutter/components/app-loading-dialog.dart';
 import 'package:country_provider/country_provider.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:storeFlutter/util/enums-util.dart';
 
 class AddressManage extends StatelessWidget {
   final GlobalKey<FormBuilderState> _fbAddress = GlobalKey<FormBuilderState>();
@@ -30,7 +31,7 @@ class AddressManage extends StatelessWidget {
   final String _country;
   final String _state;
   final String _city;
-  final Function(int, String) setParams;
+  final Function(enumManageAddress, String) setParams;
 
   AddressManage(
       this.context,
@@ -55,17 +56,17 @@ class AddressManage extends StatelessWidget {
         if (state is AddressInProgress) {
           AppLoadingDialog(context);
           if (!hasDialog) {
-            setParams(4, "true");
+            setParams(enumManageAddress.DIALOG, "true");
           }
         } else if (state is AddressInitial) {
           if (hasDialog) {
             Navigator.of(context).pop();
-            setParams(4, "false");
+            setParams(enumManageAddress.DIALOG, "false");
           }
         } else {
           if (hasDialog) {
             Navigator.of(context).pop();
-            setParams(4, "false");
+            setParams(enumManageAddress.DIALOG, "false");
           }
           if (state is ManageAddressFailed) {
             AppNotification(
@@ -142,7 +143,7 @@ class AddressManage extends StatelessWidget {
                     validators: [FormBuilderValidators.required()],
                     onChanged: (val) {
                       print("onChanged Country $val");
-                      setParams(0, val);
+                      setParams(enumManageAddress.COUNTRY, val);
                       GetIt.I<AddressBloc>().add(GetStateListEvent(val));
                     },
                     items: countries == null || countries.length == 0
@@ -170,7 +171,7 @@ class AddressManage extends StatelessWidget {
                     elevation: 16,
                     validators: [FormBuilderValidators.required()],
                     onChanged: (val) {
-                      setParams(1, val);
+                      setParams(enumManageAddress.STATE, val);
                       GetIt.I<AddressBloc>().add(GetCityListEvent(val));
                     },
                     items: states == null || states.length == 0
@@ -198,7 +199,7 @@ class AddressManage extends StatelessWidget {
                         context, "account.address.selectCity")),
                     validators: [FormBuilderValidators.required()],
                     onChanged: (val) {
-                      setParams(2, val);
+                      setParams(enumManageAddress.CITY, val);
                     },
                     items: cities == null || cities.length == 0
                         ? [DropdownMenuItem(value: "None", child: Text("None"))]
@@ -282,7 +283,8 @@ class AddressManage extends StatelessWidget {
                             width: 100,
                             height: 57,
                             child: RaisedButton(
-                              onPressed: () => {setParams(3, "true")},
+                              onPressed: () =>
+                                  {setParams(enumManageAddress.HOME, "true")},
                               color: _isHome
                                   ? AppTheme.colorPrimary
                                   : AppTheme.colorGray1,
@@ -306,7 +308,8 @@ class AddressManage extends StatelessWidget {
                             width: 100,
                             height: 57,
                             child: RaisedButton(
-                              onPressed: () => {setParams(3, "false")},
+                              onPressed: () =>
+                                  {setParams(enumManageAddress.HOME, "false")},
                               color: !_isHome
                                   ? AppTheme.colorPrimary
                                   : AppTheme.colorGray1,

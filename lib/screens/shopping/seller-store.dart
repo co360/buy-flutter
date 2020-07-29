@@ -11,6 +11,8 @@ import 'package:storeFlutter/components/shopping/shopping-cart-icon.dart';
 import 'package:storeFlutter/components/shopping/seller-store/seller-store-header.dart';
 import 'package:storeFlutter/components/shopping/seller-store/seller-store-body-nav.dart';
 import 'package:storeFlutter/components/shopping/seller-store/seller-store-overview.dart';
+import 'package:storeFlutter/components/shopping/seller-store/seller-store-products.dart';
+import 'package:storeFlutter/components/shopping/seller-store/seller-store-review.dart';
 import 'package:storeFlutter/components/app-button.dart';
 import 'package:storeFlutter/components/app-html.dart';
 import 'package:storeFlutter/components/app-label-value.dart';
@@ -30,7 +32,7 @@ class SellerStore extends StatefulWidget {
 }
 
 class _SellerStoreState extends State<SellerStore> {
-  var activeChild = enumSelections.OVERVIEW;
+  var activeChild = enumSellerStore.OVERVIEW;
 
   @override
   void initState() {
@@ -84,12 +86,17 @@ class _SellerStoreState extends State<SellerStore> {
 
   Widget sellerStoreBodyContent(BuildContext context) {
     switch (activeChild) {
-      case enumSelections.PRODUCTS:
-        return SellerStoreOverview(
-            widget.sellerCompany, widget.sellerCompanyProfile);
+      case enumSellerStore.PRODUCTS:
+        return SingleChildScrollView(
+          child: SellerStoreReview(
+              widget.sellerCompany, widget.sellerCompanyProfile),
+        );
         break;
-      case enumSelections.RATINGS:
-        return (Container(child: Text("test2")));
+      case enumSellerStore.RATINGS:
+        return SingleChildScrollView(
+          child: SellerStoreProducts(
+              widget.sellerCompany, widget.sellerCompanyProfile),
+        );
         break;
       default:
         return SingleChildScrollView(
@@ -100,7 +107,7 @@ class _SellerStoreState extends State<SellerStore> {
     }
   }
 
-  void _changeChild(enumSelections en) {
+  void _changeChild(enumSellerStore en) {
     print("Enum: $en");
     setState(() {
       activeChild = en;
