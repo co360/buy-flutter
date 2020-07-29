@@ -18,6 +18,7 @@ class InitialLoadingService extends BaseRestService {
 //  }
 
   reload() async {
+    // should load all.. including for guest...
     CurrentUser currentUser = await _authService.currentUser();
 
     Account account =

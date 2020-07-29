@@ -10,6 +10,7 @@ import 'package:storeFlutter/components/app-html.dart';
 import 'package:storeFlutter/components/app-label-value.dart';
 import 'package:storeFlutter/components/app-list-title.dart';
 import 'package:storeFlutter/components/app-panel.dart';
+import 'package:storeFlutter/components/form/quantity-input.dart';
 import 'package:storeFlutter/components/shopping/product-detail/product-delivery-info.dart';
 import 'package:storeFlutter/components/shopping/product-detail/product-image-slider.dart';
 import 'package:storeFlutter/components/shopping/product-detail/product-variant.dart';
@@ -109,7 +110,8 @@ class ProductDetailScreen extends StatelessWidget {
                 () => CheckSession.checkSession(
                   context,
                   () {
-                    ProductDetailScreen.showProductDetailBottomSheet(context,
+                    ProductDetailScreen.showProductDetailBottomSheet(
+                        context, product,
                         action: ProductActionModalAction.addToCart);
                   },
                 ),
@@ -127,7 +129,8 @@ class ProductDetailScreen extends StatelessWidget {
                 () => CheckSession.checkSession(
                   context,
                   () {
-                    ProductDetailScreen.showProductDetailBottomSheet(context,
+                    ProductDetailScreen.showProductDetailBottomSheet(
+                        context, product,
                         action: ProductActionModalAction.buyNow);
                   },
                 ),
@@ -141,16 +144,19 @@ class ProductDetailScreen extends StatelessWidget {
     );
   }
 
-  static void showProductDetailBottomSheet(BuildContext context,
+  static void showProductDetailBottomSheet(
+      BuildContext context, Product product,
       {ProductActionModalAction action: ProductActionModalAction.both}) {
     showModalBottomSheet<void>(
       context: context,
+      isScrollControlled: true,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
       ),
       backgroundColor: Colors.white,
       builder: (BuildContext context) {
         return ProductActionModalBody(
+          product,
           action: action,
         );
       },
@@ -160,8 +166,10 @@ class ProductDetailScreen extends StatelessWidget {
 
 class ProductActionModalBody extends StatelessWidget {
   final ProductActionModalAction action;
+  final Product product;
 
-  const ProductActionModalBody({
+  const ProductActionModalBody(
+    this.product, {
     this.action = ProductActionModalAction.both,
     Key key,
   }) : super(key: key);
@@ -174,15 +182,37 @@ class ProductActionModalBody extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(32.0),
-              child: Text(
-                'This is the modal bottom sheet. Slide down to dismiss.12',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Theme.of(context).accentColor,
-                  fontSize: 24.0,
+            buildInfoAndPrice(context),
+            SizedBox(height: 10),
+            divider(),
+            ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: 300),
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.all(AppTheme.paddingStandard),
+                  child: Column(
+                    children: <Widget>[
+                      ProductVariant(product),
+                    ],
+                  ),
                 ),
+              ),
+            ),
+            divider(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(
+                    FlutterI18n.translate(
+                            context, "shopping.productDetail.quantity") +
+                        " (${product.consumerPriceUom})",
+                    style: TextStyle(fontWeight: FontWeight.w500),
+                  ),
+//                  TouchSpin(),
+                  QuantityInput(),
+                ],
               ),
             ),
             buildActionButtons(context)
@@ -191,6 +221,66 @@ class ProductActionModalBody extends StatelessWidget {
       ),
     );
   }
+
+  Widget buildInfoAndPrice(BuildContext context) {
+    return Row(
+//              mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+
+      children: <Widget>[
+        Padding(
+          padding: EdgeInsets.only(
+            top: 20,
+            left: 20,
+          ),
+          child: Image.network(
+            ResourceUtil.fullPath(product.images[0].imageUrl),
+            fit: BoxFit.cover,
+            height: 90,
+            width: 90,
+          ),
+        ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.only(
+              left: 10.0,
+              right: 10,
+              top: 20,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(product.name + "fd fdsa fdas fds afdsafdsa"),
+                SizedBox(
+                  height: 10,
+                ),
+                product.consumerPrice > 0
+                    ? Text(
+                        "${product.consumerPriceCurrency} ${FormatUtil.formatPrice(product.consumerPrice)}",
+                        style: TextStyle(
+                            color: AppTheme.colorOrange,
+                            fontSize: 19,
+                            fontWeight: FontWeight.bold),
+                      )
+                    : SizedBox.shrink()
+              ],
+            ),
+          ),
+        ),
+        GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: () => Navigator.pop(context),
+          child: Padding(
+            padding: EdgeInsets.only(top: 20.0, right: 20),
+            child: FaIcon(FontAwesomeIcons.lightTimes),
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget divider() => Divider(height: 1, thickness: 1);
 
   Widget buildActionButtons(BuildContext context) {
     List<Widget> buttons = [];
@@ -546,7 +636,8 @@ class ProductDetailBody extends StatelessWidget {
             () => CheckSession.checkSession(
               context,
               () {
-                ProductDetailScreen.showProductDetailBottomSheet(context);
+                ProductDetailScreen.showProductDetailBottomSheet(
+                    context, product);
               },
             ),
           ),

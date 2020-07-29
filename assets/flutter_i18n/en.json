@@ -71,7 +71,8 @@
 
       "ratingsReviews": "Ratings & Reviews",
       "ratings": "Ratings",
-      "reviews": "Reviews"
+      "reviews": "Reviews",
+      "quantity": "Quantity"
     },
     "filter": {
       "priceRange": "Price Range (RM)"

@@ -49,6 +49,9 @@ class DioTokenInterceptors extends InterceptorsWrapper {
       if (token.error != null) {
         // login with guest
         print("error refershing the token... should login with guest now");
+
+        _storageService.clearSession();
+
         LoginStatus status = await authService.loginAsGuest();
 
         if (status.error != null) {
