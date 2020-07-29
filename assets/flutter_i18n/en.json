@@ -48,10 +48,7 @@
     },
     "productDetail": {
       "name" : "Product Detail",
-      "productInformation": "Product Information"
-    },
-    "filter": {
-      "priceRange": "Price Range (RM)",
+      "productInformation": "Product Information",
       "delivery" : "Delivery",
       "cost" : "Cost",
       "Received By" : "Received By",
@@ -75,7 +72,9 @@
       "ratingsReviews": "Ratings & Reviews",
       "ratings": "Ratings",
       "reviews": "Reviews"
-
+    },
+    "filter": {
+      "priceRange": "Price Range (RM)"
     }
   },
   "cart": {
