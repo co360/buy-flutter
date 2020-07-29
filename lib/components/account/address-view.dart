@@ -142,7 +142,13 @@ class AddressView extends StatelessWidget {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(80.0),
                       ),
-                      child: AutoSizeText(_addresses[i].name,
+                      child: AutoSizeText(
+                          _addresses[i].locationType != null &&
+                                  _addresses[i].locationType == "HOME"
+                              ? FlutterI18n.translate(
+                                  _context, "account.address.home")
+                              : FlutterI18n.translate(
+                                  _context, "account.address.office"),
                           minFontSize: 12,
                           style: TextStyle(
                             color: Colors.white,

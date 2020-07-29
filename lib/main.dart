@@ -8,6 +8,7 @@ import 'package:get_it/get_it.dart';
 import 'package:storeFlutter/blocs/account/auth-bloc.dart';
 import 'package:storeFlutter/blocs/language/language-bloc.dart';
 import 'package:storeFlutter/blocs/logging-bloc-observer.dart';
+import 'package:storeFlutter/models/identity/account.dart';
 import 'package:storeFlutter/screens/account.dart';
 import 'package:storeFlutter/screens/account/login.dart';
 import 'package:storeFlutter/screens/account/signup.dart';
@@ -41,10 +42,19 @@ void main() async {
       SystemUiOverlayStyle(statusBarColor: Colors.transparent));
 
   // TODO session validation initailization should only start after runapp to prevent screen freeze
+  print("is run here...");
   if (storageService.accessToken != null) {
     InitialLoadingService initialLoadingService =
         GetIt.I<InitialLoadingService>();
     await initialLoadingService.reload();
+
+    // check if it's session still valid
+    Account account = storageService.loginUser;
+
+    if (account.userName != 'guest') {
+      // manually set the AuthBloc state to LoginSuccess
+      GetIt.I<AuthBloc>().add(FlagLoginAsSuccess());
+    }
   } else {
     // login as guest
     AuthBloc authBloc = GetIt.I<AuthBloc>();

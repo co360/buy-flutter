@@ -390,7 +390,7 @@ class AddressManage extends StatelessWidget {
 
                           Location body =
                               Location.fromJson(_fbAddress.currentState.value);
-                          body.name = _isHome ? "Home" : "Office";
+                          body.locationType = _isHome ? "Home" : "Office";
                           body.id = location.id;
                           print(body);
                           print(body.id);
@@ -423,7 +423,7 @@ class AddressManage extends StatelessWidget {
 
                     Location body =
                         Location.fromJson(_fbAddress.currentState.value);
-                    body.name = _isHome ? "Home" : "Office";
+                    body.locationType = _isHome ? "HOME" : "OFFICE";
                     body.id = location != null && location.id != null
                         ? location.id
                         : null;

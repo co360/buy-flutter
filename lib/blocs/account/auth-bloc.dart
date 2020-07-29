@@ -46,7 +46,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         return;
       }
 
+      // preload all necessary data
+      await _initialLoadingService.reload();
+
       yield LogoutSuccess();
+    } else if (event is FlagLoginAsSuccess) {
+      yield LoginSuccess();
     }
   }
 }
@@ -100,3 +105,5 @@ class LoginEvent extends AuthEvent {
 class LogoutEvent extends AuthEvent {}
 
 class LoginGuest extends AuthEvent {}
+
+class FlagLoginAsSuccess extends AuthEvent {}
