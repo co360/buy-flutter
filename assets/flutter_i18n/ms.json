@@ -32,6 +32,21 @@
     "productDetail": {
       "name" : "Product Info",
       "productInformation": "Maklumat Produk"
+    },
+    "sellerStorePage": {
+      "overview": "Company Overview",
+      "products": "All Products",
+      "ratings": "Ratings & Reviews",
+      "intro": "Detailed Introduction",
+      "basic": "Basic Information",
+      "businessType": "Business Type",
+      "location": "Location",
+      "yearRegistered": "Year Registered",
+      "totalEmployees": "Total Employees",
+      "totalAnnualRevenue": "Total Annual Revenue",
+      "overallRatings": "Overall Ratings",
+      "ratingsLabel": "Ratings",
+      "reviewsLabel": "Reviews"
     }
   },
   "account" : {
