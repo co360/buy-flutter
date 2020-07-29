@@ -20,11 +20,11 @@ import 'package:storeFlutter/util/app-theme.dart';
 import 'package:storeFlutter/util/resource-util.dart';
 import 'package:storeFlutter/util/enums-util.dart';
 
-class SellerStoreBodyOverview extends StatelessWidget {
+class SellerStoreOverview extends StatelessWidget {
   final Company sellerCompany;
   final CompanyProfile sellerCompanyProfile;
 
-  const SellerStoreBodyOverview(
+  const SellerStoreOverview(
     this.sellerCompany,
     this.sellerCompanyProfile, {
     Key key,

@@ -85,7 +85,7 @@ class _SellerStoreState extends State<SellerStore> {
   Widget sellerStoreBodyContent(BuildContext context) {
     switch (activeChild) {
       case enumSelections.PRODUCTS:
-        return SellerStoreBodyOverview(
+        return SellerStoreOverview(
             widget.sellerCompany, widget.sellerCompanyProfile);
         break;
       case enumSelections.RATINGS:
@@ -93,7 +93,7 @@ class _SellerStoreState extends State<SellerStore> {
         break;
       default:
         return SingleChildScrollView(
-          child: SellerStoreBodyOverview(
+          child: SellerStoreOverview(
               widget.sellerCompany, widget.sellerCompanyProfile),
         );
         break;
