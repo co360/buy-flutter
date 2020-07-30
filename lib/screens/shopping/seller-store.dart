@@ -1,28 +1,18 @@
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:quiver/strings.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:storeFlutter/models/identity/company-profile.dart';
 import 'package:storeFlutter/models/identity/company.dart';
 import 'package:storeFlutter/models/filter-type.dart';
 import 'package:storeFlutter/blocs/shopping/product-listing-bloc.dart';
 import 'package:storeFlutter/components/shopping/static-search-bar.dart';
-import 'package:storeFlutter/components/shopping/shopping-cart-icon.dart';
 import 'package:storeFlutter/components/shopping/seller-store/seller-store-header.dart';
 import 'package:storeFlutter/components/shopping/seller-store/seller-store-body-nav.dart';
 import 'package:storeFlutter/components/shopping/seller-store/seller-store-overview.dart';
 import 'package:storeFlutter/components/shopping/seller-store/seller-store-products.dart';
 import 'package:storeFlutter/components/shopping/seller-store/seller-store-review.dart';
-import 'package:storeFlutter/components/app-button.dart';
-import 'package:storeFlutter/components/app-html.dart';
-import 'package:storeFlutter/components/app-label-value.dart';
-import 'package:storeFlutter/components/app-list-title.dart';
-import 'package:storeFlutter/components/app-panel.dart';
 import 'package:storeFlutter/util/app-theme.dart';
-import 'package:storeFlutter/util/resource-util.dart';
 import 'package:storeFlutter/util/enums-util.dart';
 import 'package:storeFlutter/services/product-service.dart';
 
@@ -96,7 +86,6 @@ class _SellerStoreState extends State<SellerStore> {
       SellerStoreBodyNav(_changeChild, activeChild),
       Expanded(
         child: Container(
-          // padding: EdgeInsets.only(top: 20),
           child: sellerStoreBodyContent(context),
         ),
       ),
@@ -110,8 +99,10 @@ class _SellerStoreState extends State<SellerStore> {
             widget.sellerCompany, widget.sellerCompanyProfile);
         break;
       case enumSellerStore.RATINGS:
-        return SellerStoreReview(
-            widget.sellerCompany, widget.sellerCompanyProfile);
+        return SingleChildScrollView(
+          child: SellerStoreReview(
+              widget.sellerCompany, widget.sellerCompanyProfile),
+        );
         break;
       default:
         return SingleChildScrollView(
