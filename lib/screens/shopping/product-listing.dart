@@ -143,11 +143,6 @@ class FilterDrawer extends StatelessWidget {
                     // TODO also might skip if the values is only one value.. cause pointless to filter anyway
                     return SizedBox.shrink();
                   }
-                  if(meta.metaType == "VARIANT") {
-                    if(state.queryFilter.filters.length <= 0 && state.queryFilter.query == ""){
-                      return SizedBox.shrink();
-                    }
-                  }
                   cacheState = state;
                   // TODO do the "View More" if filter option more than 5
                   return buildFilterMeta(

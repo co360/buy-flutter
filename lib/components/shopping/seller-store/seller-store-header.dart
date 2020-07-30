@@ -1,6 +1,9 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_i18n/flutter_i18n.dart';
+import 'package:storeFlutter/blocs/shopping/product-listing-bloc.dart';
 import 'package:storeFlutter/models/identity/company.dart';
 import 'package:storeFlutter/util/resource-util.dart';
 
@@ -14,6 +17,17 @@ class SellerStoreHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return BlocBuilder<ProductListingBloc, ProductListingState>(
+      builder: (context, state) {
+        if (state is ProductListingSearchComplete) {
+          return buildChild(context, state.result.total);
+        }
+        return buildChild(context, 0);
+      },
+    );
+  }
+
+  Widget buildChild(BuildContext context, int totalProducts) {
     return SafeArea(
       bottom: false,
       child: Padding(
@@ -42,7 +56,10 @@ class SellerStoreHeader extends StatelessWidget {
                       alignment: Alignment.centerLeft,
                       margin: EdgeInsets.only(top: 10),
                       child: AutoSizeText(
-                        "25 Products",
+                        totalProducts.toString() +
+                            " " +
+                            FlutterI18n.translate(context,
+                                "shopping.sellerStorePage.totalProduct"),
                         minFontSize: 12,
                         textAlign: TextAlign.left,
                         style: TextStyle(
