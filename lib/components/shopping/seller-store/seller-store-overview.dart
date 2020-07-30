@@ -45,13 +45,7 @@ class SellerStoreOverview extends StatelessWidget {
 
   Widget buildCompanyIntroduction(BuildContext context) {
     if (isBlank(sellerCompanyProfile.longIntroduction)) return null;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        SizedBox(height: 10),
-        AppHtml(sellerCompanyProfile.longIntroduction),
-      ],
-    );
+    return AppHtml(sellerCompanyProfile.longIntroduction);
   }
 
   Widget buildCompanyBasicInformation(BuildContext context) {
