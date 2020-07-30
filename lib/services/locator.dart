@@ -1,6 +1,6 @@
 import 'package:get_it/get_it.dart';
-import 'package:storeFlutter/blocs/account/auth-bloc.dart';
 import 'package:storeFlutter/blocs/account/address-bloc.dart';
+import 'package:storeFlutter/blocs/account/auth-bloc.dart';
 import 'package:storeFlutter/blocs/account/change-email-bloc.dart';
 import 'package:storeFlutter/blocs/account/change-password-bloc.dart';
 import 'package:storeFlutter/blocs/account/forget-password-bloc.dart';
@@ -11,10 +11,12 @@ import 'package:storeFlutter/blocs/navigation/bottom-navigation-bloc.dart';
 import 'package:storeFlutter/blocs/shopping/product-category-bloc.dart';
 import 'package:storeFlutter/blocs/shopping/sales-cart-bloc.dart';
 import 'package:storeFlutter/services/account-service.dart';
-import 'package:storeFlutter/services/auth-service.dart';
 import 'package:storeFlutter/services/address-service.dart';
+import 'package:storeFlutter/services/auth-service.dart';
 import 'package:storeFlutter/services/change-email-service.dart';
 import 'package:storeFlutter/services/change-password-service.dart';
+import 'package:storeFlutter/services/company-profile-service.dart';
+import 'package:storeFlutter/services/company-service.dart';
 import 'package:storeFlutter/services/forget-password-service.dart';
 import 'package:storeFlutter/services/initial-loading-service.dart';
 import 'package:storeFlutter/services/product-category-service.dart';
@@ -41,6 +43,8 @@ Future setupLocator() async {
   GetIt.I.registerSingleton<SignUpService>(SignUpService());
   GetIt.I.registerSingleton<SalesCartService>(SalesCartService());
   GetIt.I.registerSingleton<VariantTypeService>(VariantTypeService());
+  GetIt.I.registerSingleton<CompanyService>(CompanyService());
+  GetIt.I.registerSingleton<CompanyProfileService>(CompanyProfileService());
 
   // Bloc
   GetIt.I.registerSingleton<BottomNavigationBloc>(BottomNavigationBloc());
