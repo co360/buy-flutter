@@ -28,14 +28,14 @@ class ProductListingScreen extends StatelessWidget {
     final ProductListingScreenParams args =
         ModalRoute.of(context).settings.arguments;
     String query = args.query;
-    Map<String, FilterValue> filter = args.filter;
+    String filter = args.category;
     cacheMinPrice = null;
     cacheMaxPrice = null;
 
     return BlocProvider<ProductListingBloc>(
       create: (context) => ProductListingBloc()
         ..add(ProductListingSearch(ProductListingQueryFilter(
-            query: query, filters: filter != null ? filter : {}))),
+            query: query, category: filter, filters: {}))),
       child: Builder(
         builder: (context) {
           return Scaffold(
@@ -154,7 +154,7 @@ class FilterDrawer extends StatelessWidget {
           ]);
         } else if (state is ProductListingCategoryResetState) {
           bloc.add(ProductListingSearch(
-              ProductListingQueryFilter(query: "", filters: {})));
+              ProductListingQueryFilter(query: "",category: null, filters: {})));
           cacheMaxPrice = null;
           cacheMinPrice = null;
         } else if (state is ProductListingSearchError) {}
@@ -604,9 +604,9 @@ class ProductNotFound extends StatelessWidget {
 
 class ProductListingScreenParams {
   final String query;
-  final Map<String, FilterValue> filter;
+  final String category;
 
-  ProductListingScreenParams({this.query, this.filter});
+  ProductListingScreenParams({this.query, this.category});
 }
 
 String getCountryFullName(String code) {

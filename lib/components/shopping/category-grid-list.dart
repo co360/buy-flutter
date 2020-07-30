@@ -55,7 +55,7 @@ class CategoryGridList extends StatelessWidget {
                         print("Select ${categories[i].id}");
                         Navigator.pushNamedAndRemoveUntil(
                             context, '/product-listing', ModalRoute.withName('/'),
-                            arguments: ProductListingScreenParams(filter: {"CATEGORY":FilterValue(categories[i].name,categories[i].code,0)}));
+                            arguments: ProductListingScreenParams(category: categories[i].code));
                       })
                   : GridButtonDisable(),
               categories.length > i + 1
@@ -65,7 +65,7 @@ class CategoryGridList extends StatelessWidget {
                         print("Select ${categories[i + 1].id}");
                         Navigator.pushNamedAndRemoveUntil(
                             context, '/product-listing', ModalRoute.withName('/'),
-                            arguments: ProductListingScreenParams(filter: {"CATEGORY":FilterValue(categories[i+1].name,categories[i+1].code,0)}));
+                            arguments: ProductListingScreenParams(category: categories[i+1].code));
                       })
                   : GridButtonDisable(),
               // categories.length > i + 2

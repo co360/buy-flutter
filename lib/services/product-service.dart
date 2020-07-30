@@ -91,19 +91,24 @@ class ProductService extends BaseRestService {
     if(filter.filters != null) {
       params.addAll(filter.toQueryParameter());
     }
+    if(filter.category != null && filter.query == null) {
+      params["category.code"] = filter.category;
+    }
     return params;
   }
 }
 
 class ProductListingQueryFilter {
   String query;
+  String category;
 
   Map<String, FilterValue> filters = {};
 
-  ProductListingQueryFilter({this.query,this.filters});
+  ProductListingQueryFilter({this.query,this.category, this.filters});
 
   ProductListingQueryFilter.copy(ProductListingQueryFilter filter) {
     query = filter.query;
+    category = filter.category;
     filters = Map.from(filter.filters);
   }
 
@@ -123,14 +128,19 @@ class ProductListingQueryFilter {
   }
 
   bool hasAnyFilter() {
-    return filters.length > 0;
+    return filters != null && filters.length > 0;
   }
 
   Map<String, String> toQueryParameter() {
     return filters.map((key, value) {
       String finalKey = key;
 
-      if (key == 'CATEGORY') finalKey = "category.code";
+      if (key == 'CATEGORY') {
+        finalKey = "category.code";
+        if((category != null && category.length > 0) && (value != null)) {
+          category = null;
+        }
+      }
       if (key == 'COUNTRY') finalKey = "sellerCountryCode";
       if (key == 'BUSINESS_TYPE') finalKey = "sellerBusinessTypes";
       if (key == 'MIN_PRICE') finalKey = "minPrice";

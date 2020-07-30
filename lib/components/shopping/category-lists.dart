@@ -49,7 +49,7 @@ class CategoryLists extends StatelessWidget {
                         print("Select ${categories.layer2Category[i].id}");
                         Navigator.pushNamedAndRemoveUntil(
                             context, '/product-listing', ModalRoute.withName('/'),
-                            arguments: ProductListingScreenParams(filter: {"CATEGORY":FilterValue(categories.layer2Category[i].name,categories.layer2Category[i].code,0)}));
+                            arguments: ProductListingScreenParams(category: categories.layer2Category[i].code));
                       })
                   : GridButtonDisable(),
               categories.layer2Category.length > i + 1
@@ -59,7 +59,7 @@ class CategoryLists extends StatelessWidget {
                         print("Select ${categories.layer2Category[i + 1].id}");
                         Navigator.pushNamedAndRemoveUntil(
                             context, '/product-listing', ModalRoute.withName('/'),
-                            arguments: ProductListingScreenParams(filter: {"CATEGORY":FilterValue(categories.layer2Category[i+1].name,categories.layer2Category[i+1].code,0)}));
+                            arguments: ProductListingScreenParams(category: categories.layer2Category[i+1].code));
                       })
                   : GridButtonDisable(),
               // categories.layer2Category.length > i + 2

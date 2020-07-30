@@ -73,7 +73,7 @@ class _ProductCategoryScreenState extends State<ProductCategoryScreen> {
                           int index = cacheState.layerOneIndex >= 0 ? cacheState.layerOneIndex : 0;
                           Navigator.pushNamedAndRemoveUntil(
                               context, '/product-listing', ModalRoute.withName('/'),
-                              arguments: ProductListingScreenParams(filter: {"CATEGORY":FilterValue(cacheState.categories.layer1Category[index].name,cacheState.categories.layer1Category[index].code,0)}));
+                              arguments: ProductListingScreenParams(category: cacheState.categories.layer1Category[index].code));
                         }),
                         CategoryLists()
                       ],
