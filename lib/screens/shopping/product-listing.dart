@@ -28,14 +28,14 @@ class ProductListingScreen extends StatelessWidget {
     final ProductListingScreenParams args =
         ModalRoute.of(context).settings.arguments;
     String query = args.query;
-    Map<String, FilterValue> filter = args.filter;
+    String filter = args.category;
     cacheMinPrice = null;
     cacheMaxPrice = null;
 
     return BlocProvider<ProductListingBloc>(
       create: (context) => ProductListingBloc()
         ..add(ProductListingSearch(ProductListingQueryFilter(
-            query: query, filters: filter != null ? filter : {}))),
+            query: query, category: filter, filters: {}))),
       child: Builder(
         builder: (context) {
           return Scaffold(
@@ -143,11 +143,6 @@ class FilterDrawer extends StatelessWidget {
                     // TODO also might skip if the values is only one value.. cause pointless to filter anyway
                     return SizedBox.shrink();
                   }
-                  if(meta.metaType == "VARIANT") {
-                    if(state.queryFilter.filters.length <= 0 && state.queryFilter.query == ""){
-                      return SizedBox.shrink();
-                    }
-                  }
                   cacheState = state;
                   // TODO do the "View More" if filter option more than 5
                   return buildFilterMeta(
@@ -159,7 +154,7 @@ class FilterDrawer extends StatelessWidget {
           ]);
         } else if (state is ProductListingCategoryResetState) {
           bloc.add(ProductListingSearch(
-              ProductListingQueryFilter(query: "", filters: {})));
+              ProductListingQueryFilter(query: "",category: null, filters: {})));
           cacheMaxPrice = null;
           cacheMinPrice = null;
         } else if (state is ProductListingSearchError) {}
@@ -609,9 +604,9 @@ class ProductNotFound extends StatelessWidget {
 
 class ProductListingScreenParams {
   final String query;
-  final Map<String, FilterValue> filter;
+  final String category;
 
-  ProductListingScreenParams({this.query, this.filter});
+  ProductListingScreenParams({this.query, this.category});
 }
 
 String getCountryFullName(String code) {

@@ -1,9 +1,11 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:quiver/strings.dart';
+import 'package:storeFlutter/blocs/shopping/product-detail-bloc.dart';
 import 'package:storeFlutter/components/account/check-session.dart';
 import 'package:storeFlutter/components/app-button.dart';
 import 'package:storeFlutter/components/app-html.dart';
@@ -17,6 +19,8 @@ import 'package:storeFlutter/components/shopping/product-detail/product-variant.
 import 'package:storeFlutter/components/shopping/product-detail/seller-store-button.dart';
 import 'package:storeFlutter/components/shopping/shopping-cart-icon.dart';
 import 'package:storeFlutter/components/shopping/static-search-bar.dart';
+import 'package:storeFlutter/models/identity/company-profile.dart';
+import 'package:storeFlutter/models/identity/company.dart';
 import 'package:storeFlutter/models/identity/location.dart';
 import 'package:storeFlutter/models/shopping/product.dart';
 import 'package:storeFlutter/util/app-theme.dart';
@@ -31,45 +35,59 @@ class ProductDetailScreen extends StatelessWidget {
 
     Product product = args.product;
 
-    return Scaffold(
-      backgroundColor: AppTheme.colorBg2,
-      appBar: AppBar(
-        titleSpacing: 0,
-        title: Row(
-          children: <Widget>[
-            Expanded(
-              child: StaticSearchBar(
-                placeholder: FlutterI18n.translate(
-                  context,
-                  "shopping.searchProductSeller",
+    return BlocProvider(
+      create: (context) => ProductDetailBloc(product: product),
+      child: Builder(
+        builder: (context) {
+          return BlocBuilder<ProductDetailBloc, ProductDetailState>(
+            buildWhen: (previousState, state) {
+              return (state is ProductDetailLoadComplete ||
+                  state is ProductDetailInitial);
+            },
+            builder: (context, state) {
+              ProductDetailBloc bloc =
+                  BlocProvider.of<ProductDetailBloc>(context);
+
+              var sellerCompanyProfile = bloc.sellerCompanyProfile;
+              var sellerCompany = bloc.sellerCompany;
+
+              return Scaffold(
+                backgroundColor: AppTheme.colorBg2,
+                appBar: AppBar(
+                  titleSpacing: 0,
+                  title: Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: StaticSearchBar(
+                          placeholder: FlutterI18n.translate(
+                            context,
+                            "shopping.searchProductSeller",
+                          ),
+                          borderColor: AppTheme.colorOrange,
+                        ),
+                      ),
+                      SizedBox(width: 10),
+                      ShoppingCartIcon(
+                        dark: true,
+                      ),
+                      SizedBox(width: 10),
+                    ],
+                  ),
                 ),
-                borderColor: AppTheme.colorOrange,
-              ),
-            ),
-            SizedBox(width: 10),
-            ShoppingCartIcon(
-              dark: true,
-            ),
-            SizedBox(width: 10),
-          ],
-        ),
-//        flexibleSpace: Container(
-//          decoration: BoxDecoration(
-//            gradient: LinearGradient(
-//              begin: Alignment.topLeft,
-//              end: Alignment.bottomRight,
-//              colors: <Color>[AppTheme.colorPrimary, AppTheme.colorSuccess],
-//            ),
-//          ),
-//        ),
-//        iconTheme: IconThemeData(color: Colors.white),
+                bottomNavigationBar: buildBottomAppBar(
+                    product, sellerCompany, sellerCompanyProfile, context),
+                body: ProductDetailBody(
+                    product, sellerCompany, sellerCompanyProfile),
+              );
+            },
+          );
+        },
       ),
-      bottomNavigationBar: buildBottomAppBar(product, context),
-      body: ProductDetailBody(product),
     );
   }
 
-  BottomAppBar buildBottomAppBar(Product product, BuildContext context) {
+  BottomAppBar buildBottomAppBar(Product product, Company sellerCompany,
+      CompanyProfile sellerCompanyProfile, BuildContext context) {
     return BottomAppBar(
       child: Padding(
         padding: EdgeInsets.symmetric(
@@ -80,8 +98,7 @@ class ProductDetailScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
-            SellerStoreButton(
-                product.sellerCompany, product.sellerCompanyProfile),
+            SellerStoreButton(sellerCompany, sellerCompanyProfile),
             SizedBox(
               width: 10,
             ),
@@ -357,9 +374,13 @@ enum ProductActionModalAction { both, addToCart, buyNow }
 
 class ProductDetailBody extends StatelessWidget {
   final Product product;
+  final Company sellerCompany;
+  final CompanyProfile sellerCompanyProfile;
 
   const ProductDetailBody(
-    this.product, {
+    this.product,
+    this.sellerCompany,
+    this.sellerCompanyProfile, {
     Key key,
   }) : super(key: key);
 
@@ -388,8 +409,10 @@ class ProductDetailBody extends StatelessWidget {
               buildContactPerson(context),
             ],
           ),
-          AppListTitle.noTopPadding(FlutterI18n.translate(
-              context, "shopping.productDetail.keyProductAdvantage")),
+          (isNotBlank(product.keySellingPoint))
+              ? AppListTitle.noTopPadding(FlutterI18n.translate(
+                  context, "shopping.productDetail.keyProductAdvantage"))
+              : null,
           AppPanel(
             children: <Widget>[
               buildKeyProductAdvantage(context),
@@ -516,7 +539,7 @@ class ProductDetailBody extends StatelessWidget {
   }
 
   Widget buildCompanyIntroduction(BuildContext context) {
-    if (isBlank(product.sellerCompanyProfile.longIntroduction)) return null;
+    if (isBlank(sellerCompanyProfile.longIntroduction)) return null;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
@@ -526,7 +549,7 @@ class ProductDetailBody extends StatelessWidget {
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         SizedBox(height: 10),
-        AppHtml(product.sellerCompanyProfile.longIntroduction),
+        AppHtml(sellerCompanyProfile.longIntroduction),
       ],
     );
   }
@@ -544,8 +567,7 @@ class ProductDetailBody extends StatelessWidget {
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Expanded(
-                child: AppLabelValue("Company", product.sellerCompany.name)),
+            Expanded(child: AppLabelValue("Company", sellerCompany.name)),
             Expanded(child: AppLabelValue("Business Type", getBusinessType())),
           ],
         ),
@@ -596,9 +618,9 @@ class ProductDetailBody extends StatelessWidget {
   String getBusinessType() {
     var formattedType = '';
 
-    if (product.sellerCompany.businessType != null &&
-        product.sellerCompany.businessType.length > 0) {
-      product.sellerCompany.businessType.map((e) {});
+    if (sellerCompany.businessType != null &&
+        sellerCompany.businessType.length > 0) {
+      sellerCompany.businessType.map((e) {});
     }
     return formattedType;
   }
@@ -706,14 +728,14 @@ class ProductDetailBody extends StatelessWidget {
   }
 
   Widget getSellerLogo() {
-    if (product.sellerCompany != null && product.sellerCompany.image != null) {
+    if (sellerCompany != null && sellerCompany.image != null) {
       return Padding(
         padding: EdgeInsets.only(right: 10),
         child: SizedBox(
           width: 30,
           child: Container(
             child: Image.network(
-              ResourceUtil.fullPath(product.sellerCompany.image.imageUrl),
+              ResourceUtil.fullPath(sellerCompany.image.imageUrl),
               fit: BoxFit.cover,
 //          width: MediaQuery.of(context).size.width,
             ),
@@ -728,8 +750,9 @@ class ProductDetailBody extends StatelessWidget {
   String getLocationInfo() {
     String locationInfo;
 
-    if (product.sellerCompanyProfile != null) {
-      Location location = product.sellerCompanyProfile.locations
+    if (sellerCompanyProfile != null &&
+        sellerCompanyProfile.locations != null) {
+      Location location = sellerCompanyProfile.locations
           .firstWhere((element) => element.supplyLocation);
 
       if (location != null) {
@@ -741,10 +764,9 @@ class ProductDetailBody extends StatelessWidget {
     }
 
     if (isBlank(locationInfo)) {
-      if (product.sellerCompany != null) {
-        if (isBlank(locationInfo)) locationInfo = product.sellerCompany.city;
-        if (isBlank(locationInfo))
-          locationInfo = product.sellerCompany.countryName;
+      if (sellerCompany != null) {
+        if (isBlank(locationInfo)) locationInfo = sellerCompany.city;
+        if (isBlank(locationInfo)) locationInfo = sellerCompany.countryName;
       }
     }
 
