@@ -46,7 +46,10 @@
       "totalAnnualRevenue": "Total Annual Revenue",
       "overallRatings": "Overall Ratings",
       "ratingsLabel": "Ratings",
-      "reviewsLabel": "Reviews"
+      "reviewsLabel": "Reviews",
+      "totalProduct": "Products",
+      "noRatingsYet": "No Ratings Yet",
+      "noReviewsYet": "This Seller Has No Reviews"
     }
   },
   "account" : {

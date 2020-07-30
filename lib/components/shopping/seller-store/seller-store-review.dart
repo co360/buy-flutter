@@ -32,6 +32,94 @@ class SellerStoreReview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Container(
+        child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        SizedBox(height: 20),
+        Align(
+          alignment: Alignment.center,
+          child: AppListTitle.noTopPadding(FlutterI18n.translate(
+              context, "shopping.sellerStorePage.overallRatings")),
+        ),
+        Container(
+            color: Colors.white,
+            padding: EdgeInsets.only(top: 20, bottom: 20, right: 5, left: 5),
+            child: ratingBody(context)),
+        SizedBox(height: 15),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: AppListTitle.noTopPadding(FlutterI18n.translate(
+              context, "shopping.sellerStorePage.reviewsLabel")),
+        ),
+        Container(
+          color: Colors.white,
+          padding: EdgeInsets.only(top: 20, bottom: 20, right: 5, left: 5),
+          child: dynamicReviewBody(context),
+        ),
+      ],
+    ));
+  }
+
+  Widget ratingBody(BuildContext context) {
+    return (Column(children: <Widget>[
+      Text(
+        "4.5",
+        textAlign: TextAlign.center,
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 34),
+      ),
+      SizedBox(height: 10),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          FaDuotoneIcon(
+            FontAwesomeIcons.duotoneStar,
+            secondaryColor: AppTheme.colorYellow,
+            primaryColor: AppTheme.colorYellow,
+            size: 30,
+          ),
+          FaDuotoneIcon(
+            FontAwesomeIcons.duotoneStar,
+            secondaryColor: AppTheme.colorYellow,
+            primaryColor: AppTheme.colorYellow,
+            size: 30,
+          ),
+          FaDuotoneIcon(
+            FontAwesomeIcons.duotoneStar,
+            secondaryColor: Colors.white,
+            primaryColor: AppTheme.colorYellow,
+            size: 30,
+          ),
+          FaDuotoneIcon(
+            FontAwesomeIcons.duotoneStar,
+            secondaryColor: Colors.white,
+            primaryColor: AppTheme.colorYellow,
+            size: 30,
+          ),
+          FaDuotoneIcon(
+            FontAwesomeIcons.duotoneStar,
+            secondaryColor: Colors.white,
+            primaryColor: AppTheme.colorYellow,
+            size: 30,
+          ),
+        ],
+      ),
+      SizedBox(height: 15),
+      Text(
+        "24" +
+            " " +
+            FlutterI18n.translate(
+                context, "shopping.sellerStorePage.ratingsLabel"),
+        textAlign: TextAlign.center,
+        style: TextStyle(fontWeight: FontWeight.normal, fontSize: 14),
+      ),
+    ]));
+  }
+
+  Widget dynamicReviewBody(BuildContext context) {
+    return (Column(children: <Widget>[
+      Text(FlutterI18n.translate(
+          context, "shopping.sellerStorePage.noReviewsYet")),
+    ]));
   }
 }
