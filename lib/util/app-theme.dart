@@ -7,6 +7,7 @@ class AppTheme {
   static Color colorDanger = Color(0xFFEB547C);
   static Color colorInfo = Color(0xFFB2DBBF);
   static Color colorOrange = Color(0xFFF37318);
+  static Color colorYellow = Color(0xFFF8CB51);
   static Color colorLink = Color(0xFF0093E9);
 
   static Color colorBg = Color(0xFFF9F9F9);
