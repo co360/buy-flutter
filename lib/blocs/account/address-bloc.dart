@@ -56,6 +56,8 @@ class AddressBloc extends Bloc<AddressEvent, AddressState> {
             await _addressService.getStateList(event.country);
         print(status);
         yield GetStateListSuccess(status);
+      } else if (event is SetAddressHomeEvent) {
+        yield SetAddressHomeSuccess(event.isHome);
       } else if (event is GetCountryListEvent) {
         yield AddressInProgress();
         List<Country> status = await _addressService.getCountryList();
@@ -134,6 +136,14 @@ class SetAddressSuccess extends AddressState {
   List<Object> get props => [addresses];
 }
 
+class SetAddressHomeSuccess extends AddressState {
+  final bool isHome;
+  SetAddressHomeSuccess(this.isHome);
+
+  @override
+  List<Object> get props => [isHome];
+}
+
 class DeleteAddressSuccess extends AddressState {
   final List<Location> addresses;
   DeleteAddressSuccess(this.addresses);
@@ -202,6 +212,15 @@ class DeleteAddressEvent extends AddressEvent {
 
   @override
   List<Object> get props => [body];
+}
+
+class SetAddressHomeEvent extends AddressEvent {
+  final bool isHome;
+
+  SetAddressHomeEvent(this.isHome);
+
+  @override
+  List<Object> get props => [isHome];
 }
 
 class InitAddressEvent extends AddressEvent {}
