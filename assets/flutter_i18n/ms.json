@@ -68,10 +68,10 @@
 
     "inCollaborationWith": "dengan kerjasama",
     "noAccountYet": "Belum Ada Akaun? Daftarlah Sekarang!",
-    "signup": "",
-    "goToLogin": "",
-    "confirmPassword": "",
-    "signupSpace": "",
+    "signup": "Daftar",
+    "goToLogin": "Pergi Ke Login",
+    "confirmPassword": "Sahkan Kata Laluan",
+    "signupSpace": "Daftar",
 
     "email": "Emel",
     "password": "Kata laluan",

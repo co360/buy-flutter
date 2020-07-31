@@ -8,12 +8,12 @@ part of 'label-value.dart';
 
 LabelValue _$LabelValueFromJson(Map<String, dynamic> json) {
   return LabelValue(
-    json['label'] as String,
-    json['label2'] as String,
-    json['label3'] as String,
-    json['label4'] as String,
-    json['value'] as String,
-    json['code'] as String,
+    label: json['label'] as String,
+    label2: json['label2'] as String,
+    label3: json['label3'] as String,
+    label4: json['label4'] as String,
+    value: json['value'] as String,
+    code: json['code'] as String,
   );
 }
 

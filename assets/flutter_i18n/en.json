@@ -23,6 +23,57 @@
     "done" : "Done",
     "noMoreResults" : "No More Results"
   },
+  "dataSource" : {
+    "general": {
+      "yes": "Yes",
+      "No": "No"
+    },
+    "businessType": {
+      "MANUFACTURER": "Manufacturer",
+      "MARINE_INSURANCE": "Marine Insurance",
+      "SURVEYOR": "Surveyor",
+      "PACKAGING_PROVIDER": "Packaging Provider",
+      "FUMIGATION/PHYTOSANITARY": "Fumigation / Phytosanitary",
+      "CERTIFICATIONS": "Certifications",
+      "PORT_SERVICES": "Port Services",
+      "COORPERATIVE": "Cooperative",
+      "COORPETATIVE_MEMBER": "Cooperative Member",
+      "TRADER": "Trader",
+      "DISTRIBUTOR/RESELLER": "Distributor / Reseller",
+      "TRUCKING": "Trucking",
+      "WAREHOUSING": "Warehousing",
+      "TANK_OPERATOR": "Tank Operator",
+      "VESSEL": "Vessel",
+      "AIR_SERVICE": "Air service",
+      "FORWARDER/SHIPPING_AGENT": "Forwarder / Shipping Agent",
+      "HAULAGE": "Haulage",
+      "PIPELINE": "Pipeline",
+      "BARGE": "Barge",
+      "WATERBORNE": "Waterborne",
+      "TRADE_FINANCE": "Trade Finance",
+      "LAND_INSURANCE": "Land Insurance",
+      "SERVICE_PROVIDER": "Service Provider"
+    },
+    "totalEmployee":{
+      "1-10": "1-10 employees",
+      "11-50": "11-50 employees",
+      "51-200": "51-200 employees",
+      "201-500": "201-500 employees",
+      "501-1000": "501-1000 employees",
+      "1001-5000": "1001-5000 employees",
+      "5001-10,000": "5001-10,000 employees",
+      "10,001+": "10,001+ employees"
+    },
+    "annualRevenue": {
+      "0-1M": "Below US$1 Million",
+      "1-2.5M": "US$1 Million - US$2.5 Million",
+      "2.5-5M": "US$2.5 Million - US$5 Million",
+      "5M-10M": "US$5 Million - US$10 Million",
+      "10M-50M": "US$10 Million - US$50 Million",
+      "50M-100M": "US$50 Million - US$100 Million",
+      "100M+": "Above US$100 Million"
+    }
+  },
   "screen" : {
     "bottomNavigation": {
       "market": "Marketplace",
@@ -72,7 +123,14 @@
       "ratingsReviews": "Ratings & Reviews",
       "ratings": "Ratings",
       "reviews": "Reviews",
-      "quantity": "Quantity"
+      "quantity": "Quantity",
+
+      "company" : "Company",
+      "businessType" : "Business Type",
+      "location" : "Location",
+      "totalEmployees" : "Total Employees",
+      "yearRegistered" : "Year Registered",
+      "totalAnnualRevenue" : "Total Annual Revenue"
     },
     "filter": {
       "priceRange": "Price Range (RM)"
