@@ -9,8 +9,11 @@ import 'package:storeFlutter/blocs/account/signup-bloc.dart';
 import 'package:storeFlutter/blocs/language/language-bloc.dart';
 import 'package:storeFlutter/blocs/navigation/bottom-navigation-bloc.dart';
 import 'package:storeFlutter/blocs/shopping/product-category-bloc.dart';
-import 'package:storeFlutter/blocs/shopping/sales-cart-bloc.dart';
 import 'package:storeFlutter/blocs/shopping/rating-bloc.dart';
+import 'package:storeFlutter/blocs/shopping/sales-cart-bloc.dart';
+import 'package:storeFlutter/datasource/annual-revenue-data-source.dart';
+import 'package:storeFlutter/datasource/business-type-data-source.dart';
+import 'package:storeFlutter/datasource/total-employee-data-source.dart';
 import 'package:storeFlutter/services/account-service.dart';
 import 'package:storeFlutter/services/address-service.dart';
 import 'package:storeFlutter/services/auth-service.dart';
@@ -48,6 +51,11 @@ Future setupLocator() async {
   GetIt.I.registerSingleton<VariantTypeService>(VariantTypeService());
   GetIt.I.registerSingleton<CompanyService>(CompanyService());
   GetIt.I.registerSingleton<CompanyProfileService>(CompanyProfileService());
+
+  // Datasource
+  GetIt.I.registerSingleton<BusinessTypeDataSource>(BusinessTypeDataSource());
+  GetIt.I.registerSingleton<TotalEmployeeDataSource>(TotalEmployeeDataSource());
+  GetIt.I.registerSingleton<AnnualRevenueDataSource>(AnnualRevenueDataSource());
 
   // Bloc
   GetIt.I.registerSingleton<BottomNavigationBloc>(BottomNavigationBloc());

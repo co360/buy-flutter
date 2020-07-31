@@ -19,6 +19,7 @@ import 'package:storeFlutter/components/shopping/product-detail/product-variant.
 import 'package:storeFlutter/components/shopping/product-detail/seller-store-button.dart';
 import 'package:storeFlutter/components/shopping/shopping-cart-icon.dart';
 import 'package:storeFlutter/components/shopping/static-search-bar.dart';
+import 'package:storeFlutter/datasource/data-source-helper.dart';
 import 'package:storeFlutter/models/identity/company-profile.dart';
 import 'package:storeFlutter/models/identity/company.dart';
 import 'package:storeFlutter/models/identity/location.dart';
@@ -36,7 +37,8 @@ class ProductDetailScreen extends StatelessWidget {
     Product product = args.product;
 
     return BlocProvider(
-      create: (context) => ProductDetailBloc(product: product),
+      create: (context) =>
+          ProductDetailBloc(product: product, buildContext: context),
       child: Builder(
         builder: (context) {
           return BlocBuilder<ProductDetailBloc, ProductDetailState>(
@@ -377,7 +379,9 @@ class ProductDetailBody extends StatelessWidget {
   final Company sellerCompany;
   final CompanyProfile sellerCompanyProfile;
 
-  const ProductDetailBody(
+  ProductDetailBloc productDetailBloc;
+
+  ProductDetailBody(
     this.product,
     this.sellerCompany,
     this.sellerCompanyProfile, {
@@ -386,6 +390,8 @@ class ProductDetailBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    productDetailBloc = BlocProvider.of<ProductDetailBloc>(context);
+
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -412,7 +418,7 @@ class ProductDetailBody extends StatelessWidget {
           (isNotBlank(product.keySellingPoint))
               ? AppListTitle.noTopPadding(FlutterI18n.translate(
                   context, "shopping.productDetail.keyProductAdvantage"))
-              : null,
+              : SizedBox.shrink(),
           AppPanel(
             children: <Widget>[
               buildKeyProductAdvantage(context),
@@ -567,22 +573,62 @@ class ProductDetailBody extends StatelessWidget {
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Expanded(child: AppLabelValue("Company", sellerCompany.name)),
-            Expanded(child: AppLabelValue("Business Type", getBusinessType())),
+            Expanded(
+              child: AppLabelValue(
+                  FlutterI18n.translate(
+                      context, "shopping.productDetail.company"),
+                  sellerCompany.name),
+            ),
+            Expanded(
+              child: AppLabelValue(
+                FlutterI18n.translate(
+                    context, "shopping.productDetail.businessType"),
+                DataSourceHelper.getLabels(
+                    values: sellerCompany.businessType,
+                    lvs: productDetailBloc.businessTypeLvs),
+              ),
+            ),
           ],
         ),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Expanded(child: AppLabelValue("Location", null)),
-            Expanded(child: AppLabelValue("Total Employees", null)),
+            Expanded(
+              child: AppLabelValue(
+                FlutterI18n.translate(
+                    context, "shopping.productDetail.location"),
+                sellerCompany.countryName,
+              ),
+            ),
+            Expanded(
+              child: AppLabelValue(
+                FlutterI18n.translate(
+                    context, "shopping.productDetail.totalEmployees"),
+                DataSourceHelper.getLabel(
+                    value: sellerCompany.totalEmployees,
+                    lvs: productDetailBloc.totalEmployeeLvs),
+              ),
+            ),
           ],
         ),
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Expanded(child: AppLabelValue("Year Registered", null)),
-            Expanded(child: AppLabelValue("Total Annual Revenue", null)),
+            Expanded(
+              child: AppLabelValue(
+                FlutterI18n.translate(
+                    context, "shopping.productDetail.yearRegistered"),
+                sellerCompany.yearRegistered,
+              ),
+            ),
+            Expanded(
+              child: AppLabelValue(
+                FlutterI18n.translate(
+                    context, "shopping.productDetail.totalAnnualRevenue"),
+                DataSourceHelper.getLabel(
+                    value: sellerCompanyProfile.totalAnnualRevenue),
+              ),
+            ),
           ],
         ),
       ],
@@ -613,16 +659,6 @@ class ProductDetailBody extends StatelessWidget {
         SizedBox(height: 10),
       ],
     );
-  }
-
-  String getBusinessType() {
-    var formattedType = '';
-
-    if (sellerCompany.businessType != null &&
-        sellerCompany.businessType.length > 0) {
-      sellerCompany.businessType.map((e) {});
-    }
-    return formattedType;
   }
 
   Widget buildPanelContentWithAction(Widget child, Function onPressed) {

@@ -13,7 +13,7 @@ OrderRateReview _$OrderRateReviewFromJson(Map<String, dynamic> json) {
     onTimeDelivery: json['onTimeDelivery'] as int,
     service: json['service'] as int,
     easeOfDoingBusiness: json['easeOfDoingBusiness'] as int,
-    averageRating: json['averageRating'] as double,
+    averageRating: (json['averageRating'] as num)?.toDouble(),
     title: json['title'] as String,
     review: json['review'] as String,
     dateCreated: json['dateCreated'] == null

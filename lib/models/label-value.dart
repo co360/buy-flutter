@@ -12,7 +12,12 @@ class LabelValue {
   String code;
 
   LabelValue(
-      this.label, this.label2, this.label3, this.label4, this.value, this.code);
+      {this.label,
+      this.label2,
+      this.label3,
+      this.label4,
+      this.value,
+      this.code});
 
   factory LabelValue.fromJson(Map<String, dynamic> json) =>
       _$LabelValueFromJson(json);
