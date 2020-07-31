@@ -14,11 +14,6 @@ import 'package:storeFlutter/components/form/address-button-form.dart';
 import 'package:storeFlutter/services/storage-service.dart';
 import 'package:storeFlutter/components/app-loading-dialog.dart';
 
-class LocalGlobalKeys {
-  static final globKeys1 = const Key('__GlobKey1__');
-  static final globKeys2 = const Key('__GlobKey2__');
-}
-
 class ManageAddressScreen extends StatefulWidget {
   final int id;
 
@@ -44,10 +39,10 @@ class _ManageAddressScreenState extends State<ManageAddressScreen> {
 
     // Call service api
     if (!isNew) {
-      print("widget id: ${widget.id}");
+      print("Existing case - ${widget.id}");
       GetIt.I<AddressBloc>().add(GetAddressByIDEvent(widget.id));
     } else {
-      print("call this");
+      print("New case");
       GetIt.I<AddressBloc>().add(GetCountryListEvent());
     }
     super.initState();
