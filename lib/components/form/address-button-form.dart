@@ -43,6 +43,7 @@ class _AddressButtonFormState extends State<AddressButtonForm> {
         if (state is GetAddressByIDSuccess) {
           setState(() {
             location = state.address;
+            isHome = state.address.locationType == "HOME" ? true : false;
           });
         } else if (state is SetAddressHomeSuccess) {
           setState(() {
