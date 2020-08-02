@@ -17,11 +17,13 @@
 	"pleaseTryAgain": "Please try again"
   },
   "general": {
-    "pleaseWait" : "Please Wait...",
-    "cancel" : "Cancel",
-    "reset" : "Reset",
-    "done" : "Done",
-    "noMoreResults" : "No More Results"
+    "pleaseWait": "Please Wait...",
+    "cancel": "Cancel",
+    "reset": "Reset",
+    "done": "Done",
+    "noMoreResults": "No More Results",
+    "deleteTitle": "Delete Confirmation",
+    "deleteContent": "Are you sure you want to proceed ?"
   },
   "dataSource" : {
     "general": {

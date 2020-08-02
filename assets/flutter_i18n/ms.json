@@ -13,8 +13,13 @@
 	"pleaseTryAgain" : "Sila cuba lagi"
   },
   "general": {
-    "pleaseWait" : "Sila Tunggu...",
-    "cancel" : "Batal"
+    "pleaseWait": "Sila Tunggu...",
+    "cancel": "Batal",
+    "reset": "Reset",
+    "done": "Done",
+    "noMoreResults": "No More Results",
+    "deleteTitle": "Delete Confirmation",
+    "deleteContent": "Are you sure you want to proceed ?"
   },
   "screen" : {
     "bottomNavigation": {
