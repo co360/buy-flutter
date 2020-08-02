@@ -10,9 +10,22 @@ class AddressService extends BaseRestService {
   List<Country> _countryLists;
 
   Future<List<Country>> getCountryList() async {
-    _countryLists = await CountryProvider.getAllCountries(
-        filter: CountryFilter(isName: true, isAlpha2Code: true));
+    if (_countryLists == null) {
+      _countryLists = await CountryProvider.getAllCountries(
+          filter: CountryFilter(isName: true, isAlpha2Code: true));
+    }
     return _countryLists;
+  }
+
+  String getCountryName(String code) {
+    if (_countryLists != null) {
+      for (var f in _countryLists) {
+        if (f.alpha2Code == code) {
+          return f.name;
+        }
+      }
+    }
+    return "";
   }
 
   Future<List<LabelValue>> getStateList(String country) async {
