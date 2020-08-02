@@ -5,8 +5,8 @@ class RatingService extends BaseRestService {
   String _endPoint = 'store-shopping-service/order-rate-review/byCompany';
 
   Future<List<OrderRateReview>> getAllRatingsByID(int companyId) async {
-    // var url = '$_endPoint/$companyId';
-    var url = '$_endPoint/202001080000018';
+    var url = '$_endPoint/$companyId';
+    // var url = '$_endPoint/202001080000018';
     return await dio.get(url).then((value) {
       print("[getAllRatingsByID] Response - ${value.data['object']}");
       List<OrderRateReview> lists = [];

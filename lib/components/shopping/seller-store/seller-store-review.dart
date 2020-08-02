@@ -256,7 +256,14 @@ class _SellerStoreReviewState extends State<SellerStoreReview> {
                       color: AppTheme.colorLink,
                       fontWeight: FontWeight.normal,
                       fontSize: 14)),
-              Text(" | " + f.salesOrder.orderItems[0].product.name,
+              Text(
+                  " | " +
+                      (f.salesOrder.orderItems != null &&
+                              f.salesOrder.orderItems.length > 0 &&
+                              f.salesOrder.orderItems[0].product != null &&
+                              f.salesOrder.orderItems[0].product.name != null
+                          ? f.salesOrder.orderItems[0].product.name
+                          : "-"),
                   style: TextStyle(
                       color: AppTheme.colorGray6,
                       fontWeight: FontWeight.normal,
