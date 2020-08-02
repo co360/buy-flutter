@@ -243,16 +243,20 @@ class _SellerStoreReviewState extends State<SellerStoreReview> {
             padding: EdgeInsets.only(left: 10.0, right: 10.0),
             child: Row(children: <Widget>[
               Text(
-                  f.dateCreated.day.toString() +
-                      "-" +
-                      f.dateCreated.month.toString() +
-                      "-" +
-                      f.dateCreated.year.toString(),
+                  f.dateCreated.day < 10
+                      ? "0" + f.dateCreated.day.toString()
+                      : f.dateCreated.day.toString() +
+                          "/" +
+                          (f.dateCreated.month < 10
+                              ? "0" + f.dateCreated.month.toString()
+                              : f.dateCreated.month.toString()) +
+                          "/" +
+                          f.dateCreated.year.toString(),
                   style: TextStyle(
                       color: AppTheme.colorLink,
                       fontWeight: FontWeight.normal,
                       fontSize: 14)),
-              Text(" | " + "Cili Segar",
+              Text(" | " + f.salesOrder.orderItems[0].product.name,
                   style: TextStyle(
                       color: AppTheme.colorGray6,
                       fontWeight: FontWeight.normal,

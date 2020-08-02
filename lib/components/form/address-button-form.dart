@@ -8,6 +8,7 @@ import 'package:storeFlutter/blocs/account/address-bloc.dart';
 import 'package:storeFlutter/models/identity/location.dart';
 import 'package:storeFlutter/util/app-theme.dart';
 import 'package:storeFlutter/components/app-button.dart';
+import 'package:storeFlutter/components/app-alert-dialog.dart';
 
 class AddressButtonForm extends StatefulWidget {
   final GlobalKey<FormBuilderState> _fbAddressLocal;
@@ -26,7 +27,7 @@ class AddressButtonForm extends StatefulWidget {
 class _AddressButtonFormState extends State<AddressButtonForm> {
   final StorageService storageService = GetIt.I<StorageService>();
   Location location;
-  bool isHome;
+  bool isHome = true;
 
   @override
   void initState() {
@@ -125,8 +126,15 @@ class _AddressButtonFormState extends State<AddressButtonForm> {
 
                       print("Delete Op");
                       print("id ${body.id}");
-
-                      GetIt.I<AddressBloc>().add(DeleteAddressEvent(body));
+                      AppAlertDialog(context,
+                          title: FlutterI18n.translate(
+                              context, "general.deleteTitle"),
+                          content: FlutterI18n.translate(
+                              context, "general.deleteContent"),
+                          cb: () => {
+                                GetIt.I<AddressBloc>()
+                                    .add(DeleteAddressEvent(body))
+                              });
                     } else {
                       print(widget._fbAddressLocal.currentState.value);
                       print('validation failed');

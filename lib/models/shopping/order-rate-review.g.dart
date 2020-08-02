@@ -16,6 +16,9 @@ OrderRateReview _$OrderRateReviewFromJson(Map<String, dynamic> json) {
     averageRating: (json['averageRating'] as num)?.toDouble(),
     title: json['title'] as String,
     review: json['review'] as String,
+    salesOrder: json['salesOrder'] == null
+        ? null
+        : SalesOrder.fromJson(json['salesOrder'] as Map<String, dynamic>),
     dateCreated: json['dateCreated'] == null
         ? null
         : LocalDate.fromJson(json['dateCreated'] as Map<String, dynamic>),
@@ -32,5 +35,6 @@ Map<String, dynamic> _$OrderRateReviewToJson(OrderRateReview instance) =>
       'averageRating': instance.averageRating,
       'title': instance.title,
       'review': instance.review,
+      'salesOrder': instance.salesOrder,
       'dateCreated': instance.dateCreated,
     };

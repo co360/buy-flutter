@@ -15,6 +15,9 @@ class AppHtml extends StatelessWidget {
       style: {
         "body": Style(
           margin: EdgeInsets.zero,
+          width: MediaQuery.of(context).size.width > 400
+              ? MediaQuery.of(context).size.width * 0.7
+              : MediaQuery.of(context).size.width,
         ),
         "p": Style(
           margin: EdgeInsets.only(bottom: 10),

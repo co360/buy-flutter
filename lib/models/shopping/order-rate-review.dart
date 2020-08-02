@@ -1,5 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:storeFlutter/models/local-date.dart';
+import 'package:storeFlutter/models/shopping/sales-order.dart';
 
 part 'order-rate-review.g.dart';
 
@@ -13,7 +14,7 @@ class OrderRateReview {
   double averageRating;
   String title;
   String review;
-  // salesOrder: SalesOrder;
+  SalesOrder salesOrder;
   LocalDate dateCreated;
 
   OrderRateReview(
@@ -25,6 +26,7 @@ class OrderRateReview {
       this.averageRating,
       this.title,
       this.review,
+      this.salesOrder,
       this.dateCreated});
 
   factory OrderRateReview.fromJson(Map<String, dynamic> json) =>
