@@ -5,6 +5,8 @@ import 'package:get_it/get_it.dart';
 import 'package:storeFlutter/blocs/account/address-bloc.dart';
 import 'package:storeFlutter/util/app-theme.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
+import 'package:storeFlutter/models/identity/location.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 
 class AddressSwitchForm extends StatefulWidget {
   AddressSwitchForm({
@@ -17,6 +19,8 @@ class AddressSwitchForm extends StatefulWidget {
 
 class _AddressSwitchFormState extends State<AddressSwitchForm> {
   bool isHome = true;
+  bool isDefaultShipping = false;
+  bool isDefaultBilling = false;
 
   @override
   void initState() {
@@ -33,6 +37,8 @@ class _AddressSwitchFormState extends State<AddressSwitchForm> {
         if (state is GetAddressByIDSuccess) {
           setState(() {
             isHome = state.address.locationType == "HOME" ? true : false;
+            isDefaultShipping = state.address.defaultShipping;
+            isDefaultBilling = state.address.defaultBilling;
           });
         } else if (state is SetAddressHomeSuccess) {
           setState(() {
@@ -46,7 +52,8 @@ class _AddressSwitchFormState extends State<AddressSwitchForm> {
 
   Widget buildChild(BuildContext context) {
     print("[AddressSwitchForm] buildChild");
-    return Container(
+    return Column(children: <Widget>[
+      Container(
         color: Colors.white,
         alignment: Alignment.centerLeft,
         margin: const EdgeInsets.only(top: 10),
@@ -120,6 +127,60 @@ class _AddressSwitchFormState extends State<AddressSwitchForm> {
               ),
             ),
           ],
-        ));
+        ),
+      ),
+      Container(
+          color: Colors.white,
+          margin: const EdgeInsets.only(top: 10),
+          padding: const EdgeInsets.only(left: 15, right: 10),
+          child: Column(
+            children: <Widget>[
+              Container(
+                height: 50,
+                margin: const EdgeInsets.only(bottom: 10),
+                child: FormBuilderSwitch(
+                  key: UniqueKey(),
+                  label: Text(FlutterI18n.translate(
+                      context, "account.address.makeDefaultShipping")),
+                  attribute: "defaultShipping",
+                  onChanged: (value) {
+                    setState(() {
+                      isDefaultShipping = value;
+                    });
+                  },
+                  initialValue:
+                      isDefaultShipping == null ? false : isDefaultShipping,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                  ),
+                ),
+              ),
+              Divider(
+                color: AppTheme.colorGray3,
+                height: 1,
+              ),
+              Container(
+                height: 50,
+                margin: const EdgeInsets.only(bottom: 10),
+                child: FormBuilderSwitch(
+                  key: UniqueKey(),
+                  label: Text(FlutterI18n.translate(
+                      context, "account.address.makeDefaultBillingAddress")),
+                  attribute: "defaultBilling",
+                  onChanged: (value) {
+                    setState(() {
+                      isDefaultBilling = value;
+                    });
+                  },
+                  initialValue:
+                      isDefaultBilling == null ? false : isDefaultBilling,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                  ),
+                ),
+              ),
+            ],
+          )),
+    ]);
   }
 }

@@ -40,10 +40,10 @@ class _ManageAddressScreenState extends State<ManageAddressScreen> {
     // Call service api
     if (!isNew) {
       print("Existing case - ${widget.id}");
-      GetIt.I<AddressBloc>().add(GetAddressByIDEvent(widget.id));
+      GetIt.I<AddressBloc>().add(GetAddressByIDEvent(context, widget.id));
     } else {
       print("New case");
-      GetIt.I<AddressBloc>().add(GetCountryListEvent());
+      GetIt.I<AddressBloc>().add(GetCountryListEvent(context));
     }
     super.initState();
   }

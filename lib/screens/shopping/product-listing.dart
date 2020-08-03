@@ -14,6 +14,7 @@ import 'package:storeFlutter/components/shopping/product-listing/product-listing
 import 'package:storeFlutter/components/shopping/shopping-cart-icon.dart';
 import 'package:storeFlutter/components/shopping/static-search-bar.dart';
 import 'package:storeFlutter/models/filter-type.dart';
+import 'package:storeFlutter/models/label-value.dart';
 import 'package:storeFlutter/models/query-result.dart';
 import 'package:storeFlutter/models/shopping/product.dart';
 import 'package:storeFlutter/screens/shopping/search-general.dart';
@@ -21,6 +22,7 @@ import 'package:storeFlutter/services/product-service.dart';
 import 'package:storeFlutter/services/storage-service.dart';
 import 'package:storeFlutter/util/app-theme.dart';
 import 'package:country_icons/country_icons.dart';
+import 'package:storeFlutter/datasource/country-data-source.dart';
 
 class ProductListingScreen extends StatelessWidget {
   @override
@@ -153,8 +155,8 @@ class FilterDrawer extends StatelessWidget {
             buildPriceRangeInput(context)
           ]);
         } else if (state is ProductListingCategoryResetState) {
-          bloc.add(ProductListingSearch(
-              ProductListingQueryFilter(query: "",category: null, filters: {})));
+          bloc.add(ProductListingSearch(ProductListingQueryFilter(
+              query: "", category: null, filters: {})));
           cacheMaxPrice = null;
           cacheMinPrice = null;
         } else if (state is ProductListingSearchError) {}
@@ -190,30 +192,40 @@ class FilterDrawer extends StatelessWidget {
                         : AppTheme.colorGray2,
 //            visualDensity: VisualDensity.compact,
                     padding: EdgeInsets.all(10),
-                    child: meta.code != 'COUNTRY' ? Text(
-                      e.name != null ? e.name : e.value,
-                      style: TextStyle(
-                          color: queryFilter.hasFilter(meta.code, e)
-                              ? Colors.white
-                              : Colors.black,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400),
-                    ) : Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Container(
-                            width: 30,
-                            height: 20,
-                            decoration: BoxDecoration(border: Border.all(width: 1)),
-                            child: Image.asset('icons/flags/png/${e.value.toLowerCase()}.png', package: 'country_icons',fit: BoxFit.cover,)
-                        ),
-                        SizedBox( width: 5,),
-                        Text(
-                          getCountryFullName(e.value),
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),),
-                      ],
-                    ),
+                    child: meta.code != 'COUNTRY'
+                        ? Text(
+                            e.name != null ? e.name : e.value,
+                            style: TextStyle(
+                                color: queryFilter.hasFilter(meta.code, e)
+                                    ? Colors.white
+                                    : Colors.black,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400),
+                          )
+                        : Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Container(
+                                  width: 30,
+                                  height: 20,
+                                  decoration: BoxDecoration(
+                                      border: Border.all(width: 1)),
+                                  child: Image.asset(
+                                    'icons/flags/png/${e.value.toLowerCase()}.png',
+                                    package: 'country_icons',
+                                    fit: BoxFit.cover,
+                                  )),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Text(
+                                getCountryFullName(e.value),
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    fontSize: 14, fontWeight: FontWeight.w400),
+                              ),
+                            ],
+                          ),
                   ))
               .toList(),
         ),
@@ -610,7 +622,10 @@ class ProductListingScreenParams {
 }
 
 String getCountryFullName(String code) {
-  List<Country> countries = GetIt.I<StorageService>().countries.where((element) => element.alpha2Code == code).toList();
-  String name = countries[0].name;
+  List<LabelValue> countries = GetIt.I<CountryDataSource>()
+      .datas
+      .where((element) => element.code == code)
+      .toList();
+  String name = countries[0].label;
   return name != null ? name : code;
 }
