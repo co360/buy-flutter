@@ -6,3 +6,5 @@ enum enumSellerStore {
 }
 
 enum enumManageAddress { NONE, COUNTRY, STATE, CITY, HOME, DIALOG }
+
+enum enumVariantViewType { ALL, SELECTION }

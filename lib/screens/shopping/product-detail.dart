@@ -27,6 +27,7 @@ import 'package:storeFlutter/models/shopping/product.dart';
 import 'package:storeFlutter/util/app-theme.dart';
 import 'package:storeFlutter/util/format-util.dart';
 import 'package:storeFlutter/util/resource-util.dart';
+import 'package:storeFlutter/util/enums-util.dart';
 
 class ProductDetailScreen extends StatelessWidget {
   @override
@@ -211,7 +212,7 @@ class ProductActionModalBody extends StatelessWidget {
                   padding: EdgeInsets.all(AppTheme.paddingStandard),
                   child: Column(
                     children: <Widget>[
-                      ProductVariant(product),
+                      ProductVariant(product, enumVariantViewType.SELECTION),
                     ],
                   ),
                 ),
@@ -690,7 +691,7 @@ class ProductDetailBody extends StatelessWidget {
       widgets.add(
         AppPanel(
           child: buildPanelContentWithAction(
-            ProductVariant(product),
+            ProductVariant(product, enumVariantViewType.ALL),
             () => CheckSession.checkSession(
               context,
               () {
