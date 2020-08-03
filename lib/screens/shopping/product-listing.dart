@@ -13,7 +13,9 @@ import 'package:storeFlutter/components/app-loading.dart';
 import 'package:storeFlutter/components/shopping/product-listing/product-listing-grid.dart';
 import 'package:storeFlutter/components/shopping/shopping-cart-icon.dart';
 import 'package:storeFlutter/components/shopping/static-search-bar.dart';
+import 'package:storeFlutter/datasource/business-type-data-source.dart';
 import 'package:storeFlutter/models/filter-type.dart';
+import 'package:storeFlutter/models/label-value.dart';
 import 'package:storeFlutter/models/query-result.dart';
 import 'package:storeFlutter/models/shopping/product.dart';
 import 'package:storeFlutter/screens/shopping/search-general.dart';
@@ -23,8 +25,10 @@ import 'package:storeFlutter/util/app-theme.dart';
 import 'package:country_icons/country_icons.dart';
 
 class ProductListingScreen extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
+    getBusinessTypeDatasource(context);
     final ProductListingScreenParams args =
         ModalRoute.of(context).settings.arguments;
     String query = args.query;
@@ -82,6 +86,7 @@ final GlobalKey<FormBuilderState> _fbKey = GlobalKey<FormBuilderState>();
 ProductListingSearchComplete cacheState;
 String cacheMinPrice;
 String cacheMaxPrice;
+List<LabelValue> businessType;
 
 class FilterDrawer extends StatelessWidget {
 //  const FilterDrawer({
@@ -153,8 +158,8 @@ class FilterDrawer extends StatelessWidget {
             buildPriceRangeInput(context)
           ]);
         } else if (state is ProductListingCategoryResetState) {
-          bloc.add(ProductListingSearch(
-              ProductListingQueryFilter(query: "",category: null, filters: {})));
+          bloc.add(ProductListingSearch(ProductListingQueryFilter(
+              query: "", category: null, filters: {})));
           cacheMaxPrice = null;
           cacheMinPrice = null;
         } else if (state is ProductListingSearchError) {}
@@ -190,30 +195,7 @@ class FilterDrawer extends StatelessWidget {
                         : AppTheme.colorGray2,
 //            visualDensity: VisualDensity.compact,
                     padding: EdgeInsets.all(10),
-                    child: meta.code != 'COUNTRY' ? Text(
-                      e.name != null ? e.name : e.value,
-                      style: TextStyle(
-                          color: queryFilter.hasFilter(meta.code, e)
-                              ? Colors.white
-                              : Colors.black,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400),
-                    ) : Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Container(
-                            width: 30,
-                            height: 20,
-                            decoration: BoxDecoration(border: Border.all(width: 1)),
-                            child: Image.asset('icons/flags/png/${e.value.toLowerCase()}.png', package: 'country_icons',fit: BoxFit.cover,)
-                        ),
-                        SizedBox( width: 5,),
-                        Text(
-                          getCountryFullName(e.value),
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),),
-                      ],
-                    ),
+                    child: filterUISwitchCase(meta.code, e, queryFilter),
                   ))
               .toList(),
         ),
@@ -609,8 +591,75 @@ class ProductListingScreenParams {
   ProductListingScreenParams({this.query, this.category});
 }
 
+Widget filterUISwitchCase(
+    String metaCode, FilterValue e, ProductListingQueryFilter queryFilter) {
+  switch (metaCode) {
+    case "COUNTRY":
+      {
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Container(
+                width: 30,
+                height: 20,
+                decoration: BoxDecoration(border: Border.all(width: 1)),
+                child: Image.asset(
+                  'icons/flags/png/${e.value.toLowerCase()}.png',
+                  package: 'country_icons',
+                  fit: BoxFit.cover,
+                )),
+            SizedBox(
+              width: 5,
+            ),
+            Text(
+              getCountryFullName(e.value),
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+            ),
+          ],
+        );
+      }
+    case "BUSINESS_TYPE" : {
+      return Text(getBusinessTypeName(e.value),
+          style: TextStyle(
+              color: queryFilter.hasFilter(metaCode, e)
+                  ? Colors.white
+                  : Colors.black,
+              fontSize: 14,
+              fontWeight: FontWeight.w400));
+    }
+    default:
+      {
+        return Text(e.name != null ? e.name : e.value,
+            style: TextStyle(
+                color: queryFilter.hasFilter(metaCode, e)
+                    ? Colors.white
+                    : Colors.black,
+                fontSize: 14,
+                fontWeight: FontWeight.w400));
+      }
+  }
+}
+
 String getCountryFullName(String code) {
-  List<Country> countries = GetIt.I<StorageService>().countries.where((element) => element.alpha2Code == code).toList();
+  List<Country> countries = GetIt.I<StorageService>()
+      .countries
+      .where((element) => element.alpha2Code == code)
+      .toList();
   String name = countries[0].name;
   return name != null ? name : code;
+}
+
+void getBusinessTypeDatasource(BuildContext context) async {
+  businessType = await GetIt.I<BusinessTypeDataSource>().getDataSource(context);
+}
+
+String getBusinessTypeName(String code) {
+  String name;
+  if(businessType != null && businessType.length > 0) {
+    LabelValue lv = businessType.where((element) => element.value == code)
+        .toList()[0];
+    name = lv.label;
+  }
+  return name != null ? name : "";
 }

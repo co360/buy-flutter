@@ -7,15 +7,17 @@ import 'package:storeFlutter/models/shopping/variant-type.dart';
 import 'package:storeFlutter/models/shopping/variant-value.dart';
 import 'package:storeFlutter/services/variant-type-service.dart';
 import 'package:storeFlutter/util/app-theme.dart';
+import 'package:storeFlutter/util/enums-util.dart';
 
 class ProductVariant extends StatelessWidget {
   final VariantTypeService _variantTypeService = GetIt.I<VariantTypeService>();
 
   final Product product;
+  final enumVariantViewType viewType;
 
 //  List<VariantOption> variantOptions = [];
 
-  ProductVariant(this.product);
+  ProductVariant(this.product, this.viewType);
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +105,7 @@ class ProductVariant extends StatelessWidget {
         if (option.parentOption == null) {
           final variantValue = sku.variantValues[i];
           VariantTypeValue temp = variantValue.variantType.variantTypeValues
-              .firstWhere((vv) => vv.id.toString() == variantValue.value);
+              .firstWhere((vv) => vv.id.toString() == variantValue.value, orElse: () => null);
           if (temp == null && !(variantValue.value is int)) {
             temp =
                 VariantTypeValue(0, variantValue.label, variantValue.value, 0);
@@ -129,21 +131,24 @@ class ProductVariant extends StatelessWidget {
 
           VariantTypeValue tempParent;
           tempParent = parentValue.variantType.variantTypeValues.firstWhere(
-              (finder) => finder.id.toString() == parentValue.value);
+              (finder) => finder.id.toString() == parentValue.value, orElse: () => null);
           if (tempParent == null && !(parentValue.value is int)) {
             tempParent =
                 VariantTypeValue(0, parentValue.label, parentValue.value, 0);
           }
           VariantTypeValue temp;
           temp = variantValue.variantType.variantTypeValues.firstWhere(
-              (finder) => finder.id.toString() == variantValue.value);
+              (finder) => finder.id.toString() == variantValue.value, orElse: () => null);
           if (temp == null && !(variantValue.value is int)) {
             temp =
                 VariantTypeValue(0, variantValue.label, variantValue.value, 0);
           }
 
           //if parent selected
-          if (option.parentOption.selectedValue != null) {
+          if (option.parentOption.selectedValue != null || viewType == enumVariantViewType.SELECTION) {
+            if(option.parentOption.selectedValue == null) {
+              option.parentOption.selectedValue = option.parentOption.values != null? option.parentOption.values[0] : "";
+            }
             if (tempParent.value == option.parentOption.selectedValue &&
                 !option.values.contains(temp.value)) {
               option.values.add(temp.value);
@@ -230,22 +235,29 @@ class VariantOptionValueWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppTheme.colorGray2,
-        borderRadius: BorderRadius.all(
-          Radius.circular(5),
+    return GestureDetector(
+      onTap: () {
+
+      },
+      behavior: HitTestBehavior.translucent,
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppTheme.colorGray2,
+          borderRadius: BorderRadius.all(
+            Radius.circular(5),
+          ),
         ),
-      ),
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          vertical: 8.0,
-          horizontal: 10,
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            vertical: 8.0,
+            horizontal: 10,
+          ),
+          child: Text(
+            value,
+            style: TextStyle(color: AppTheme.colorGray6),
+          ),
         ),
-        child: Text(
-          value,
-          style: TextStyle(color: AppTheme.colorGray6),
-        ),
+
       ),
     );
   }
