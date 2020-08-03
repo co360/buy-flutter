@@ -6,13 +6,13 @@ import 'package:get_it/get_it.dart';
 import 'package:storeFlutter/screens/account/manage-address.dart';
 import 'package:storeFlutter/models/identity/location.dart';
 import 'package:storeFlutter/services/storage-service.dart';
-import 'package:storeFlutter/services/address-service.dart';
+import 'package:storeFlutter/datasource/country-data-source.dart';
 import 'package:storeFlutter/util/app-theme.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 
 class AddressView extends StatelessWidget {
   final StorageService storageService = GetIt.I<StorageService>();
-  final AddressService addressService = GetIt.I<AddressService>();
+  final CountryDataSource countryDataSource = GetIt.I<CountryDataSource>();
   final List<Location> addresses;
 
   AddressView(this.addresses);
@@ -118,10 +118,9 @@ class AddressView extends StatelessWidget {
                             ", " +
                             _addresses[i].postcode +
                             ", " +
-                            (_addresses[i].countryCode == null
+                            (_addresses[i].countryName == null
                                 ? "Malaysia"
-                                : addressService
-                                    .getCountryName(_addresses[i].countryCode)),
+                                : _addresses[i].countryName),
                         style: TextStyle()),
                   ),
                 ],

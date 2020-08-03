@@ -1,14 +1,26 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
-import 'package:storeFlutter/services/address-service.dart';
+import 'package:storeFlutter/models/identity/company-profile.dart';
+import 'package:storeFlutter/models/identity/country.dart';
+import 'package:storeFlutter/services/company-profile-service.dart';
+import 'package:storeFlutter/datasource/country-data-source.dart';
+import 'package:storeFlutter/datasource/state-data-source.dart';
+import 'package:storeFlutter/datasource/city-data-source.dart';
 import 'package:storeFlutter/models/identity/location.dart';
 import 'package:storeFlutter/models/label-value.dart';
-import 'package:country_provider/country_provider.dart';
+import 'package:storeFlutter/services/country-service.dart';
 
 // bloc
 class AddressBloc extends Bloc<AddressEvent, AddressState> {
-  final AddressService _addressService = GetIt.I<AddressService>();
+  final CompanyProfileService _companyProfileService =
+      GetIt.I<CompanyProfileService>();
+  final CountryService _countryService = GetIt.I<CountryService>();
+  final CountryDataSource _countryDataSource = GetIt.I<CountryDataSource>();
+  final StateDataSource _stateDataSource = GetIt.I<StateDataSource>();
+  final CityDataSource _cityDataSource = GetIt.I<CityDataSource>();
+  CompanyProfile _companyProfile;
 
   AddressBloc() : super(AddressInitial());
 
@@ -17,51 +29,120 @@ class AddressBloc extends Bloc<AddressEvent, AddressState> {
     try {
       if (event is GetAddressEvent) {
         yield AddressInProgress();
-        List<Location> status = await _addressService.getAddress(event.id);
-        if (status != null) {
-          yield GetAddressSuccess(status);
+        _companyProfile = await _companyProfileService.findByCompany(event.id);
+        if (_companyProfile != null) {
+          List<Location> locations = [];
+          for (var f in _companyProfile.locations) {
+            Country country =
+                await _countryService.getCountryByCode(f.countryCode);
+            f.countryName = country.name;
+            locations.add(f);
+          }
+          yield GetAddressSuccess(locations);
         }
       } else if (event is SetAddressEvent) {
         yield AddressInProgress();
-        List<Location> status = await _addressService.setAddress(event.body);
-        if (status != null) {
-          yield SetAddressSuccess(status);
+        CompanyProfile tempCompanyProfile = _companyProfile;
+
+        List<LabelValue> _countries =
+            await _countryDataSource.getDataSource(event.context);
+
+        bool isNew = true;
+        bool setDefaultShipping = event.location.defaultShipping;
+        bool setDefaultBilling = event.location.defaultBilling;
+
+        for (var i = 0; i < tempCompanyProfile.locations.length; i++) {
+          if (setDefaultShipping) {
+            tempCompanyProfile.locations[i].defaultShipping = false;
+          }
+          if (setDefaultBilling) {
+            tempCompanyProfile.locations[i].defaultBilling = false;
+          }
+          if (event.location.id != null &&
+              tempCompanyProfile.locations[i].id == event.location.id) {
+            tempCompanyProfile.locations[i] = event.location;
+            for (var f in _countries) {
+              if (f.label == tempCompanyProfile.locations[i].countryCode) {
+                tempCompanyProfile.locations[i].countryName = f.label;
+                break;
+              }
+            }
+            isNew = false;
+          }
+        }
+
+        if (isNew) {
+          tempCompanyProfile.locations.add(event.location);
+          for (var f in _countries) {
+            if (f.code ==
+                tempCompanyProfile
+                    .locations[tempCompanyProfile.locations.length - 1]
+                    .countryCode) {
+              tempCompanyProfile
+                  .locations[tempCompanyProfile.locations.length - 1]
+                  .countryName = f.label;
+              break;
+            }
+          }
+        }
+
+        _companyProfile = await _companyProfileService
+            .updateCompanyProfile(tempCompanyProfile);
+        if (_companyProfile != null) {
+          yield SetAddressSuccess();
         }
       } else if (event is DeleteAddressEvent) {
-        yield AddressInProgress();
-        List<Location> status = await _addressService.deleteAddress(event.body);
-        if (status != null) {
-          yield DeleteAddressSuccess(status);
+        List<Location> newLocations;
+        CompanyProfile tempCompanyProfile = _companyProfile;
+
+        for (var i = 0; i < tempCompanyProfile.locations.length; i++) {
+          if (tempCompanyProfile.locations[i].id != event.id) {
+            newLocations.add(tempCompanyProfile.locations[i]);
+          }
+        }
+
+        _companyProfile = await _companyProfileService
+            .updateCompanyProfile(tempCompanyProfile);
+        if (_companyProfile != null) {
+          yield DeleteAddressSuccess();
         }
       } else if (event is GetAddressByIDEvent) {
         yield AddressInProgress();
-        Location status = await _addressService.getAddressByID(event.id);
-        List<Country> statusCountries = await _addressService.getCountryList();
-        List<LabelValue> statusStates =
-            await _addressService.getStateList(status.countryCode);
-        List<LabelValue> statusCities =
-            await _addressService.getCityList(status.state);
-        if (status != null) {
-          yield GetAddressByIDSuccess(
-              status, statusCountries, statusStates, statusCities);
+        String tempCountry = "MY";
+        String tempState = "Kuala Lumpur";
+        Location location;
+        for (var f in _companyProfile.locations) {
+          if (f.id == event.id) {
+            location = f;
+            tempCountry = f.countryCode;
+            tempState = f.state;
+            break;
+          }
         }
+        List<LabelValue> _countries =
+            await _countryDataSource.getDataSource(event.context);
+        List<LabelValue> _states = await _stateDataSource
+            .getDataSource(event.context, param: tempCountry);
+        List<LabelValue> _cities = await _cityDataSource
+            .getDataSource(event.context, param: tempState);
+        yield GetAddressByIDSuccess(location, _countries, _states, _cities);
       } else if (event is GetCityListEvent) {
         yield AddressInProgress();
-        List<LabelValue> status =
-            await _addressService.getCityList(event.state);
-        yield GetCityListSuccess(status);
+        List<LabelValue> _cities = await _cityDataSource
+            .getDataSource(event.context, param: event.state);
+        yield GetCityListSuccess(_cities);
       } else if (event is GetStateListEvent) {
         yield AddressInProgress();
-        List<LabelValue> status =
-            await _addressService.getStateList(event.country);
-        print(status);
-        yield GetStateListSuccess(status);
+        List<LabelValue> _states = await _stateDataSource
+            .getDataSource(event.context, param: event.country);
+        yield GetStateListSuccess(_states);
       } else if (event is SetAddressHomeEvent) {
         yield SetAddressHomeSuccess(event.isHome);
       } else if (event is GetCountryListEvent) {
         yield AddressInProgress();
-        List<Country> status = await _addressService.getCountryList();
-        yield GetCountryListSuccess(status);
+        List<LabelValue> _countries =
+            await _countryDataSource.getDataSource(event.context);
+        yield GetCountryListSuccess(_countries);
       } else {
         yield AddressInitial();
       }
@@ -95,7 +176,7 @@ class GetAddressSuccess extends AddressState {
 
 class GetAddressByIDSuccess extends AddressState {
   final Location address;
-  final List<Country> countries;
+  final List<LabelValue> countries;
   final List<LabelValue> states;
   final List<LabelValue> cities;
   GetAddressByIDSuccess(this.address, this.countries, this.states, this.cities);
@@ -113,7 +194,7 @@ class GetCityListSuccess extends AddressState {
 }
 
 class GetCountryListSuccess extends AddressState {
-  final List<Country> country;
+  final List<LabelValue> country;
   GetCountryListSuccess(this.country);
 
   @override
@@ -128,13 +209,7 @@ class GetStateListSuccess extends AddressState {
   List<Object> get props => [state];
 }
 
-class SetAddressSuccess extends AddressState {
-  final List<Location> addresses;
-  SetAddressSuccess(this.addresses);
-
-  @override
-  List<Object> get props => [addresses];
-}
+class SetAddressSuccess extends AddressState {}
 
 class SetAddressHomeSuccess extends AddressState {
   final bool isHome;
@@ -144,13 +219,7 @@ class SetAddressHomeSuccess extends AddressState {
   List<Object> get props => [isHome];
 }
 
-class DeleteAddressSuccess extends AddressState {
-  final List<Location> addresses;
-  DeleteAddressSuccess(this.addresses);
-
-  @override
-  List<Object> get props => [addresses];
-}
+class DeleteAddressSuccess extends AddressState {}
 
 class ManageAddressFailed extends AddressState {}
 
@@ -171,47 +240,60 @@ class GetAddressEvent extends AddressEvent {
 
 class GetAddressByIDEvent extends AddressEvent {
   final int id;
+  final BuildContext context;
 
-  GetAddressByIDEvent(this.id);
+  GetAddressByIDEvent(this.context, this.id);
 
   @override
-  List<Object> get props => [id];
+  List<Object> get props => [context, id];
 }
 
 class GetStateListEvent extends AddressEvent {
+  final BuildContext context;
   final String country;
-  GetStateListEvent(this.country);
+
+  GetStateListEvent(this.context, this.country);
 
   @override
-  List<Object> get props => [country];
+  List<Object> get props => [context, country];
 }
 
 class GetCityListEvent extends AddressEvent {
+  final BuildContext context;
   final String state;
-  GetCityListEvent(this.state);
+
+  GetCityListEvent(this.context, this.state);
 
   @override
-  List<Object> get props => [state];
+  List<Object> get props => [context, state];
 }
 
-class GetCountryListEvent extends AddressEvent {}
+class GetCountryListEvent extends AddressEvent {
+  final BuildContext context;
 
-class SetAddressEvent extends AddressEvent {
-  final Location body;
-
-  SetAddressEvent(this.body);
+  GetCountryListEvent(this.context);
 
   @override
-  List<Object> get props => [body];
+  List<Object> get props => [context];
+}
+
+class SetAddressEvent extends AddressEvent {
+  final BuildContext context;
+  final Location location;
+
+  SetAddressEvent(this.context, this.location);
+
+  @override
+  List<Object> get props => [context, location];
 }
 
 class DeleteAddressEvent extends AddressEvent {
-  final Location body;
+  final int id;
 
-  DeleteAddressEvent(this.body);
+  DeleteAddressEvent(this.id);
 
   @override
-  List<Object> get props => [body];
+  List<Object> get props => [id];
 }
 
 class SetAddressHomeEvent extends AddressEvent {

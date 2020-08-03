@@ -23,6 +23,7 @@ import 'package:storeFlutter/services/product-service.dart';
 import 'package:storeFlutter/services/storage-service.dart';
 import 'package:storeFlutter/util/app-theme.dart';
 import 'package:country_icons/country_icons.dart';
+import 'package:storeFlutter/datasource/country-data-source.dart';
 
 class ProductListingScreen extends StatelessWidget {
 
@@ -642,12 +643,13 @@ Widget filterUISwitchCase(
 }
 
 String getCountryFullName(String code) {
-  List<Country> countries = GetIt.I<StorageService>()
-      .countries
-      .where((element) => element.alpha2Code == code)
+  List<LabelValue> countries = GetIt.I<CountryDataSource>()
+      .datas
+      .where((element) => element.code == code)
       .toList();
-  String name = countries[0].name;
+  String name = countries[0].label;
   return name != null ? name : code;
+
 }
 
 void getBusinessTypeDatasource(BuildContext context) async {

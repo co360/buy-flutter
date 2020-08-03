@@ -14,11 +14,16 @@ import 'package:storeFlutter/blocs/shopping/sales-cart-bloc.dart';
 import 'package:storeFlutter/datasource/annual-revenue-data-source.dart';
 import 'package:storeFlutter/datasource/business-type-data-source.dart';
 import 'package:storeFlutter/datasource/total-employee-data-source.dart';
+import 'package:storeFlutter/datasource/country-data-source.dart';
+import 'package:storeFlutter/datasource/state-data-source.dart';
+import 'package:storeFlutter/datasource/city-data-source.dart';
 import 'package:storeFlutter/services/account-service.dart';
-import 'package:storeFlutter/services/address-service.dart';
 import 'package:storeFlutter/services/auth-service.dart';
 import 'package:storeFlutter/services/change-email-service.dart';
 import 'package:storeFlutter/services/change-password-service.dart';
+import 'package:storeFlutter/services/country-service.dart';
+import 'package:storeFlutter/services/state-service.dart';
+import 'package:storeFlutter/services/city-service.dart';
 import 'package:storeFlutter/services/company-profile-service.dart';
 import 'package:storeFlutter/services/company-service.dart';
 import 'package:storeFlutter/services/forget-password-service.dart';
@@ -38,7 +43,6 @@ Future setupLocator() async {
 
   GetIt.I.registerSingleton<AccountService>(AccountService());
   GetIt.I.registerSingleton<AuthService>(AuthService());
-  GetIt.I.registerSingleton<AddressService>(AddressService());
   GetIt.I.registerSingleton<ProductService>(ProductService());
   GetIt.I.registerSingleton<ProductCategoryService>(ProductCategoryService());
   GetIt.I.registerSingleton<ForgetPasswordService>(ForgetPasswordService());
@@ -51,11 +55,17 @@ Future setupLocator() async {
   GetIt.I.registerSingleton<VariantTypeService>(VariantTypeService());
   GetIt.I.registerSingleton<CompanyService>(CompanyService());
   GetIt.I.registerSingleton<CompanyProfileService>(CompanyProfileService());
+  GetIt.I.registerSingleton<CountryService>(CountryService());
+  GetIt.I.registerSingleton<StateService>(StateService());
+  GetIt.I.registerSingleton<CityService>(CityService());
 
   // Datasource
   GetIt.I.registerSingleton<BusinessTypeDataSource>(BusinessTypeDataSource());
   GetIt.I.registerSingleton<TotalEmployeeDataSource>(TotalEmployeeDataSource());
   GetIt.I.registerSingleton<AnnualRevenueDataSource>(AnnualRevenueDataSource());
+  GetIt.I.registerSingleton<CountryDataSource>(CountryDataSource());
+  GetIt.I.registerSingleton<StateDataSource>(StateDataSource());
+  GetIt.I.registerSingleton<CityDataSource>(CityDataSource());
 
   // Bloc
   GetIt.I.registerSingleton<BottomNavigationBloc>(BottomNavigationBloc());
