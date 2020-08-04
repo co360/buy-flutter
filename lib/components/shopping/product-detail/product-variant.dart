@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:storeFlutter/blocs/shopping/product-detail-bloc.dart';
 import 'package:storeFlutter/models/shopping/product.dart';
 import 'package:storeFlutter/models/shopping/sku.dart';
 import 'package:storeFlutter/models/shopping/variant-type-value.dart';
@@ -13,32 +15,59 @@ class ProductVariant extends StatelessWidget {
   final VariantTypeService _variantTypeService = GetIt.I<VariantTypeService>();
 
   final Product product;
-  final enumVariantViewType viewType;
+  enumVariantViewType viewType;
+  ProductDetailBloc productDetailBloc;
 
 //  List<VariantOption> variantOptions = [];
 
-  ProductVariant(this.product, this.viewType);
+  ProductVariant(this.product, this.viewType, this.productDetailBloc);
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<VariantOption>>(
-      future: buildVariantOptions(),
-      builder:
-          (BuildContext context, AsyncSnapshot<List<VariantOption>> snapshot) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+    List<VariantOption> options;
+    if (productDetailBloc == null) {
+      return FutureBuilder<List<VariantOption>>(
+        future: buildVariantOptions(),
+        builder: (BuildContext context,
+            AsyncSnapshot<List<VariantOption>> snapshot) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
 //          children: snapshot.data.map((e) => VariantOptionWidget(e)).toList(),
-          children: buildVariantOptionWidget(snapshot.data),
-        );
-      },
-    );
+            children: buildVariantOptionWidget(snapshot.data),
+          );
+        },
+      );
+    }
+    return BlocBuilder<ProductDetailBloc, ProductDetailState>(
+        bloc: productDetailBloc,
+        builder: (context, state) {
+          if (state is ProductDetailLoadComplete) {
+
+            productDetailBloc.add(ProductDetailSkuLoad(buildVariantOptions));
+          } else if (state is ProductDetailSkuInit) {
+            this.viewType = enumVariantViewType.SELECTION;
+            productDetailBloc.add(ProductDetailSkuLoad(buildVariantOptions));
+          } else if (state is ProductDetailSelectVariant) {
+            productDetailBloc.add(ProductDetailSkuCheck());
+          } else if (state is ProductDetailSkuViewLoaded) {
+            this.viewType = enumVariantViewType.ALL;
+          }
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children:
+                buildVariantOptionWidget(productDetailBloc.variantOptions),
+          );
+        });
   }
 
   List<Widget> buildVariantOptionWidget(List<VariantOption> options) {
     List<Widget> items = [];
 
     if (options != null) {
-      items = options.map((e) => VariantOptionWidget(e)).toList();
+      items = options
+          .map((e) =>
+              VariantOptionWidget(e, this.viewType, this.productDetailBloc))
+          .toList();
 
       items = items
           .expand((e) => [
@@ -105,7 +134,8 @@ class ProductVariant extends StatelessWidget {
         if (option.parentOption == null) {
           final variantValue = sku.variantValues[i];
           VariantTypeValue temp = variantValue.variantType.variantTypeValues
-              .firstWhere((vv) => vv.id.toString() == variantValue.value, orElse: () => null);
+              .firstWhere((vv) => vv.id.toString() == variantValue.value,
+                  orElse: () => null);
           if (temp == null && !(variantValue.value is int)) {
             temp =
                 VariantTypeValue(0, variantValue.label, variantValue.value, 0);
@@ -131,24 +161,23 @@ class ProductVariant extends StatelessWidget {
 
           VariantTypeValue tempParent;
           tempParent = parentValue.variantType.variantTypeValues.firstWhere(
-              (finder) => finder.id.toString() == parentValue.value, orElse: () => null);
+              (finder) => finder.id.toString() == parentValue.value,
+              orElse: () => null);
           if (tempParent == null && !(parentValue.value is int)) {
             tempParent =
                 VariantTypeValue(0, parentValue.label, parentValue.value, 0);
           }
           VariantTypeValue temp;
           temp = variantValue.variantType.variantTypeValues.firstWhere(
-              (finder) => finder.id.toString() == variantValue.value, orElse: () => null);
+              (finder) => finder.id.toString() == variantValue.value,
+              orElse: () => null);
           if (temp == null && !(variantValue.value is int)) {
             temp =
                 VariantTypeValue(0, variantValue.label, variantValue.value, 0);
           }
 
           //if parent selected
-          if (option.parentOption.selectedValue != null || viewType == enumVariantViewType.SELECTION) {
-            if(option.parentOption.selectedValue == null) {
-              option.parentOption.selectedValue = option.parentOption.values != null? option.parentOption.values[0] : "";
-            }
+          if (option.parentOption.selectedValue != null) {
             if (tempParent.value == option.parentOption.selectedValue &&
                 !option.values.contains(temp.value)) {
               option.values.add(temp.value);
@@ -193,6 +222,29 @@ class ProductVariant extends StatelessWidget {
 //        option.values.add(vtv.value);
 //      });
 //      variantOptions.add(option);
+      if (productDetailBloc.selectedSku != null) {
+        VariantTypeValue temp;
+        temp = productDetailBloc
+            .selectedSku.variantValues[i].variantType.variantTypeValues
+            .firstWhere((finder) =>
+                finder.id.toString() ==
+                productDetailBloc.selectedSku.variantValues[i].value);
+        if (temp == null &&
+            !(productDetailBloc.selectedSku.variantValues[i].value is int)) {
+          temp = VariantTypeValue(
+              0,
+              productDetailBloc.selectedSku.variantValues[i].label,
+              productDetailBloc.selectedSku.variantValues[i].value,
+              0);
+        }
+        if (temp != null) {
+          option.selectedValue = temp.value;
+        }
+      }
+      if (option.selectedValue == null &&
+          viewType == enumVariantViewType.SELECTION) {
+        option.selectedValue = option.values != null ? option.values[0] : "";
+      }
       variantOptions.add(option);
     }
 
@@ -202,8 +254,10 @@ class ProductVariant extends StatelessWidget {
 
 class VariantOptionWidget extends StatelessWidget {
   final VariantOption option;
+  final enumVariantViewType viewType;
+  ProductDetailBloc productDetailBloc;
 
-  VariantOptionWidget(this.option);
+  VariantOptionWidget(this.option, this.viewType, this.productDetailBloc);
 
   @override
   Widget build(BuildContext context) {
@@ -219,7 +273,9 @@ class VariantOptionWidget extends StatelessWidget {
           spacing: 10,
           runSpacing: 10,
           children: option.labels.map((e) {
-            return VariantOptionValueWidget(e, option);
+            int index = option.labels.indexOf(e);
+            return VariantOptionValueWidget(
+                index, option, viewType, productDetailBloc);
           }).toList(),
         ),
       ],
@@ -228,21 +284,33 @@ class VariantOptionWidget extends StatelessWidget {
 }
 
 class VariantOptionValueWidget extends StatelessWidget {
-  final String value;
+  final int index;
   final VariantOption option;
+  final enumVariantViewType viewType;
+  String label;
+  String value;
+  ProductDetailBloc productDetailBloc;
 
-  VariantOptionValueWidget(this.value, this.option);
+  VariantOptionValueWidget(
+      this.index, this.option, this.viewType, this.productDetailBloc) {
+    this.value = this.option.values[this.index];
+    this.label = this.option.labels[this.index];
+  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-
+//        this.option.selectedValue = this.value;
+        if (this.viewType == enumVariantViewType.SELECTION)
+          productDetailBloc.add(ProductDetailVariantSelection(option, value));
       },
       behavior: HitTestBehavior.translucent,
       child: Container(
         decoration: BoxDecoration(
-          color: AppTheme.colorGray2,
+          color: option.selectedValue == this.value
+              ? AppTheme.colorGray8
+              : AppTheme.colorGray2,
           borderRadius: BorderRadius.all(
             Radius.circular(5),
           ),
@@ -253,11 +321,13 @@ class VariantOptionValueWidget extends StatelessWidget {
             horizontal: 10,
           ),
           child: Text(
-            value,
-            style: TextStyle(color: AppTheme.colorGray6),
+            this.label,
+            style: TextStyle(
+                color: option.selectedValue == this.value
+                    ? Colors.white
+                    : AppTheme.colorGray6),
           ),
         ),
-
       ),
     );
   }
