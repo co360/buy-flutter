@@ -23,7 +23,6 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
   @override
   void initState() {
     print("Initialize ForgotPassword Screen and State");
-    // GetIt.I<ForgetPasswordBloc>().add(InitForgetPasswordEvent());
     super.initState();
   }
 

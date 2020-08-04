@@ -15,8 +15,10 @@ import 'package:storeFlutter/components/app-panel.dart';
 import 'package:storeFlutter/components/form/quantity-input.dart';
 import 'package:storeFlutter/components/shopping/product-detail/product-delivery-info.dart';
 import 'package:storeFlutter/components/shopping/product-detail/product-image-slider.dart';
+import 'package:storeFlutter/components/shopping/product-detail/product-review.dart';
 import 'package:storeFlutter/components/shopping/product-detail/product-variant.dart';
 import 'package:storeFlutter/components/shopping/product-detail/seller-store-button.dart';
+import 'package:storeFlutter/components/shopping/product-detail/product-rating.dart';
 import 'package:storeFlutter/components/shopping/shopping-cart-icon.dart';
 import 'package:storeFlutter/components/shopping/static-search-bar.dart';
 import 'package:storeFlutter/datasource/data-source-helper.dart';
@@ -637,29 +639,11 @@ class ProductDetailBody extends StatelessWidget {
   }
 
   Widget buildRatings(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        Text(
-          FlutterI18n.translate(context, "shopping.productDetail.ratings"),
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        SizedBox(height: 10),
-      ],
-    );
+    return ProductRating(product);
   }
 
   Widget buildReviews(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        Text(
-          FlutterI18n.translate(context, "shopping.productDetail.reviews"),
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        SizedBox(height: 10),
-      ],
-    );
+    return ProductReview(product);
   }
 
   Widget buildPanelContentWithAction(Widget child, Function onPressed) {
