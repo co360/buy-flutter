@@ -15,7 +15,6 @@ import 'package:storeFlutter/components/form/quantity-input.dart';
 import 'package:storeFlutter/models/identity/company.dart';
 import 'package:storeFlutter/models/shopping/quote-item.dart';
 import 'package:storeFlutter/models/shopping/sales-quotation.dart';
-import 'package:storeFlutter/services/company-service.dart';
 import 'package:storeFlutter/services/storage-service.dart';
 import 'package:storeFlutter/util/app-theme.dart';
 import 'package:storeFlutter/util/format-util.dart';
@@ -132,7 +131,7 @@ class ShoppingCartBodyWithContent extends StatelessWidget {
 
 //  ShoppingCartBodyWithContent(this.salesCart);
 
-  final CompanyService _companyService = GetIt.I<CompanyService>();
+//  final CompanyService _companyService = GetIt.I<CompanyService>();
 
   @override
   Widget build(BuildContext context) {
@@ -311,6 +310,9 @@ class ShoppingCartBodyWithContent extends StatelessWidget {
                       quantity: item.quantity.toInt(),
                       min: item.minOrderQty,
                       max: item.maxOrderQty,
+                      onChanged: (num) {
+                        bloc.add(SalesCartContentChangeQuantity(item, num));
+                      },
                     ),
                   ),
                   SizedBox(width: 10),

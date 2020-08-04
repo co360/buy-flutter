@@ -99,6 +99,13 @@ class SalesCartContentBloc
       calculateTotal();
 
       yield SalesCartContentLoadingComplete();
+    } else if (event is SalesCartContentChangeQuantity) {
+      yield SalesCartContentLoadingInProgress();
+
+      event.quoteItem.quantity = event.newQuantity.toDouble();
+      calculateTotal();
+
+      yield SalesCartContentLoadingComplete();
     }
   }
 
@@ -286,6 +293,9 @@ class SalesCartContentCheckAll extends SalesCartContentEvent {
   final bool checkState;
 
   SalesCartContentCheckAll(this.checkState);
+
+  @override
+  List<Object> get props => [checkState];
 }
 
 class SalesCartContentCheckCompany extends SalesCartContentEvent {
@@ -293,6 +303,8 @@ class SalesCartContentCheckCompany extends SalesCartContentEvent {
   final bool checkState;
 
   SalesCartContentCheckCompany(this.companyId, this.checkState);
+  @override
+  List<Object> get props => [companyId, checkState];
 }
 
 class SalesCartContentCheckQuotationItem extends SalesCartContentEvent {
@@ -300,6 +312,19 @@ class SalesCartContentCheckQuotationItem extends SalesCartContentEvent {
   final bool checkState;
 
   SalesCartContentCheckQuotationItem(this.quoteItem, this.checkState);
+
+  @override
+  List<Object> get props => [quoteItem, checkState];
+}
+
+class SalesCartContentChangeQuantity extends SalesCartContentEvent {
+  final QuoteItem quoteItem;
+  final int newQuantity;
+
+  SalesCartContentChangeQuantity(this.quoteItem, this.newQuantity);
+
+  @override
+  List<Object> get props => [quoteItem, newQuantity];
 }
 
 class CartGroup {

@@ -7,7 +7,7 @@ class QuantityInput extends StatefulWidget {
   final double min;
   final double max;
   final int step;
-  final ValueChanged<num> onChanged;
+  final ValueChanged<int> onChanged;
 
   double minValue;
   double maxValue;
