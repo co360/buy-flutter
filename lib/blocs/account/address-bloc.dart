@@ -47,6 +47,14 @@ class AddressBloc extends Bloc<AddressEvent, AddressState> {
         List<LabelValue> _countries =
             await _countryDataSource.getDataSource(event.context);
 
+        // Reconfigure the parameters
+        event.location.defaultShipping = event.location.defaultShipping == null
+            ? true
+            : event.location.defaultShipping;
+        event.location.defaultBilling = event.location.defaultBilling == null
+            ? true
+            : event.location.defaultBilling;
+
         bool isNew = true;
         bool setDefaultShipping = event.location.defaultShipping;
         bool setDefaultBilling = event.location.defaultBilling;
@@ -92,7 +100,7 @@ class AddressBloc extends Bloc<AddressEvent, AddressState> {
           yield SetAddressSuccess();
         }
       } else if (event is DeleteAddressEvent) {
-        List<Location> newLocations;
+        List<Location> newLocations = [];
         CompanyProfile tempCompanyProfile = _companyProfile;
 
         for (var i = 0; i < tempCompanyProfile.locations.length; i++) {
@@ -100,6 +108,7 @@ class AddressBloc extends Bloc<AddressEvent, AddressState> {
             newLocations.add(tempCompanyProfile.locations[i]);
           }
         }
+        tempCompanyProfile.locations = newLocations;
 
         _companyProfile = await _companyProfileService
             .updateCompanyProfile(tempCompanyProfile);
@@ -125,7 +134,8 @@ class AddressBloc extends Bloc<AddressEvent, AddressState> {
             .getDataSource(event.context, param: tempCountry);
         List<LabelValue> _cities = await _cityDataSource
             .getDataSource(event.context, param: tempState);
-        yield GetAddressByIDSuccess(location, _countries, _states, _cities);
+        yield GetAddressByIDSuccess(location, _countries, _states, _cities,
+            _companyProfile.locations.length);
       } else if (event is GetCityListEvent) {
         yield AddressInProgress();
         List<LabelValue> _cities = await _cityDataSource
@@ -179,10 +189,12 @@ class GetAddressByIDSuccess extends AddressState {
   final List<LabelValue> countries;
   final List<LabelValue> states;
   final List<LabelValue> cities;
-  GetAddressByIDSuccess(this.address, this.countries, this.states, this.cities);
+  final int total;
+  GetAddressByIDSuccess(
+      this.address, this.countries, this.states, this.cities, this.total);
 
   @override
-  List<Object> get props => [address, countries, this.states, this.cities];
+  List<Object> get props => [address, countries, states, cities, total];
 }
 
 class GetCityListSuccess extends AddressState {

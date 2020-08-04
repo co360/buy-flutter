@@ -88,9 +88,11 @@ class _ManageAddressScreenState extends State<ManageAddressScreen> {
                 .show(context);
             GetIt.I<AddressBloc>().add(InitAddressEvent());
           } else if (state is SetAddressSuccess) {
-            Navigator.pop(context);
+            // Navigator.pop(context);
+            Navigator.popUntil(context, ModalRoute.withName('/'));
           } else if (state is DeleteAddressSuccess) {
-            Navigator.pop(context);
+            // Navigator.pop(context);
+            Navigator.popUntil(context, ModalRoute.withName('/'));
           }
         }
       },

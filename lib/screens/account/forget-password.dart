@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:get_it/get_it.dart';
 import 'package:storeFlutter/blocs/account/forget-password-bloc.dart';
 import 'package:storeFlutter/components/app-button.dart';
 import 'package:storeFlutter/components/app-card.dart';
@@ -24,97 +23,106 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
   @override
   void initState() {
     print("Initialize ForgotPassword Screen and State");
-    GetIt.I<ForgetPasswordBloc>().add(InitForgetPasswordEvent());
+    // GetIt.I<ForgetPasswordBloc>().add(InitForgetPasswordEvent());
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: I18nText("account.forgetPassword"),
-      ),
-      body: SafeArea(
-        child: GestureDetector(
-          onTap: () => {FocusScope.of(context).requestFocus(new FocusNode())},
-          behavior: HitTestBehavior.translucent,
-          child: LayoutBuilder(
-            builder:
-                (BuildContext context, BoxConstraints viewportConstraints) {
-              return SingleChildScrollView(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    minHeight: viewportConstraints.maxHeight,
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.all(AppTheme.paddingStandard),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
+    return BlocProvider<ForgetPasswordBloc>(
+      create: (context) => ForgetPasswordBloc(),
+      child: Builder(builder: (context) {
+        return Scaffold(
+          appBar: AppBar(
+            title: I18nText("account.forgetPassword"),
+          ),
+          body: SafeArea(
+            child: GestureDetector(
+              onTap: () =>
+                  {FocusScope.of(context).requestFocus(new FocusNode())},
+              behavior: HitTestBehavior.translucent,
+              child: LayoutBuilder(
+                builder:
+                    (BuildContext context, BoxConstraints viewportConstraints) {
+                  return SingleChildScrollView(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minHeight: viewportConstraints.maxHeight,
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.all(AppTheme.paddingStandard),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 30.0, horizontal: 60),
-                              child: Image(
-                                image: AssetImage('assets/images/eDagang.png'),
-                              ),
-                            ),
-                            AppCard(
-                              BlocBuilder<ForgetPasswordBloc,
-                                      ForgetPasswordState>(
-                                  bloc: GetIt.I<ForgetPasswordBloc>(),
-                                  builder: (context, state) {
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: <Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 30.0, horizontal: 60),
+                                  child: Image(
+                                    image:
+                                        AssetImage('assets/images/eDagang.png'),
+                                  ),
+                                ),
+                                AppCard(
+                                  BlocBuilder<ForgetPasswordBloc,
+                                          ForgetPasswordState>(
+                                      builder: (context, state) {
+                                    ForgetPasswordBloc bloc =
+                                        BlocProvider.of<ForgetPasswordBloc>(
+                                            context);
                                     print("current state $state");
                                     if (state is ForgetPasswordSuccess) {
                                       return generateConfirmationForm(context);
                                     } else {
-                                      return buildForm(context);
+                                      return buildForm(context, bloc);
                                     }
                                   }),
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 10),
-                            ),
-                            FlatButton(
-                              splashColor: Colors.transparent,
-                              highlightColor: Colors.transparent,
-                              child: Text(
-                                FlutterI18n.translate(
-                                    context, "account.backToLogin"),
-                                style: TextStyle(
-                                  color: AppTheme.colorLink,
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 20, vertical: 10),
                                 ),
-                              ),
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
+                                FlatButton(
+                                  splashColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
+                                  child: Text(
+                                    FlutterI18n.translate(
+                                        context, "account.backToLogin"),
+                                    style: TextStyle(
+                                      color: AppTheme.colorLink,
+                                    ),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                              ],
+                            ),
+                            Column(
+                              children: <Widget>[
+                                I18nText("account.inCollaborationWith"),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 20.0, horizontal: 60),
+                                  child: Image(
+                                    image: AssetImage(
+                                        'assets/images/smart-tradzt.png'),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                        Column(
-                          children: <Widget>[
-                            I18nText("account.inCollaborationWith"),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 20.0, horizontal: 60),
-                              child: Image(
-                                image: AssetImage(
-                                    'assets/images/smart-tradzt.png'),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
-                ),
-              );
-            },
+                  );
+                },
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      }),
     );
   }
 
@@ -162,15 +170,14 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
     );
   }
 
-  Widget buildForm(BuildContext context) {
+  Widget buildForm(BuildContext context, ForgetPasswordBloc bloc) {
     return BlocListener<ForgetPasswordBloc, ForgetPasswordState>(
-      bloc: GetIt.I<ForgetPasswordBloc>(),
       listener: (context, state) {
         print("current state $state");
         if (state is ForgetPasswordFailed) {
           AppNotification(FlutterI18n.translate(context, "error.notExist"))
               .show(context);
-          GetIt.I<ForgetPasswordBloc>().add(InitForgetPasswordEvent());
+          bloc.add(InitForgetPasswordEvent());
         }
       },
       child: Column(
@@ -209,8 +216,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                     ForgetPasswordBody.fromJson(_fbKey.currentState.value);
                 print(body);
 
-                GetIt.I<ForgetPasswordBloc>()
-                    .add(LoadForgetPasswordEvent(body, context));
+                bloc.add(LoadForgetPasswordEvent(body, context));
               } else {
                 print(_fbKey.currentState.value);
                 print('validation failed');

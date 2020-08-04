@@ -1,10 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:storeFlutter/blocs/account/address-bloc.dart';
 import 'package:storeFlutter/blocs/account/auth-bloc.dart';
-import 'package:storeFlutter/blocs/account/change-email-bloc.dart';
-import 'package:storeFlutter/blocs/account/change-password-bloc.dart';
-import 'package:storeFlutter/blocs/account/forget-password-bloc.dart';
-import 'package:storeFlutter/blocs/account/profile-bloc.dart';
 import 'package:storeFlutter/blocs/account/signup-bloc.dart';
 import 'package:storeFlutter/blocs/language/language-bloc.dart';
 import 'package:storeFlutter/blocs/navigation/bottom-navigation-bloc.dart';
@@ -75,11 +71,7 @@ Future setupLocator() async {
   GetIt.I.registerSingleton<SalesCartBloc>(SalesCartBloc(authBloc));
 
   // TODO remove singleton registration if bloc is only need to exist on certain screen
-  GetIt.I.registerSingleton<ProfileBloc>(ProfileBloc());
   GetIt.I.registerSingleton<AddressBloc>(AddressBloc());
-  GetIt.I.registerSingleton<ForgetPasswordBloc>(ForgetPasswordBloc());
-  GetIt.I.registerSingleton<ChangePasswordBloc>(ChangePasswordBloc());
-  GetIt.I.registerSingleton<ChangeEmailBloc>(ChangeEmailBloc());
   GetIt.I.registerSingleton<ProductCategoryBloc>(ProductCategoryBloc());
   GetIt.I.registerSingleton<SignUpBloc>(SignUpBloc());
   GetIt.I.registerSingleton<RatingBloc>(RatingBloc());

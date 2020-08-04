@@ -21,37 +21,39 @@ class _ChangeEmailScreenState extends State<ChangeEmailScreen> {
   @override
   void initState() {
     print("Initialize ChangeEmailScreen Screen and State");
-    GetIt.I<ChangeEmailBloc>().add(InitChangeEmailEvent());
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: I18nText("account.changeEmailAddress"),
-      ),
-      body: SafeArea(
-        child: GestureDetector(
-          onTap: () => {FocusScope.of(context).requestFocus(new FocusNode())},
-          behavior: HitTestBehavior.translucent,
-          child: LayoutBuilder(
-            builder:
-                (BuildContext context, BoxConstraints viewportConstraints) {
-              return SingleChildScrollView(
-                child: Column(children: <Widget>[
-                  SizedBox(
-                    height: 120,
-                    child: Container(
-                      margin: const EdgeInsets.only(top: 20.0),
-                      padding: const EdgeInsets.all(10.0),
-                      color: Colors.white,
-                      child: buildForm(context),
-                    ),
-                  ),
-                  BlocBuilder<ChangeEmailBloc, ChangeEmailState>(
-                      bloc: GetIt.I<ChangeEmailBloc>(),
-                      builder: (context, state) {
+    return BlocProvider<ChangeEmailBloc>(
+      create: (context) => ChangeEmailBloc(),
+      child: Builder(builder: (context) {
+        return Scaffold(
+          appBar: AppBar(
+            title: I18nText("account.changeEmailAddress"),
+          ),
+          body: SafeArea(
+            child: GestureDetector(
+              onTap: () =>
+                  {FocusScope.of(context).requestFocus(new FocusNode())},
+              behavior: HitTestBehavior.translucent,
+              child: LayoutBuilder(
+                builder:
+                    (BuildContext context, BoxConstraints viewportConstraints) {
+                  return SingleChildScrollView(
+                    child: Column(children: <Widget>[
+                      SizedBox(
+                        height: 120,
+                        child: Container(
+                          margin: const EdgeInsets.only(top: 20.0),
+                          padding: const EdgeInsets.all(10.0),
+                          color: Colors.white,
+                          child: buildForm(context),
+                        ),
+                      ),
+                      BlocBuilder<ChangeEmailBloc, ChangeEmailState>(
+                          builder: (context, state) {
                         print("current state $state");
                         switch (state.runtimeType) {
                           case ChangeEmailSuccess:
@@ -64,12 +66,14 @@ class _ChangeEmailScreenState extends State<ChangeEmailScreen> {
                             return ChangeEmailFirstLayer();
                         }
                       }),
-                ]),
-              );
-            },
+                    ]),
+                  );
+                },
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      }),
     );
   }
 
