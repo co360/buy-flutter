@@ -43,25 +43,15 @@ class _ViewProfileScreenState extends State<ViewProfileScreen> {
         ],
       ),
       body: SafeArea(
-        child: GestureDetector(
-          onTap: () => {FocusScope.of(context).requestFocus(new FocusNode())},
-          behavior: HitTestBehavior.translucent,
-          child: LayoutBuilder(
-            builder:
-                (BuildContext context, BoxConstraints viewportConstraints) {
-              return Container(
-                padding: const EdgeInsets.only(top: 20.0),
-                child: ListView(children: <Widget>[
-                  AppListTileTwoCols(
-                      FlutterI18n.translate(context, "account.name"),
-                      storageService.loginUser.name),
-                  AppListTileTwoCols(
-                      FlutterI18n.translate(context, "account.mobileContact"),
-                      storageService.loginUser.contactNo),
-                ]),
-              );
-            },
-          ),
+        child: Container(
+          padding: const EdgeInsets.only(top: 20.0),
+          child: ListView(children: <Widget>[
+            AppListTileTwoCols(FlutterI18n.translate(context, "account.name"),
+                storageService.loginUser.name),
+            AppListTileTwoCols(
+                FlutterI18n.translate(context, "account.mobileContact"),
+                storageService.loginUser.contactNo),
+          ]),
         ),
       ),
     );

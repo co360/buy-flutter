@@ -24,13 +24,12 @@ class _ChangeEmailFirstLayerState extends State<ChangeEmailFirstLayer> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<ChangeEmailBloc, ChangeEmailState>(
-      bloc: GetIt.I<ChangeEmailBloc>(),
       listener: (context, state) {
         print("current state $state");
         if (state is ChangeEmailFailed) {
           AppNotification(FlutterI18n.translate(context, "error.emailExisted"))
               .show(context);
-          GetIt.I<ChangeEmailBloc>().add(InitChangeEmailEvent());
+          BlocProvider.of<ChangeEmailBloc>(context).add(InitChangeEmailEvent());
         } else if (state is ConfirmCodeSuccess) {
           Navigator.pop(context);
         }
@@ -83,7 +82,7 @@ class _ChangeEmailFirstLayerState extends State<ChangeEmailFirstLayer> {
                       body.email = storageService.loginUser.email;
                       print(body);
 
-                      GetIt.I<ChangeEmailBloc>()
+                      BlocProvider.of<ChangeEmailBloc>(context)
                           .add(SendChangeEmailEvent(body, context));
                     } else {
                       print(_fbKey.currentState.value);

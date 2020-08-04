@@ -4,8 +4,8 @@ import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:storeFlutter/blocs/account/address-bloc.dart';
-import 'package:country_provider/country_provider.dart';
 import 'package:storeFlutter/models/label-value.dart';
+import 'package:storeFlutter/util/app-theme.dart';
 
 class DropDownAddressForm extends StatefulWidget {
   DropDownAddressForm({
@@ -17,7 +17,7 @@ class DropDownAddressForm extends StatefulWidget {
 }
 
 class _DropDownAddressFormState extends State<DropDownAddressForm> {
-  List<Country> countries = [];
+  List<LabelValue> countries = [];
   List<LabelValue> states = [];
   List<LabelValue> cities = [];
 
@@ -83,7 +83,7 @@ class _DropDownAddressFormState extends State<DropDownAddressForm> {
   }
 
   Widget buildChild(BuildContext context) {
-    print("[DropDownAddressForm] buildChild");
+    print("[DropDownAddressForm] buildChild ${countries.length}");
     return Column(
       children: <Widget>[
         FormBuilderDropdown(
@@ -94,8 +94,15 @@ class _DropDownAddressFormState extends State<DropDownAddressForm> {
               : selectCountry,
           elevation: 16,
           decoration: InputDecoration(
-              labelText:
-                  FlutterI18n.translate(context, "account.address.country")),
+            labelText:
+                FlutterI18n.translate(context, "account.address.country"),
+            enabledBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: AppTheme.colorGray2),
+            ),
+            focusedBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: AppTheme.colorGray2),
+            ),
+          ),
           hint: Text(
               FlutterI18n.translate(context, "account.address.selectCountry")),
           validators: [
@@ -108,7 +115,7 @@ class _DropDownAddressFormState extends State<DropDownAddressForm> {
           onChanged: (val) {
             print("onChanged Country $val");
             selectCountry = val;
-            GetIt.I<AddressBloc>().add(GetStateListEvent(val));
+            GetIt.I<AddressBloc>().add(GetStateListEvent(context, val));
           },
           items: countries == null || countries.length == 0
               ? [DropdownMenuItem(value: "None", child: Text("None"))]
@@ -116,8 +123,8 @@ class _DropDownAddressFormState extends State<DropDownAddressForm> {
                   DropdownMenuItem(value: "None", child: Text("None")),
                   ...countries
                       .map((country) => DropdownMenuItem(
-                          value: country.alpha2Code,
-                          child: Text("${country.name}")))
+                          value: country.value,
+                          child: Text("${country.label}")))
                       .toList()
                 ],
         ),
@@ -128,8 +135,14 @@ class _DropDownAddressFormState extends State<DropDownAddressForm> {
           initialValue:
               states == null || states.length == 0 ? "None" : selectState,
           decoration: InputDecoration(
-              labelText:
-                  FlutterI18n.translate(context, "account.address.state")),
+            labelText: FlutterI18n.translate(context, "account.address.state"),
+            enabledBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: AppTheme.colorGray2),
+            ),
+            focusedBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: AppTheme.colorGray2),
+            ),
+          ),
           hint: Text(
               FlutterI18n.translate(context, "account.address.selectState")),
           elevation: 16,
@@ -142,7 +155,7 @@ class _DropDownAddressFormState extends State<DropDownAddressForm> {
           ],
           onChanged: (val) {
             selectState = val;
-            GetIt.I<AddressBloc>().add(GetCityListEvent(val));
+            GetIt.I<AddressBloc>().add(GetCityListEvent(context, val));
           },
           items: states == null || states.length == 0
               ? [DropdownMenuItem(value: "None", child: Text("None"))]
@@ -162,8 +175,14 @@ class _DropDownAddressFormState extends State<DropDownAddressForm> {
               cities == null || cities.length == 0 ? "None" : selectCity,
           elevation: 16,
           decoration: InputDecoration(
-              labelText:
-                  FlutterI18n.translate(context, "account.address.city")),
+            labelText: FlutterI18n.translate(context, "account.address.city"),
+            enabledBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: AppTheme.colorGray2),
+            ),
+            focusedBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: AppTheme.colorGray2),
+            ),
+          ),
           hint: Text(
               FlutterI18n.translate(context, "account.address.selectCity")),
           validators: [

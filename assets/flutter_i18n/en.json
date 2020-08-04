@@ -132,7 +132,14 @@
       "location" : "Location",
       "totalEmployees" : "Total Employees",
       "yearRegistered" : "Year Registered",
-      "totalAnnualRevenue" : "Total Annual Revenue"
+      "totalAnnualRevenue" : "Total Annual Revenue",
+      "productQuality": "Product Quality",
+      "ontimeDelivery": "On-Time Delivery",
+      "service": "Service",
+      "easeOfDoingBusiness": "Ease Of Doing Business",
+      "seeAll": "See All",
+      "seeLess": "See Less",
+      "noReviewsYet": "This product has no reviews"
     },
     "filter": {
       "priceRange": "Price Range (RM)"
@@ -153,7 +160,7 @@
       "reviewsLabel": "Reviews",
       "totalProduct": "Products",
       "noRatingsYet": "No Ratings Yet",
-      "noReviewsYet": "This Seller Has No Reviews"
+      "noReviewsYet": "This seller has no reviews"
     }
   },
   "cart": {

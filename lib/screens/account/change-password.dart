@@ -3,15 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:storeFlutter/components/app-button.dart';
 import 'package:storeFlutter/components/app-loading-dialog.dart';
 import 'package:storeFlutter/components/app-notification.dart';
-import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:storeFlutter/services/storage-service.dart';
-import 'package:storeFlutter/util/app-theme.dart';
 import 'package:storeFlutter/blocs/account/change-password-bloc.dart';
-import 'package:storeFlutter/util/form-util.dart';
 import 'package:storeFlutter/models/identity/change-password-body.dart';
+import 'package:storeFlutter/util/form-util.dart';
+import 'package:storeFlutter/util/app-theme.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   @override
@@ -32,40 +32,47 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: I18nText("account.changePassword"),
-      ),
-      body: SafeArea(
-        child: GestureDetector(
-          onTap: () => {FocusScope.of(context).requestFocus(new FocusNode())},
-          behavior: HitTestBehavior.translucent,
-          child: LayoutBuilder(
-            builder:
-                (BuildContext context, BoxConstraints viewportConstraints) {
-              return SingleChildScrollView(
-                child: SizedBox(
-                  height: 550,
-                  child: Container(
-                    margin: const EdgeInsets.only(top: 20.0),
-                    padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-                    color: Colors.white,
-                    child: buildForm(context),
-                  ),
-                ),
-              );
-            },
+    return BlocProvider<ChangePasswordBloc>(
+      create: (context) => ChangePasswordBloc(),
+      child: Builder(builder: (context) {
+        return Scaffold(
+          appBar: AppBar(
+            title: I18nText("account.changePassword"),
           ),
-        ),
-      ),
+          body: SafeArea(
+            child: GestureDetector(
+              onTap: () =>
+                  {FocusScope.of(context).requestFocus(new FocusNode())},
+              behavior: HitTestBehavior.translucent,
+              child: LayoutBuilder(
+                builder:
+                    (BuildContext context, BoxConstraints viewportConstraints) {
+                  return SingleChildScrollView(
+                    child: SizedBox(
+                      height: 550,
+                      child: Container(
+                        margin: const EdgeInsets.only(top: 20.0),
+                        padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+                        color: Colors.white,
+                        child: buildForm(context,
+                            BlocProvider.of<ChangePasswordBloc>(context)),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        );
+      }),
     );
   }
 
-  Widget buildForm(BuildContext context) {
+  Widget buildForm(BuildContext context, ChangePasswordBloc bloc) {
     return BlocListener<ChangePasswordBloc, ChangePasswordState>(
-      bloc: GetIt.I<ChangePasswordBloc>(),
       listener: (context, state) {
         print("current state $state");
+
         if (state is ChangePasswordInProgress) {
           AppLoadingDialog(context);
           hasDialog = true;
@@ -78,7 +85,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             AppNotification(
                     FlutterI18n.translate(context, "error.oldPasswordInvalid"))
                 .show(context);
-            GetIt.I<ChangePasswordBloc>().add(InitChangePasswordEvent());
+            bloc.add(InitChangePasswordEvent());
           } else if (state is ChangePasswordSuccess) {
             Navigator.pop(context);
           }
@@ -205,7 +212,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     body.userId = storageService.loginUser.userName;
                     print(body);
 
-                    GetIt.I<ChangePasswordBloc>().add(SaveChangePasswordEvent(
+                    bloc.add(SaveChangePasswordEvent(
                         storageService.loginUser.userName, body, context));
                   } else {
                     print(_fbKey.currentState.value);

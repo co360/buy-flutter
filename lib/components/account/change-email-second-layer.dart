@@ -28,13 +28,12 @@ class _ChangeEmailSecondLayerState extends State<ChangeEmailSecondLayer> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<ChangeEmailBloc, ChangeEmailState>(
-      bloc: GetIt.I<ChangeEmailBloc>(),
       listener: (context, state) {
         print("current state $state");
         if (state is ConfirmCodeFailed) {
           AppNotification(FlutterI18n.translate(context, "error.emailExisted"))
               .show(context);
-          GetIt.I<ChangeEmailBloc>().add(InitChangeEmailEvent());
+          BlocProvider.of<ChangeEmailBloc>(context).add(InitChangeEmailEvent());
         } else if (state is ConfirmCodeSuccess) {
           Navigator.pop(context);
         }
@@ -69,8 +68,10 @@ class _ChangeEmailSecondLayerState extends State<ChangeEmailSecondLayer> {
               alignment: Alignment.topLeft,
               child: FlatButton(
                 textColor: AppTheme.colorLink,
-                onPressed: () =>
-                    {GetIt.I<ChangeEmailBloc>().add(InitChangeEmailEvent())},
+                onPressed: () => {
+                  BlocProvider.of<ChangeEmailBloc>(context)
+                      .add(InitChangeEmailEvent())
+                },
                 child: Text(
                     FlutterI18n.translate(context, "account.useDiffEmail"),
                     textAlign: TextAlign.left),
@@ -284,13 +285,15 @@ class _ChangeEmailSecondLayerState extends State<ChangeEmailSecondLayer> {
     ChangeEmailBody body =
         ChangeEmailBody(storageService.loginUser.email, newEmail, null);
 
-    GetIt.I<ChangeEmailBloc>().add(SendChangeEmailEvent(body, context));
+    BlocProvider.of<ChangeEmailBloc>(context)
+        .add(SendChangeEmailEvent(body, context));
   }
 
   sendConfirmationCode(BuildContext context, String newEmail, String code) {
     ChangeEmailBody body =
         ChangeEmailBody(storageService.loginUser.email, newEmail, code);
 
-    GetIt.I<ChangeEmailBloc>().add(SendConfirmCodeEvent(body, context));
+    BlocProvider.of<ChangeEmailBloc>(context)
+        .add(SendConfirmCodeEvent(body, context));
   }
 }

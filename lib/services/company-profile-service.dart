@@ -10,4 +10,12 @@ class CompanyProfileService extends BaseRestService {
 
     return CompanyProfile.fromJson(response.data['object']);
   }
+
+  Future<CompanyProfile> updateCompanyProfile(
+      CompanyProfile companyProfile) async {
+    var url = '$_endPoint/${companyProfile.id}';
+    final response = await dio.put(url, data: companyProfile.toJson());
+
+    return CompanyProfile.fromJson(response.data['object']);
+  }
 }

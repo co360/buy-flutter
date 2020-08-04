@@ -40,10 +40,10 @@ class _ManageAddressScreenState extends State<ManageAddressScreen> {
     // Call service api
     if (!isNew) {
       print("Existing case - ${widget.id}");
-      GetIt.I<AddressBloc>().add(GetAddressByIDEvent(widget.id));
+      GetIt.I<AddressBloc>().add(GetAddressByIDEvent(context, widget.id));
     } else {
       print("New case");
-      GetIt.I<AddressBloc>().add(GetCountryListEvent());
+      GetIt.I<AddressBloc>().add(GetCountryListEvent(context));
     }
     super.initState();
   }
@@ -88,9 +88,11 @@ class _ManageAddressScreenState extends State<ManageAddressScreen> {
                 .show(context);
             GetIt.I<AddressBloc>().add(InitAddressEvent());
           } else if (state is SetAddressSuccess) {
-            Navigator.pop(context);
+            // Navigator.pop(context);
+            Navigator.popUntil(context, ModalRoute.withName('/'));
           } else if (state is DeleteAddressSuccess) {
-            Navigator.pop(context);
+            // Navigator.pop(context);
+            Navigator.popUntil(context, ModalRoute.withName('/'));
           }
         }
       },

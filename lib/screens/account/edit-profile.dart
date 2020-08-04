@@ -32,36 +32,41 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: I18nText("account.editProfile"),
-      ),
-      body: SafeArea(
-        child: GestureDetector(
-          onTap: () => {FocusScope.of(context).requestFocus(new FocusNode())},
-          behavior: HitTestBehavior.translucent,
-          child: LayoutBuilder(
-            builder:
-                (BuildContext context, BoxConstraints viewportConstraints) {
-              return SizedBox(
-                height: 247,
-                child: Container(
-                  margin: const EdgeInsets.only(top: 20.0),
-                  padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-                  color: Colors.white,
-                  child: buildForm(context),
-                ),
-              );
-            },
+    return BlocProvider<ProfileBloc>(
+      create: (context) => ProfileBloc(),
+      child: Builder(builder: (context) {
+        return Scaffold(
+          appBar: AppBar(
+            title: I18nText("account.editProfile"),
           ),
-        ),
-      ),
+          body: SafeArea(
+            child: GestureDetector(
+              onTap: () =>
+                  {FocusScope.of(context).requestFocus(new FocusNode())},
+              behavior: HitTestBehavior.translucent,
+              child: LayoutBuilder(
+                builder:
+                    (BuildContext context, BoxConstraints viewportConstraints) {
+                  return SizedBox(
+                    height: 247,
+                    child: Container(
+                      margin: const EdgeInsets.only(top: 20.0),
+                      padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+                      color: Colors.white,
+                      child: buildForm(context),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        );
+      }),
     );
   }
 
   Widget buildForm(BuildContext context) {
     return BlocListener<ProfileBloc, ProfileState>(
-      bloc: GetIt.I<ProfileBloc>(),
       listener: (context, state) {
         print("current state $state");
         if (state is ProfileInProgress) {
@@ -75,7 +80,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           if (state is ProfileFailed) {
             AppNotification(FlutterI18n.translate(context, "error.notExist"))
                 .show(context);
-            GetIt.I<ProfileBloc>().add(InitProfileEvent());
+            BlocProvider.of<ProfileBloc>(context).add(InitProfileEvent());
           } else if (state is ProfileSuccess) {
             Navigator.pop(context, true);
           }
@@ -140,7 +145,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     body.contactNo = temp.contactNo;
                     print(body);
 
-                    GetIt.I<ProfileBloc>().add(
+                    BlocProvider.of<ProfileBloc>(context).add(
                         SaveProfileEvent(storageService.loginUser.id, body));
                   } else {
                     print(_fbKey.currentState.value);

@@ -15,8 +15,10 @@ import 'package:storeFlutter/components/app-panel.dart';
 import 'package:storeFlutter/components/form/quantity-input.dart';
 import 'package:storeFlutter/components/shopping/product-detail/product-delivery-info.dart';
 import 'package:storeFlutter/components/shopping/product-detail/product-image-slider.dart';
+import 'package:storeFlutter/components/shopping/product-detail/product-review.dart';
 import 'package:storeFlutter/components/shopping/product-detail/product-variant.dart';
 import 'package:storeFlutter/components/shopping/product-detail/seller-store-button.dart';
+import 'package:storeFlutter/components/shopping/product-detail/product-rating.dart';
 import 'package:storeFlutter/components/shopping/shopping-cart-icon.dart';
 import 'package:storeFlutter/components/shopping/static-search-bar.dart';
 import 'package:storeFlutter/datasource/data-source-helper.dart';
@@ -27,6 +29,7 @@ import 'package:storeFlutter/models/shopping/product.dart';
 import 'package:storeFlutter/util/app-theme.dart';
 import 'package:storeFlutter/util/format-util.dart';
 import 'package:storeFlutter/util/resource-util.dart';
+import 'package:storeFlutter/util/enums-util.dart';
 
 class ProductDetailScreen extends StatelessWidget {
   @override
@@ -166,6 +169,7 @@ class ProductDetailScreen extends StatelessWidget {
   static void showProductDetailBottomSheet(
       BuildContext context, Product product,
       {ProductActionModalAction action: ProductActionModalAction.both}) {
+    ProductDetailBloc productDetailBloc = BlocProvider.of<ProductDetailBloc>(context);
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
@@ -175,19 +179,22 @@ class ProductDetailScreen extends StatelessWidget {
       backgroundColor: Colors.white,
       builder: (BuildContext context) {
         return ProductActionModalBody(
+          productDetailBloc,
           product,
           action: action,
         );
       },
-    );
+    ).whenComplete(() => productDetailBloc.add(ProductDetailSkuViewMode()));
   }
 }
 
 class ProductActionModalBody extends StatelessWidget {
   final ProductActionModalAction action;
   final Product product;
+  ProductDetailBloc productDetailBloc;
 
-  const ProductActionModalBody(
+  ProductActionModalBody(
+      this.productDetailBloc,
     this.product, {
     this.action = ProductActionModalAction.both,
     Key key,
@@ -211,7 +218,7 @@ class ProductActionModalBody extends StatelessWidget {
                   padding: EdgeInsets.all(AppTheme.paddingStandard),
                   child: Column(
                     children: <Widget>[
-                      ProductVariant(product),
+                      ProductVariant(product, enumVariantViewType.SELECTION, productDetailBloc),
                     ],
                   ),
                 ),
@@ -636,29 +643,11 @@ class ProductDetailBody extends StatelessWidget {
   }
 
   Widget buildRatings(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        Text(
-          FlutterI18n.translate(context, "shopping.productDetail.ratings"),
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        SizedBox(height: 10),
-      ],
-    );
+    return ProductRating(product);
   }
 
   Widget buildReviews(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        Text(
-          FlutterI18n.translate(context, "shopping.productDetail.reviews"),
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        SizedBox(height: 10),
-      ],
-    );
+    return ProductReview(product);
   }
 
   Widget buildPanelContentWithAction(Widget child, Function onPressed) {
@@ -690,10 +679,11 @@ class ProductDetailBody extends StatelessWidget {
       widgets.add(
         AppPanel(
           child: buildPanelContentWithAction(
-            ProductVariant(product),
+            ProductVariant(product, enumVariantViewType.ALL, productDetailBloc),
             () => CheckSession.checkSession(
               context,
               () {
+                productDetailBloc.add(ProductDetailSkuInitiate(product.variantSkus));
                 ProductDetailScreen.showProductDetailBottomSheet(
                     context, product);
               },

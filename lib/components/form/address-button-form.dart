@@ -59,52 +59,6 @@ class _AddressButtonFormState extends State<AddressButtonForm> {
   Widget buildChild(BuildContext context) {
     return Column(
       children: <Widget>[
-        Container(
-            color: Colors.white,
-            margin: const EdgeInsets.only(top: 10),
-            padding: const EdgeInsets.only(left: 15, right: 10),
-            child: Column(
-              children: <Widget>[
-                Container(
-                  height: 50,
-                  margin: const EdgeInsets.only(bottom: 10),
-                  child: FormBuilderSwitch(
-                    key: UniqueKey(),
-                    label: Text(FlutterI18n.translate(
-                        context, "account.address.makeDefaultShipping")),
-                    attribute: "defaultShipping",
-                    initialValue:
-                        location == null || location.defaultShipping == null
-                            ? false
-                            : location.defaultShipping,
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                    ),
-                  ),
-                ),
-                Divider(
-                  color: AppTheme.colorGray3,
-                  height: 1,
-                ),
-                Container(
-                  height: 50,
-                  margin: const EdgeInsets.only(bottom: 10),
-                  child: FormBuilderSwitch(
-                    key: UniqueKey(),
-                    label: Text(FlutterI18n.translate(
-                        context, "account.address.makeDefaultBillingAddress")),
-                    attribute: "defaultBilling",
-                    initialValue:
-                        location == null || location.defaultBilling == null
-                            ? false
-                            : location.defaultBilling,
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                    ),
-                  ),
-                ),
-              ],
-            )),
         widget.isNew
             ? Container()
             : Container(
@@ -119,13 +73,7 @@ class _AddressButtonFormState extends State<AddressButtonForm> {
                       print(widget._fbAddressLocal.currentState.value);
                       FocusScope.of(context).requestFocus(new FocusNode());
 
-                      Location body = Location.fromJson(
-                          widget._fbAddressLocal.currentState.value);
-                      body.locationType = isHome ? "Home" : "Office";
-                      body.id = location.id;
-
-                      print("Delete Op");
-                      print("id ${body.id}");
+                      print("Delete Op: ${location.id}");
                       AppAlertDialog(context,
                           title: FlutterI18n.translate(
                               context, "general.deleteTitle"),
@@ -133,7 +81,7 @@ class _AddressButtonFormState extends State<AddressButtonForm> {
                               context, "general.deleteContent"),
                           cb: () => {
                                 GetIt.I<AddressBloc>()
-                                    .add(DeleteAddressEvent(body))
+                                    .add(DeleteAddressEvent(location.id))
                               });
                     } else {
                       print(widget._fbAddressLocal.currentState.value);
@@ -176,7 +124,7 @@ class _AddressButtonFormState extends State<AddressButtonForm> {
                 print("defaultShipping ${body.defaultShipping}");
                 print("defaultBilling ${body.defaultBilling}");
 
-                GetIt.I<AddressBloc>().add(SetAddressEvent(body));
+                GetIt.I<AddressBloc>().add(SetAddressEvent(context, body));
               } else {
                 print(widget._fbAddressLocal.currentState.value);
                 print('validation failed');
