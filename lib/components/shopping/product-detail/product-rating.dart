@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:storeFlutter/components/app-list-title.dart';
 import 'package:storeFlutter/models/shopping/order-rate-review.dart';
 import 'package:storeFlutter/models/shopping/product.dart';
 import 'package:storeFlutter/blocs/shopping/rating-bloc.dart';
