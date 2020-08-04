@@ -789,7 +789,7 @@ class ProductDetailBody extends StatelessWidget {
     if (sellerCompanyProfile != null &&
         sellerCompanyProfile.locations != null) {
       Location location = sellerCompanyProfile.locations
-          .firstWhere((element) => element.supplyLocation);
+          .firstWhere((element) => element.supplyLocation, orElse: () => null);
 
       if (location != null) {
         if (isBlank(locationInfo))

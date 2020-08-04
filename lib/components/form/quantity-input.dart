@@ -4,10 +4,13 @@ import 'package:storeFlutter/util/app-theme.dart';
 
 class QuantityInput extends StatefulWidget {
   final int quantity;
-  final int min;
-  final int max;
+  final double min;
+  final double max;
   final int step;
   final ValueChanged<num> onChanged;
+
+  double minValue;
+  double maxValue;
 
   QuantityInput({
     this.quantity = 1,
@@ -15,22 +18,31 @@ class QuantityInput extends StatefulWidget {
     this.max = 9999,
     this.step = 1,
     this.onChanged,
-  });
+  }) {
+    if (this.min != null)
+      this.minValue = this.min;
+    else
+      this.minValue = 1;
+    if (this.max != null)
+      this.maxValue = this.max;
+    else
+      this.maxValue = 9999;
+  }
 
   @override
   _QuantityInputState createState() => _QuantityInputState();
 }
 
 class _QuantityInputState extends State<QuantityInput> {
-  double _widgetHeight = 40;
+  double _widgetHeight = 30;
   double _btnWidth = 35;
   int _quantity;
 
   bool get minusBtnDisabled =>
-      _quantity <= widget.min || _quantity - widget.step < widget.min;
+      _quantity <= widget.minValue || _quantity - widget.step < widget.minValue;
 
   bool get addBtnDisabled =>
-      _quantity >= widget.max || _quantity + widget.step > widget.max;
+      _quantity >= widget.maxValue || _quantity + widget.step > widget.maxValue;
 
   @override
   void initState() {

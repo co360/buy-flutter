@@ -159,7 +159,10 @@
   "cart": {
     "shoppingCartEmpty": "Your shopping cart is empty",
     "shoppingCartEmptyMsg": "Looks like you have not adding anything into your cart yet",
-    "goShoppingNow": "Go Shopping Now"
+    "goShoppingNow": "Go Shopping Now",
+    "all": "All",
+    "checkout": "Checkout",
+    "total": "Total"
   },
   "account" : {
     "login": "Login",
