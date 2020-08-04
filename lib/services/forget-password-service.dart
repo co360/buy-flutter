@@ -10,10 +10,7 @@ class ForgetPasswordService extends BaseRestService {
 
     print(response.data);
 
-    if (response.data['object'] != null) {
-      return ForgetPasswordBody.fromJson(response.data['object']);
-    } else {
-      return null;
-    }
+    return getResponseObject<ForgetPasswordBody>(
+        response.data, (json) => ForgetPasswordBody.fromJson(json));
   }
 }

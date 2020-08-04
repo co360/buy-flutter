@@ -8,7 +8,8 @@ class CompanyProfileService extends BaseRestService {
     var url = '$_endPoint/find-by-company/$companyId';
     final response = await dio.get(url);
 
-    return CompanyProfile.fromJson(response.data['object']);
+    return getResponseObject<CompanyProfile>(
+        response.data, (json) => CompanyProfile.fromJson(json));
   }
 
   Future<CompanyProfile> updateCompanyProfile(
@@ -16,6 +17,7 @@ class CompanyProfileService extends BaseRestService {
     var url = '$_endPoint/${companyProfile.id}';
     final response = await dio.put(url, data: companyProfile.toJson());
 
-    return CompanyProfile.fromJson(response.data['object']);
+    return getResponseObject<CompanyProfile>(
+        response.data, (json) => CompanyProfile.fromJson(json));
   }
 }

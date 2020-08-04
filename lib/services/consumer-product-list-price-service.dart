@@ -11,6 +11,7 @@ class ConsumerProductListPriceService extends BaseRestService {
     var url = '$_endPoint/getPrice?$item';
     final response = await dio.get(url);
 
-    return ConsumerProductListPrice.fromJson(response.data['object']);
+    return getResponseObject<ConsumerProductListPrice>(
+        response.data, (json) => ConsumerProductListPrice.fromJson(json));
   }
 }

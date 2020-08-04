@@ -11,6 +11,7 @@ class ProductStockQuantityService extends BaseRestService {
     var url = '$_endPoint/getStock?$item';
     final response = await dio.get(url);
 
-    return ProductStockQuantity.fromJson(response.data['object']);
+    return getResponseObject<ProductStockQuantity>(
+        response.data, (json) => ProductStockQuantity.fromJson(json));
   }
 }

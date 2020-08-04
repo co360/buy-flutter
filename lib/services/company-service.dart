@@ -8,6 +8,7 @@ class CompanyService extends BaseRestService {
     var url = '$_endPoint/$id';
     final response = await dio.get(url);
 
-    return Company.fromJson(response.data['object']);
+    return getResponseObject<Company>(
+        response.data, (json) => Company.fromJson(json));
   }
 }
