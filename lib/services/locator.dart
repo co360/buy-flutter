@@ -26,7 +26,7 @@ import 'package:storeFlutter/services/forget-password-service.dart';
 import 'package:storeFlutter/services/initial-loading-service.dart';
 import 'package:storeFlutter/services/product-category-service.dart';
 import 'package:storeFlutter/services/product-service.dart';
-import 'package:storeFlutter/services/rating-service.dart';
+import 'package:storeFlutter/services/order-rate-review-service.dart';
 import 'package:storeFlutter/services/sales-cart-service.dart';
 import 'package:storeFlutter/services/signup-service.dart';
 import 'package:storeFlutter/services/storage-service.dart';
@@ -46,7 +46,7 @@ Future setupLocator() async {
   GetIt.I.registerSingleton<ChangeEmailService>(ChangeEmailService());
   GetIt.I.registerSingleton<InitialLoadingService>(InitialLoadingService());
   GetIt.I.registerSingleton<SignUpService>(SignUpService());
-  GetIt.I.registerSingleton<RatingService>(RatingService());
+  GetIt.I.registerSingleton<OrderRateReviewService>(OrderRateReviewService());
   GetIt.I.registerSingleton<SalesCartService>(SalesCartService());
   GetIt.I.registerSingleton<VariantTypeService>(VariantTypeService());
   GetIt.I.registerSingleton<CompanyService>(CompanyService());

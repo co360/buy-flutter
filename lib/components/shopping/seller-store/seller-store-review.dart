@@ -24,7 +24,8 @@ class _SellerStoreReviewState extends State<SellerStoreReview> {
   @override
   void initState() {
     print("Initialize SellerStoreReview and State");
-    GetIt.I<RatingBloc>().add(LoadRatingByIDEvent(widget.sellerCompany.id));
+    GetIt.I<RatingBloc>()
+        .add(LoadRatingByCompanyIdEvent(widget.sellerCompany.id));
     super.initState();
   }
 
@@ -33,7 +34,7 @@ class _SellerStoreReviewState extends State<SellerStoreReview> {
     return BlocBuilder<RatingBloc, RatingState>(
       bloc: GetIt.I<RatingBloc>(),
       builder: (context, state) {
-        if (state is RatingSuccess) {
+        if (state is LoadRatingSuccess) {
           return buildChild(context, state.ratings);
         }
         return buildChild(context, []);
