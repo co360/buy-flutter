@@ -18,21 +18,24 @@ class QuoteItem extends CommonItem {
   //Transient
   LocalDateTime productLeadTime;
 
-  //Transient
+  @JsonKey(ignore: true)
   double minOrderQty;
-  double maxOrderQty;
-  bool decreaseButtonEnable = false;
-  bool increaseButtonEnable = true;
 
-  QuoteItem(
-      {this.additionalInfo,
-      this.checked,
-      this.deliverySchedules,
-      this.productLeadTime,
-      this.minOrderQty,
-      this.maxOrderQty,
-      this.decreaseButtonEnable,
-      this.increaseButtonEnable});
+  @JsonKey(ignore: true)
+  double maxOrderQty;
+
+  @JsonKey(ignore: true)
+  bool screenChecked = false;
+
+  @JsonKey(ignore: true)
+  bool screenEditChecked = false;
+
+  QuoteItem({
+    this.additionalInfo,
+    this.checked,
+    this.deliverySchedules,
+    this.productLeadTime,
+  });
 
   factory QuoteItem.fromJson(Map<String, dynamic> json) =>
       _$QuoteItemFromJson(json);

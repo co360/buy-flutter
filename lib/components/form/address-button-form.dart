@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
-import 'package:storeFlutter/services/storage-service.dart';
 import 'package:storeFlutter/blocs/account/address-bloc.dart';
-import 'package:storeFlutter/models/identity/location.dart';
-import 'package:storeFlutter/util/app-theme.dart';
 import 'package:storeFlutter/components/app-button.dart';
-import 'package:storeFlutter/components/app-alert-dialog.dart';
+import 'package:storeFlutter/components/app-confirmation-dialog.dart';
+import 'package:storeFlutter/models/identity/location.dart';
+import 'package:storeFlutter/services/storage-service.dart';
+import 'package:storeFlutter/util/app-theme.dart';
 
 class AddressButtonForm extends StatefulWidget {
   final GlobalKey<FormBuilderState> _fbAddressLocal;
@@ -74,11 +74,12 @@ class _AddressButtonFormState extends State<AddressButtonForm> {
                       FocusScope.of(context).requestFocus(new FocusNode());
 
                       print("Delete Op: ${location.id}");
-                      AppAlertDialog(context,
+                      AppConfirmationDialog(context,
                           title: FlutterI18n.translate(
                               context, "general.deleteTitle"),
                           content: FlutterI18n.translate(
                               context, "general.deleteContent"),
+                          delete: true,
                           cb: () => {
                                 GetIt.I<AddressBloc>()
                                     .add(DeleteAddressEvent(location.id))

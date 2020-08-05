@@ -19,10 +19,6 @@ QuoteItem _$QuoteItemFromJson(Map<String, dynamic> json) {
         ? null
         : LocalDateTime.fromJson(
             json['productLeadTime'] as Map<String, dynamic>),
-    minOrderQty: (json['minOrderQty'] as num)?.toDouble(),
-    maxOrderQty: (json['maxOrderQty'] as num)?.toDouble(),
-    decreaseButtonEnable: json['decreaseButtonEnable'] as bool,
-    increaseButtonEnable: json['increaseButtonEnable'] as bool,
   )
     ..itemNumber = json['itemNumber'] as String
     ..product = json['product'] == null
@@ -114,8 +110,4 @@ Map<String, dynamic> _$QuoteItemToJson(QuoteItem instance) => <String, dynamic>{
       'checked': instance.checked,
       'deliverySchedules': instance.deliverySchedules,
       'productLeadTime': instance.productLeadTime,
-      'minOrderQty': instance.minOrderQty,
-      'maxOrderQty': instance.maxOrderQty,
-      'decreaseButtonEnable': instance.decreaseButtonEnable,
-      'increaseButtonEnable': instance.increaseButtonEnable,
     };

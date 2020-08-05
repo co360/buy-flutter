@@ -10,6 +10,7 @@ import 'package:storeFlutter/blocs/shopping/sales-cart-bloc.dart';
 import 'package:storeFlutter/blocs/shopping/sales-cart-content-bloc.dart';
 import 'package:storeFlutter/components/account/check-session.dart';
 import 'package:storeFlutter/components/app-button.dart';
+import 'package:storeFlutter/components/app-confirmation-dialog.dart';
 import 'package:storeFlutter/components/app-general-error-info.dart';
 import 'package:storeFlutter/components/app-loading.dart';
 import 'package:storeFlutter/components/app-panel.dart';
@@ -24,58 +25,82 @@ import 'package:storeFlutter/util/resource-util.dart';
 class ShoppingCartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppTheme.colorBg2,
-      appBar: AppBar(
-        title: BlocBuilder<SalesCartBloc, SalesCartState>(
-            bloc: GetIt.I<SalesCartBloc>(),
-            builder: (context, state) {
-              int total = GetIt.I<SalesCartBloc>().totalCart;
-              return Text(
-                FlutterI18n.translate(context, "screen.bottomNavigation.cart") +
-                    (total > 0 ? " ($total)" : ""),
-                style: TextStyle(color: Colors.white),
-              );
-            }),
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: <Color>[AppTheme.colorPrimary, AppTheme.colorSuccess],
+    return BlocProvider(
+      create: (context) => SalesCartContentBloc(GetIt.I<SalesCartBloc>()),
+      child: BlocBuilder<SalesCartContentBloc, SalesCartContentState>(
+          builder: (context, state) {
+        SalesCartContentBloc contentBloc =
+            BlocProvider.of<SalesCartContentBloc>(context);
+
+        int total = contentBloc.totalCart;
+
+        return Scaffold(
+          backgroundColor: AppTheme.colorBg2,
+          appBar: AppBar(
+            title: Text(
+              FlutterI18n.translate(context, "screen.bottomNavigation.cart") +
+                  (total > 0 ? " ($total)" : ""),
+              style: TextStyle(color: Colors.white),
             ),
+            flexibleSpace: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: <Color>[AppTheme.colorPrimary, AppTheme.colorSuccess],
+                ),
+              ),
+            ),
+            iconTheme: IconThemeData(color: Colors.white),
+            actions: buildActions(context, contentBloc),
           ),
-        ),
-        iconTheme: IconThemeData(color: Colors.white),
-        actions: <Widget>[
-          BlocBuilder<SalesCartBloc, SalesCartState>(
-              bloc: GetIt.I<SalesCartBloc>(),
-              builder: (context, state) {
-                int total = GetIt.I<SalesCartBloc>().totalCart;
-                if (total > 0) {
-                  return FlatButton(
-                    splashColor: Colors.transparent,
-                    highlightColor: Colors.transparent,
-                    child: Text(
-                      FlutterI18n.translate(context, "general.edit"),
-                      style: TextStyle(
-                        color: Colors.white,
-                      ),
-                    ),
-                    onPressed: () {},
-                  );
-                } else {
-                  return SizedBox.shrink();
-                }
-              }),
-        ],
+          body: CheckSession(
+            child: ShoppingCartBody(),
+          ),
+        );
+      }),
+    );
+  }
+
+  List<Widget> buildActions(BuildContext context, SalesCartContentBloc bloc) {
+    List<Widget> widgets = [];
+
+    int total = bloc.totalCart;
+
+    bool checkoutScreen = bloc.screenMode == ScreenMode.checkout;
+
+    if (total > 0) {
+      if (checkoutScreen) {
+        widgets.add(editButton(context, bloc));
+      } else {
+        widgets.add(cancelButton(context, bloc));
+      }
+    }
+
+    return widgets;
+  }
+
+  Widget editButton(BuildContext context, SalesCartContentBloc bloc) {
+    return FlatButton(
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      child: Text(
+        FlutterI18n.translate(context, "general.edit"),
+        style: TextStyle(color: Colors.white),
       ),
-      body: CheckSession(
-        child: BlocProvider(
-          create: (context) => SalesCartContentBloc(GetIt.I<SalesCartBloc>()),
-          child: ShoppingCartBody(),
-        ),
+      onPressed: () => bloc.add(SalesCartContentScreenEdit()),
+    );
+  }
+
+  Widget cancelButton(BuildContext context, SalesCartContentBloc bloc) {
+    return FlatButton(
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      child: Text(
+        FlutterI18n.translate(context, "general.cancel"),
+        style: TextStyle(color: Colors.white),
       ),
+      onPressed: () => bloc.add(SalesCartContentScreenCheckout()),
     );
   }
 }
@@ -88,11 +113,7 @@ class ShoppingCartBody extends StatelessWidget {
         SalesCartContentBloc bloc =
             BlocProvider.of<SalesCartContentBloc>(context);
 
-        bool hasCartDocs = false;
-
-        if (bloc.salesCart != null && bloc.salesCart.totalItems > 0) {
-          hasCartDocs = true;
-        }
+        bool hasCartDocs = bloc.totalCart > 0;
 
         return Scaffold(
           bottomNavigationBar: hasCartDocs ? buildBottomAppBar(context) : null,
@@ -151,9 +172,7 @@ class ShoppingCartBody extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          SizedBox(
-            height: 30,
-          ),
+          SizedBox(height: 30),
 //          FlatButton(
 //            child: Text("RELOAD - to be removed"),
 //            onPressed: () {
@@ -165,9 +184,7 @@ class ShoppingCartBody extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 19, fontWeight: FontWeight.w500),
           ),
-          SizedBox(
-            height: 20,
-          ),
+          SizedBox(height: 20),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 20.0),
             child: Text(
@@ -175,9 +192,7 @@ class ShoppingCartBody extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
           ),
-          SizedBox(
-            height: 20,
-          ),
+          SizedBox(height: 20),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 20.0),
             child: AppButton(
@@ -203,32 +218,28 @@ class ShoppingCartBody extends StatelessWidget {
   Widget buildCartHeader(BuildContext context, CartGroup cartGroup) {
     SalesCartContentBloc bloc = BlocProvider.of<SalesCartContentBloc>(context);
 
+    bool checkedState = cartGroup.screenChecked;
+
+    if (bloc.screenMode == ScreenMode.edit) {
+      checkedState = cartGroup.screenEditChecked;
+    }
+    SalesCartContentEvent event =
+        SalesCartContentCheckCompany(cartGroup.companyId, !checkedState);
+
     return Row(
       children: <Widget>[
         GestureDetector(
           behavior: HitTestBehavior.translucent,
-          onTap: () {
-            bloc.add(SalesCartContentCheckCompany(
-                cartGroup.companyId, !cartGroup.isChecked));
-          },
-          child: !cartGroup.isChecked
-              ? FaIcon(
-                  FontAwesomeIcons.lightCircle,
-                  color: AppTheme.colorGray4,
-                  size: 20,
-                )
-              : FaIcon(
-                  FontAwesomeIcons.solidCheckCircle,
-                  color: AppTheme.colorGray7,
-                  size: 20,
-                ),
+          onTap: () => bloc.add(event),
+          child: !checkedState
+              ? FaIcon(FontAwesomeIcons.lightCircle,
+                  color: AppTheme.colorGray4, size: 20)
+              : FaIcon(FontAwesomeIcons.solidCheckCircle,
+                  color: AppTheme.colorGray7, size: 20),
         ),
         SizedBox(width: 10),
         getSellerLogo(cartGroup.company),
-        Text(
-          cartGroup.company.name,
-          style: TextStyle(fontSize: 14),
-        ),
+        Text(cartGroup.company.name, style: TextStyle(fontSize: 14)),
       ],
     );
   }
@@ -265,92 +276,91 @@ class ShoppingCartBody extends StatelessWidget {
       BuildContext context, SalesQuotation quotation, QuoteItem item) {
     SalesCartContentBloc bloc = BlocProvider.of<SalesCartContentBloc>(context);
 
-    return BlocBuilder<SalesCartContentBloc, SalesCartContentState>(
-        builder: (context, state) {
-      bool loading = state is SalesCartContentLoadingInProgress;
+    bool loading = bloc.state is SalesCartContentLoadingInProgress;
+    bool editScreen = true;
+    bool checkedState = item.screenChecked;
 
-      return Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          GestureDetector(
-            behavior: HitTestBehavior.translucent,
-            onTap: () {
-              bloc.add(SalesCartContentCheckQuotationItem(item, !item.checked));
-            },
-            child: Row(
-              children: <Widget>[
-                Container(
+    if (bloc.screenMode == ScreenMode.edit) {
+      checkedState = item.screenEditChecked;
+      editScreen = false;
+    }
+
+    SalesCartContentEvent event =
+        SalesCartContentCheckQuotationItem(item, !checkedState);
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: () {
+            bloc.add(event);
+          },
+          child: Row(
+            children: <Widget>[
+              Container(
+                height: 80,
+                child: Center(
+                  child: !checkedState
+                      ? FaIcon(FontAwesomeIcons.lightCircle,
+                          color: AppTheme.colorGray4, size: 20)
+                      : FaIcon(FontAwesomeIcons.solidCheckCircle,
+                          color: AppTheme.colorGray7, size: 20),
+                ),
+              ),
+              SizedBox(width: 10),
+              ClipRRect(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(5)),
+                child: Image.network(
+                  ResourceUtil.fullPath(item.product.images[0].imageUrl),
+                  fit: BoxFit.cover,
                   height: 80,
-                  child: Center(
-                    child: !item.checked
-                        ? FaIcon(
-                            FontAwesomeIcons.lightCircle,
-                            color: AppTheme.colorGray4,
-                            size: 20,
-                          )
-                        : FaIcon(
-                            FontAwesomeIcons.solidCheckCircle,
-                            color: AppTheme.colorGray7,
-                            size: 20,
-                          ),
-                  ),
+                  width: 80,
                 ),
-                SizedBox(width: 10),
-                ClipRRect(
-                  borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(5),
-                  ),
-                  child: Image.network(
-                    ResourceUtil.fullPath(item.product.images[0].imageUrl),
-                    fit: BoxFit.cover,
-                    height: 80,
-                    width: 80,
-                  ),
-                ),
-                SizedBox(width: 10),
-              ],
-            ),
+              ),
+              SizedBox(width: 10),
+            ],
           ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(item.product.name),
-                SizedBox(height: 10),
-                ...buildVariantValue(quotation, item),
-                Text(
-                  loading
-                      ? "${item.currencyCode} -"
-                      : "${item.currencyCode} ${FormatUtil.formatPrice(item.invoicePrice)}",
-                  style: TextStyle(
-                      color: AppTheme.colorOrange, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 10),
-                Row(
-                  children: <Widget>[
-                    ConstrainedBox(
-                      constraints: BoxConstraints(maxWidth: 200),
-                      child: QuantityInput(
-                        key: UniqueKey(),
-                        quantity: item.quantity.toInt(),
-                        min: item.minOrderQty,
-                        max: item.maxOrderQty,
-                        enabled: !loading,
-                        onChanged: (num) {
-                          bloc.add(SalesCartContentChangeQuantity(item, num));
-                        },
-                      ),
+        ),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(item.product.name),
+              SizedBox(height: 10),
+              ...buildVariantValue(quotation, item),
+              Text(
+                loading
+                    ? "${item.currencyCode} -"
+                    : "${item.currencyCode} ${FormatUtil.formatPrice(item.invoicePrice)}",
+                style: TextStyle(
+                    color: AppTheme.colorOrange, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 10),
+              Row(
+                children: <Widget>[
+                  ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: 200),
+                    child: QuantityInput(
+                      key: UniqueKey(),
+                      quantity: item.quantity.toInt(),
+                      min: item.minOrderQty,
+                      max: item.maxOrderQty,
+                      enabled: !loading && editScreen,
+                      onChanged: (num) {
+                        bloc.add(SalesCartContentChangeQuantity(item, num));
+                      },
                     ),
-                    SizedBox(width: 10),
-                    Text(item.uomCode),
-                  ],
-                )
-              ],
-            ),
+                  ),
+                  SizedBox(width: 10),
+                  Text(item.uomCode),
+                ],
+              )
+            ],
           ),
-        ],
-      );
-    });
+        ),
+      ],
+    );
   }
 
   List<Widget> buildVariantValue(SalesQuotation quotation, QuoteItem item) {
@@ -411,84 +421,132 @@ class ShoppingCartBody extends StatelessWidget {
 
     return BottomAppBar(
       color: Colors.white,
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: 20,
-          vertical: 5.0,
-        ),
-        child: BlocBuilder<SalesCartContentBloc, SalesCartContentState>(
-          builder: (context, state) {
-            bool loading = state is SalesCartContentLoadingInProgress;
-            return Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  onTap: () {
-                    bloc.add(SalesCartContentCheckAll(!bloc.checkAll));
-                  },
-                  child: Row(
-                    children: <Widget>[
-                      !bloc.checkAll
-                          ? FaIcon(
-                              FontAwesomeIcons.lightCircle,
-                              color: AppTheme.colorGray4,
-                              size: 20,
-                            )
-                          : FaIcon(
-                              FontAwesomeIcons.solidCheckCircle,
-                              color: AppTheme.colorGray7,
-                              size: 20,
-                            ),
-                      SizedBox(width: 10),
-                      Text(
-                        FlutterI18n.translate(context, "cart.all"),
-                        style: TextStyle(fontWeight: FontWeight.w500),
-                      ),
-                    ],
+      child: bloc.screenMode == ScreenMode.edit
+          ? buildEditBottomContent(context)
+          : buildCheckoutBottomContent(context),
+    );
+  }
+
+  Widget buildCheckoutBottomContent(BuildContext context) {
+    SalesCartContentBloc bloc = BlocProvider.of<SalesCartContentBloc>(context);
+    bool loading = bloc.state is SalesCartContentLoadingInProgress;
+    return Padding(
+      padding: EdgeInsets.only(right: 20, top: 5.0, bottom: 5.0),
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: () {
+              bloc.add(SalesCartContentCheckAll(!bloc.checkAll));
+            },
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
+              child: Row(
+                children: <Widget>[
+                  !bloc.checkAll
+                      ? FaIcon(FontAwesomeIcons.lightCircle,
+                          color: AppTheme.colorGray4, size: 20)
+                      : FaIcon(FontAwesomeIcons.solidCheckCircle,
+                          color: AppTheme.colorGray7, size: 20),
+                  SizedBox(width: 10),
+                  Text(
+                    FlutterI18n.translate(context, "cart.all"),
+                    style: TextStyle(fontWeight: FontWeight.w500),
                   ),
-                ),
-                Row(
-                  children: <Widget>[
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Text(
-                          FlutterI18n.translate(context, "cart.total"),
-//                      style: TextStyle(
-////                          color: AppTheme.colorGray4,
-//                          fontWeight: FontWeight.w500),
-                        ),
-                        SizedBox(height: 3),
-                        Text(
-                          loading
-                              ? "${bloc.currency} -"
-                              : "${bloc.currency} ${FormatUtil.formatPrice(bloc.totalAmount)}",
-                          style: TextStyle(
-                              color: AppTheme.colorOrange,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                    SizedBox(width: 10),
-                    AppButton(
-                      FlutterI18n.translate(context, "cart.checkout") +
-                          ((bloc.totalItemChecked > 0 && !loading)
-                              ? " (${bloc.totalItemChecked})"
-                              : ""),
-                      () {},
-                      size: AppButtonSize.small,
-                      enabled: bloc.totalItemChecked > 0 && !loading,
-                      noPadding: true,
-                    ),
-                  ],
-                ),
-              ],
-            );
-          },
-        ),
+                ],
+              ),
+            ),
+          ),
+          Row(
+            children: <Widget>[
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(FlutterI18n.translate(context, "cart.total")),
+                  SizedBox(height: 3),
+                  Text(
+                    loading
+                        ? "${bloc.currency} -"
+                        : "${bloc.currency} ${FormatUtil.formatPrice(bloc.totalAmount)}",
+                    style: TextStyle(
+                        color: AppTheme.colorOrange,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              SizedBox(width: 10),
+              AppButton(
+                FlutterI18n.translate(context, "cart.checkout") +
+                    ((bloc.totalItemChecked > 0 && !loading)
+                        ? " (${bloc.totalItemChecked})"
+                        : ""),
+                () {},
+                size: AppButtonSize.small,
+                enabled: bloc.totalItemChecked > 0 && !loading,
+                noPadding: true,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildEditBottomContent(BuildContext context) {
+    SalesCartContentBloc bloc = BlocProvider.of<SalesCartContentBloc>(context);
+    bool hasItem = bloc.totalItemEditChecked > 0;
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 5.0),
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: () {
+              bloc.add(SalesCartContentCheckAll(!bloc.editCheckAll));
+            },
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
+              child: Row(
+                children: <Widget>[
+                  !bloc.editCheckAll
+                      ? FaIcon(FontAwesomeIcons.lightCircle,
+                          color: AppTheme.colorGray4, size: 20)
+                      : FaIcon(FontAwesomeIcons.solidCheckCircle,
+                          color: AppTheme.colorGray7, size: 20),
+                  SizedBox(width: 10),
+                  Text(
+                    FlutterI18n.translate(context, "cart.all"),
+                    style: TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          FlatButton(
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
+            child: Text(
+              FlutterI18n.translate(context, "general.delete") +
+                  (hasItem ? " (${bloc.totalItemEditChecked})" : ""),
+              style: TextStyle(
+                  color: hasItem ? AppTheme.colorLink : AppTheme.colorGray4),
+            ),
+            onPressed: hasItem
+                ? () {
+                    AppConfirmationDialog(context,
+                        content: FlutterI18n.translate(
+                            context, "cart.confirmDelete"),
+                        delete: true,
+                        cb: () => bloc.add(SalesCartContentDelete()));
+                  }
+                : null,
+          ),
+        ],
       ),
     );
   }
