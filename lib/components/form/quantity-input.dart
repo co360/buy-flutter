@@ -8,17 +8,20 @@ class QuantityInput extends StatefulWidget {
   final double max;
   final int step;
   final ValueChanged<int> onChanged;
+  final bool enabled;
 
   double minValue;
   double maxValue;
 
   QuantityInput({
+    Key key,
     this.quantity = 1,
     this.min = 1,
     this.max = 9999,
     this.step = 1,
+    this.enabled = true,
     this.onChanged,
-  }) {
+  }) : super(key: key) {
     if (this.min != null)
       this.minValue = this.min;
     else
@@ -39,10 +42,14 @@ class _QuantityInputState extends State<QuantityInput> {
   int _quantity;
 
   bool get minusBtnDisabled =>
-      _quantity <= widget.minValue || _quantity - widget.step < widget.minValue;
+      _quantity <= widget.minValue ||
+      _quantity - widget.step < widget.minValue ||
+      !widget.enabled;
 
   bool get addBtnDisabled =>
-      _quantity >= widget.maxValue || _quantity + widget.step > widget.maxValue;
+      _quantity >= widget.maxValue ||
+      _quantity + widget.step > widget.maxValue ||
+      !widget.enabled;
 
   @override
   void initState() {

@@ -60,12 +60,7 @@ class MainLayout extends StatelessWidget {
     return BlocBuilder<SalesCartBloc, SalesCartState>(
       bloc: GetIt.I<SalesCartBloc>(),
       builder: (context, state) {
-        int total = 0;
-        if (state is SalesCartRefreshComplete) {
-          if (state.cart != null) {
-            total = state.cart.totalItems;
-          }
-        }
+        int total = GetIt.I<SalesCartBloc>().totalCart;
 
         if (total > 0) {
           return Positioned(

@@ -41,9 +41,16 @@ class SalesCartContentBloc
 
   SalesCartContentBloc(this.salesCartBloc) : super(SalesCartContentInitial()) {
     salesCartSubscription = salesCartBloc.listen((state) {
+      print("listen fired");
       if (state is SalesCartRefreshComplete) {
-        salesCart = state.cart;
-        add(SalesCartContentInitContent());
+        salesCart = salesCartBloc.salesCart;
+
+        populateCartGroup();
+
+        refreshCartCheckStatus();
+        calculateTotal();
+
+        add(SalesCartContentInitContent(completer: state.completer));
       }
     });
   }
@@ -52,21 +59,22 @@ class SalesCartContentBloc
   Stream<SalesCartContentState> mapEventToState(
       SalesCartContentEvent event) async* {
     if (event is SalesCartContentInitContent) {
-      yield SalesCartContentLoadingInProgress();
-
-      await populateCartGroup();
-      await updatePriceAndQuantity();
-
       // TODO by right should have default currency by their own country, or hard code to MYR for eDagang
       // then each for the sales quotation need to do currency conversion to convert
       if (salesCart != null && salesCart.cartDocs.length > 0) {
         currency = salesCart.cartDocs[0].quoteItems[0].currencyCode;
       }
 
-      refreshCartCheckStatus();
+      yield SalesCartContentLoadingInProgress();
+      await updateCartGroupCompany();
+      await updatePriceAndQuantity();
+
+//      refreshCartCheckStatus();
       calculateTotal();
 
       yield SalesCartContentLoadingComplete();
+
+      if (event.completer != null) event.completer.complete(true);
     } else if (event is SalesCartContentCheckQuotationItem) {
       yield SalesCartContentLoadingInProgress();
       event.quoteItem.checked = event.checkState;
@@ -103,6 +111,8 @@ class SalesCartContentBloc
       yield SalesCartContentLoadingInProgress();
 
       event.quoteItem.quantity = event.newQuantity.toDouble();
+
+      refreshCartCheckStatus();
       calculateTotal();
 
       yield SalesCartContentLoadingComplete();
@@ -139,12 +149,10 @@ class SalesCartContentBloc
     // Note : can only populate based on item... not the other way round here
     checkAll = true;
 
-//    bool checkAllRunner = true;
     for (int i = 0; i < cartGroups.length; i++) {
       CartGroup cg = cartGroups[i];
       cg.isChecked = true;
 
-//      bool checkGroupRunner = true;
       for (int j = 0; j < cg.cartDocs.length; j++) {
         SalesQuotation sq = cg.cartDocs[j];
 
@@ -153,22 +161,13 @@ class SalesCartContentBloc
 
           cg.isChecked &= (qi.checked != null && qi.checked);
           if (qi.checked != null && qi.checked) {
-            cg.isChecked &= true;
             totalItemChecked += qi.quantity.toInt();
-          } else {
-            cg.isChecked &= false;
           }
         }
       }
 
-//      cg.isChecked = checkGroupRunner;
-
       checkAll &= cg.isChecked;
     }
-
-    // set cart group checkbox
-
-    // set cart all checkbox
   }
 
   calculateTotal() {
@@ -194,75 +193,96 @@ class SalesCartContentBloc
     this.totalAmount = tempTotal;
   }
 
-  Future<void> populateCartGroup() async {
+  bool hasCarts() {
+    return this.salesCart != null &&
+        this.salesCart.cartDocs != null &&
+        this.salesCart.cartDocs.length > 0;
+  }
+
+  populateCartGroup() {
     List<CartGroup> cartGroups = [];
 
-    for (int i = 0; i < this.salesCart.cartDocs.length; i++) {
-      SalesQuotation salesQuotation = this.salesCart.cartDocs[i];
+    if (hasCarts()) {
+      for (int i = 0; i < this.salesCart.cartDocs.length; i++) {
+        SalesQuotation salesQuotation = this.salesCart.cartDocs[i];
 
-      CartGroup group = cartGroups.firstWhere(
-          (temp) =>
-              temp.companyId == salesQuotation.quoteItems[0].product.companyId,
-          orElse: () => null);
+        CartGroup group = cartGroups.firstWhere(
+            (temp) =>
+                temp.companyId ==
+                salesQuotation.quoteItems[0].product.companyId,
+            orElse: () => null);
 
-      if (group != null) {
-        group.cartDocs.add(salesQuotation);
-      } else {
-        group = CartGroup();
-        group.isChecked = true;
-        cartGroups.add(group);
-        group.companyId = salesQuotation.quoteItems[0].product.companyId;
-        group.company = await _companyService.getCompany(group.companyId);
-        group.cartDocs.add(salesQuotation);
+        if (group != null) {
+          group.cartDocs.add(salesQuotation);
+        } else {
+          group = CartGroup();
+          group.isChecked = true;
+          cartGroups.add(group);
+          group.companyId = salesQuotation.quoteItems[0].product.companyId;
+//        group.company = await _companyService.getCompany(group.companyId);
+          group.company = salesQuotation.quoteItems[0].product.sellerCompany;
+          group.cartDocs.add(salesQuotation);
+        }
       }
     }
 
-    this.salesCart.cartDocs.map((salesQuotation) async {}).toList();
+//    this.salesCart.cartDocs.map((salesQuotation) async {}).toList();
 
     this.cartGroups = cartGroups;
   }
 
+  Future<void> updateCartGroupCompany() async {
+    for (int i = 0; i < this.cartGroups.length; i++) {
+      CartGroup group = cartGroups[i];
+
+      group.company = await _companyService.getCompany(group.companyId);
+    }
+  }
+
   Future<void> updatePriceAndQuantity() async {
-    for (int j = 0; j < salesCart.cartDocs.length; j++) {
-      SalesQuotation sq = salesCart.cartDocs[j];
+    if (hasCarts()) {
+      for (int j = 0; j < salesCart.cartDocs.length; j++) {
+        SalesQuotation sq = salesCart.cartDocs[j];
 
-      for (int k = 0; k < sq.quoteItems.length; k++) {
-        QuoteItem qi = sq.quoteItems[k];
+        for (int k = 0; k < sq.quoteItems.length; k++) {
+          QuoteItem qi = sq.quoteItems[k];
 
-        String countryCode = '';
+          String countryCode = '';
 
-        if (sq.storeShippingOption != null &&
-            sq.storeShippingOption.shippingAddress != null) {
-          countryCode = sq.storeShippingOption.shippingAddress.countryCode;
-        }
-        ConsumerProductListPrice price = await _consumerProductListPriceService
-            .getPrice(qi.sku.productSkuID, qi.product.companyId, countryCode);
+          if (sq.storeShippingOption != null &&
+              sq.storeShippingOption.shippingAddress != null) {
+            countryCode = sq.storeShippingOption.shippingAddress.countryCode;
+          }
+          ConsumerProductListPrice price =
+              await _consumerProductListPriceService.getPrice(
+                  qi.sku.productSkuID, qi.product.companyId, countryCode);
 
-        print("get price in updatePrice $price");
-        if (price != null) {
-          qi.invoicePrice = price.price;
-          qi.currencyCode = price.currency.code;
-          qi.uomCode = price.uom.code;
-        } else {
-          qi.invoicePrice = 0;
-        }
+          print("get price in updatePrice $price");
+          if (price != null) {
+            qi.invoicePrice = price.price;
+            qi.currencyCode = price.currency.code;
+            qi.uomCode = price.uom.code;
+          } else {
+            qi.invoicePrice = 0;
+          }
 
-        MinimumOrderQuantity minQty = await _minimumOrderQuantityService
-            .findMinimumOrder(qi.sku.productSkuID, qi.product.companyId);
+          MinimumOrderQuantity minQty = await _minimumOrderQuantityService
+              .findMinimumOrder(qi.sku.productSkuID, qi.product.companyId);
 
-        if (minQty != null) {
-          qi.minOrderQty = minQty.minQuantity;
-        } else {
-          qi.minOrderQty = 1;
-        }
+          if (minQty != null) {
+            qi.minOrderQty = minQty.minQuantity;
+          } else {
+            qi.minOrderQty = 1;
+          }
 
-        ProductStockQuantity stock = await _productStockQuantityService
-            .getStock(qi.sku.productSkuID, qi.product.companyId, countryCode);
+          ProductStockQuantity stock = await _productStockQuantityService
+              .getStock(qi.sku.productSkuID, qi.product.companyId, countryCode);
 
-        if (stock != null) {
-          qi.maxOrderQty = stock.stock;
-        } else {
-          qi.maxOrderQty = 9999;
+          if (stock != null) {
+            qi.maxOrderQty = stock.stock;
+          } else {
+            qi.maxOrderQty = 9999;
+          }
         }
       }
     }
@@ -287,7 +307,14 @@ abstract class SalesCartContentEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class SalesCartContentInitContent extends SalesCartContentEvent {}
+class SalesCartContentInitContent extends SalesCartContentEvent {
+  final Completer completer;
+
+  SalesCartContentInitContent({this.completer});
+
+  @override
+  List<Object> get props => [completer];
+}
 
 class SalesCartContentCheckAll extends SalesCartContentEvent {
   final bool checkState;

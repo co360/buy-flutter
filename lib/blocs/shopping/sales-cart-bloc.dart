@@ -14,6 +14,8 @@ class SalesCartBloc extends Bloc<SalesCartEvent, SalesCartState> {
   final AuthBloc authBloc;
   StreamSubscription authSubscription;
 
+  SalesCart salesCart;
+
   SalesCartBloc(this.authBloc) : super(SalesCartInitial()) {
     authSubscription = authBloc.listen((state) {
       if (state is LoginSuccess) {
@@ -25,17 +27,23 @@ class SalesCartBloc extends Bloc<SalesCartEvent, SalesCartState> {
     });
   }
 
+  int get totalCart {
+    if (salesCart == null) return 0;
+    return salesCart.totalItems;
+  }
+
   @override
   Stream<SalesCartState> mapEventToState(SalesCartEvent event) async* {
     if (event is SalesCartRefresh) {
-      yield SalesCartRefreshInProgress();
+      yield SalesCartRefreshInProgress(completer: event.completer);
 
       try {
-        SalesCart salesCart = await _salesCartService.refreshSalesCart();
-        yield SalesCartRefreshComplete(salesCart);
+        salesCart = await _salesCartService.refreshSalesCart();
+        yield SalesCartRefreshComplete(completer: event.completer);
       } catch (_, stacktrace) {
         print(stacktrace);
         yield SalesCartRefreshFailed(_.toString());
+        if (event.completer != null) event.completer.complete(true);
       }
     } else if (event is SalesCartClear) {
       yield SalesCartRefreshFailed("clear cart");
@@ -51,15 +59,29 @@ abstract class SalesCartState extends Equatable {
 
 class SalesCartInitial extends SalesCartState {}
 
-class SalesCartRefreshInProgress extends SalesCartState {}
+class SalesCartRefreshInProgress extends SalesCartState {
+  final Completer completer;
 
-class SalesCartRefreshComplete extends SalesCartState {
-  final SalesCart cart;
-
-  SalesCartRefreshComplete(this.cart);
+  SalesCartRefreshInProgress({this.completer});
 
   @override
-  List<Object> get props => [cart];
+  List<Object> get props => [completer];
+}
+
+class SalesCartRefreshComplete extends SalesCartState {
+//  final SalesCart cart;
+//
+//  SalesCartRefreshComplete(this.cart);
+//
+//  @override
+//  List<Object> get props => [cart];
+
+  final Completer completer;
+
+  SalesCartRefreshComplete({this.completer});
+
+  @override
+  List<Object> get props => [completer];
 }
 
 class SalesCartRefreshFailed extends SalesCartState {
@@ -78,7 +100,14 @@ abstract class SalesCartEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class SalesCartRefresh extends SalesCartEvent {}
+class SalesCartRefresh extends SalesCartEvent {
+  final Completer completer;
+
+  SalesCartRefresh({this.completer});
+
+  @override
+  List<Object> get props => [completer];
+}
 
 class SalesCartClear extends SalesCartEvent {}
 
