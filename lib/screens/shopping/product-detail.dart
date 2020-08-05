@@ -455,6 +455,7 @@ class ProductDetailBody extends StatelessWidget {
               buildRatings(context),
               buildReviews(context),
             ],
+            padding: 0,
           ),
         ],
       ),

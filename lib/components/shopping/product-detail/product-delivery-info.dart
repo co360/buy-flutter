@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:storeFlutter/models/identity/location.dart';
 import 'package:storeFlutter/models/shopping/easy-parcel-response.dart';
@@ -24,10 +25,8 @@ class ProductDeliveryInfo extends StatelessWidget {
             Container(
               width: 100,
               alignment: Alignment.centerRight,
-              child: FaDuotoneIcon(
-                FontAwesomeIcons.duotoneTruck,
-                primaryColor: AppTheme.colorPrimary,
-                secondaryColor: AppTheme.colorPrimary,
+              child: FaIcon(
+                FontAwesomeIcons.lightTruck,
                 size: 16,
               ),
             ),
@@ -46,12 +45,12 @@ class ProductDeliveryInfo extends StatelessWidget {
           ],
         ),
         SizedBox(height: 10),
-        courierDynamicList(),
+        courierDynamicList(context),
       ],
     );
   }
 
-  Widget courierDynamicList() {
+  Widget courierDynamicList(BuildContext context) {
     double minCost = 1000000;
     double maxCost = 0;
     DateTime minDate = new DateTime(2080, 1, 1, 0, 0);
@@ -78,7 +77,7 @@ class ProductDeliveryInfo extends StatelessWidget {
           SizedBox(
             width: 100,
             child: Text(
-              "Cost",
+              FlutterI18n.translate(context, "shopping.productDetail.cost"),
               textAlign: TextAlign.right,
               style: TextStyle(fontWeight: FontWeight.normal, fontSize: 14),
             ),
@@ -103,7 +102,8 @@ class ProductDeliveryInfo extends StatelessWidget {
           SizedBox(
             width: 100,
             child: Text(
-              "Received By",
+              FlutterI18n.translate(
+                  context, "shopping.productDetail.receivedBy"),
               textAlign: TextAlign.right,
               style: TextStyle(fontWeight: FontWeight.normal, fontSize: 14),
             ),

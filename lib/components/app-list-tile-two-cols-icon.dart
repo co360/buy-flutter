@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:storeFlutter/util/app-theme.dart';
-import 'package:storeFlutter/util/resource-util.dart';
 
-class AppListTileTwoColsTwoRows extends StatelessWidget {
+class AppListTileTwoColsIcons extends StatelessWidget {
   final String titleLeft;
   final String titleRight;
   final String content;
@@ -10,7 +9,7 @@ class AppListTileTwoColsTwoRows extends StatelessWidget {
   final bool topDivider;
   final bool bottomDivider;
 
-  AppListTileTwoColsTwoRows(this.titleLeft, this.titleRight, this.content,
+  AppListTileTwoColsIcons(this.titleLeft, this.titleRight, this.content,
       {this.topDivider: false, this.bottomDivider: true, this.imagePath});
 
   @override
@@ -34,9 +33,9 @@ class AppListTileTwoColsTwoRows extends StatelessWidget {
                             ),
                             child: Image.network(
                               imagePath,
-                              fit: BoxFit.cover,
-                              height: 30,
-                              width: 30,
+                              fit: BoxFit.fill,
+                              height: 20,
+                              width: 40,
                             ),
                           ),
                     Text(titleLeft,

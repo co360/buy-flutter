@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:storeFlutter/components/app-list-tile-two-cols-two-rows.dart';
+import 'package:storeFlutter/components/app-list-tile-two-cols-icon.dart';
 import 'package:storeFlutter/components/app-list-title.dart';
 import 'package:storeFlutter/models/identity/location.dart';
 import 'package:storeFlutter/models/shopping/easy-parcel-response.dart';
@@ -58,7 +59,8 @@ class ProductFeeInfoModalBody extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Text(
-                    "Delivery Fee Information",
+                    FlutterI18n.translate(context,
+                        "shopping.productDetail.deliveryFeeInformation"),
                     textAlign: TextAlign.left,
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
                   ),
@@ -80,7 +82,8 @@ class ProductFeeInfoModalBody extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Text(
-                    "Deliver To",
+                    FlutterI18n.translate(
+                        context, "shopping.productDetail.deliverTo"),
                     textAlign: TextAlign.left,
                     style:
                         TextStyle(fontWeight: FontWeight.normal, fontSize: 14),
@@ -118,7 +121,8 @@ class ProductFeeInfoModalBody extends StatelessWidget {
               ),
             ),
             AppListTitle(
-              "Standard Delivery",
+              FlutterI18n.translate(
+                  context, "shopping.productDetail.standardDelivery"),
               size: 14,
             ),
             userAddress == null
@@ -130,7 +134,8 @@ class ProductFeeInfoModalBody extends StatelessWidget {
                             color: Colors.white,
                             padding: EdgeInsets.all(AppTheme.paddingStandard),
                             child: Text(
-                              "No Data",
+                              FlutterI18n.translate(
+                                  context, "shopping.general.noData"),
                               textAlign: TextAlign.center,
                             )),
                       ])
@@ -148,10 +153,10 @@ class ProductFeeInfoModalBody extends StatelessWidget {
     List<Widget> lists = [];
     int i = 0;
     for (var f in shipments) {
-      lists.add(AppListTileTwoColsTwoRows(
+      lists.add(AppListTileTwoColsIcons(
         f.courier_name,
         "RM " + f.price.toStringAsFixed(2),
-        "Received by " +
+        FlutterI18n.translate(context, "shopping.productDetail.receivedBy") +
             f.delivery_dates.from.day.toString() +
             " " +
             reformatMonth(f.delivery_dates.from.month) +

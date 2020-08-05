@@ -38,34 +38,37 @@ class _ProductReviewState extends State<ProductReview> {
         child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Text(
-              FlutterI18n.translate(context, "shopping.productDetail.reviews"),
-              textAlign: TextAlign.left,
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            ratings.length > 0
-                ? FlatButton(
-                    textColor: AppTheme.colorLink,
-                    onPressed: () {
-                      setState(() {
-                        seeAllFlag = !seeAllFlag;
-                      });
-                    },
-                    child: Text(FlutterI18n.translate(
+        Padding(
+          padding: EdgeInsets.only(left: 15),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                FlutterI18n.translate(
+                    context, "shopping.productDetail.reviews"),
+                textAlign: TextAlign.left,
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              FlatButton(
+                textColor: AppTheme.colorLink,
+                onPressed: () {
+                  setState(() {
+                    seeAllFlag = !seeAllFlag;
+                  });
+                },
+                child: ratings.length > 0
+                    ? Text(FlutterI18n.translate(
                         context,
                         seeAllFlag
                             ? "shopping.productDetail.seeLess"
-                            : "shopping.productDetail.seeAll")),
-                    shape: CircleBorder(
-                        side: BorderSide(color: Colors.transparent)),
-                  )
-                : Container(),
-          ],
+                            : "shopping.productDetail.seeAll"))
+                    : Text(""),
+                shape:
+                    CircleBorder(side: BorderSide(color: Colors.transparent)),
+              ),
+            ],
+          ),
         ),
-        SizedBox(height: 10),
         Container(
           color: Colors.white,
           // padding: EdgeInsets.only(right: 10, left: 10),
@@ -103,7 +106,7 @@ class _ProductReviewState extends State<ProductReview> {
         Column(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
           SizedBox(height: 15),
           Padding(
-            padding: EdgeInsets.only(left: 0.0, right: 0.0),
+            padding: EdgeInsets.only(left: 15, right: 15),
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
@@ -134,22 +137,20 @@ class _ProductReviewState extends State<ProductReview> {
           ),
           SizedBox(height: 15),
           Padding(
-            padding: EdgeInsets.only(left: 0.0, right: 0.0),
+            padding: EdgeInsets.only(left: 15, right: 15),
             child: Text(f.review == null ? "" : f.review),
           ),
           SizedBox(height: f.review == null ? 0 : 15),
           Padding(
-            padding: EdgeInsets.only(left: 0.0, right: 0.0),
+            padding: EdgeInsets.only(left: 15, right: 15),
             child: Row(children: <Widget>[
               Text(
                   f.dateCreated.day < 10
                       ? "0" + f.dateCreated.day.toString()
                       : f.dateCreated.day.toString() +
-                          "/" +
-                          (f.dateCreated.month < 10
-                              ? "0" + f.dateCreated.month.toString()
-                              : f.dateCreated.month.toString()) +
-                          "/" +
+                          " " +
+                          reformatMonth(f.dateCreated.month) +
+                          " " +
                           f.dateCreated.year.toString(),
                   style: TextStyle(
                       color: AppTheme.colorLink,
@@ -170,24 +171,55 @@ class _ProductReviewState extends State<ProductReview> {
             ]),
           ),
           SizedBox(height: 15),
-          Divider(
-            color: AppTheme.colorGray3,
-            height: 1,
-            thickness: 1,
-          ),
+          // Divider(
+          //   color: AppTheme.colorGray3,
+          //   height: 1,
+          //   thickness: 1,
+          // ),
         ]),
       );
       if (!seeAllFlag) break;
     }
 
-    // lists.insert(
-    //   0,
-    //   Divider(
-    //     color: AppTheme.colorGray3,
-    //     height: 1,
-    //     thickness: 1,
-    //   ),
-    // );
+    lists.insert(
+      0,
+      Divider(
+        color: AppTheme.colorGray3,
+        height: 1,
+        thickness: 1,
+      ),
+    );
     return lists;
+  }
+
+  String reformatMonth(int month) {
+    switch (month) {
+      case 1:
+        return "Jan";
+      case 2:
+        return "Feb";
+      case 3:
+        return "Mar";
+      case 4:
+        return "Apr";
+      case 5:
+        return "May";
+      case 6:
+        return "Jun";
+      case 7:
+        return "Jul";
+      case 8:
+        return "Aug";
+      case 9:
+        return "Sep";
+      case 10:
+        return "Oct";
+      case 11:
+        return "Nov";
+      case 12:
+        return "Dec";
+      default:
+        return "";
+    }
   }
 }

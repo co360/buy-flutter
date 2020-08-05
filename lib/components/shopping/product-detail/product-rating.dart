@@ -35,17 +35,20 @@ class _ProductRatingState extends State<ProductRating> {
         child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        Text(
-          FlutterI18n.translate(context, "shopping.productDetail.ratings"),
-          textAlign: TextAlign.left,
-          style: TextStyle(fontWeight: FontWeight.bold),
+        Padding(
+          padding: EdgeInsets.only(left: 15, right: 15, top: 15),
+          child: Text(
+            FlutterI18n.translate(context, "shopping.productDetail.ratings"),
+            textAlign: TextAlign.left,
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
         ),
         SizedBox(height: 10),
         Container(
             color: Colors.white,
-            padding: EdgeInsets.only(top: 10, bottom: 10, right: 5, left: 5),
+            padding: EdgeInsets.only(top: 10, right: 5, left: 5),
             child: ratingBody(context, ratings)),
-        SizedBox(height: 15)
+        SizedBox(height: 20)
       ],
     ));
   }
@@ -146,7 +149,10 @@ class _ProductRatingState extends State<ProductRating> {
           child: Text(
             title,
             textAlign: TextAlign.right,
-            style: TextStyle(fontWeight: FontWeight.normal, fontSize: 14),
+            style: TextStyle(
+                fontWeight: FontWeight.normal,
+                color: AppTheme.colorGray6,
+                fontSize: 14),
           ),
         ),
         SizedBox(width: 10),
@@ -159,7 +165,10 @@ class _ProductRatingState extends State<ProductRating> {
         Text(
           avg.toStringAsFixed(1),
           textAlign: TextAlign.center,
-          style: TextStyle(fontWeight: FontWeight.normal, fontSize: 14),
+          style: TextStyle(
+              fontWeight: FontWeight.normal,
+              color: AppTheme.colorGray6,
+              fontSize: 14),
         ),
       ],
     );
