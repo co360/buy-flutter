@@ -24,7 +24,8 @@
     "noMoreResults": "No More Results",
     "deleteTitle": "Delete Confirmation",
     "deleteContent": "Are you sure you want to proceed ?",
-    "noData": "No Data"
+    "noData": "No Data",
+    "edit" : "Edit"
   },
   "dataSource" : {
     "general": {
@@ -142,7 +143,8 @@
       "noReviewsYet": "This product has no reviews",
       "standardDelivery": "Standard Delivery",
       "deliverTo": "Deliver To",
-      "deliveryFeeInformation": "Delivery Fee Information"
+      "deliveryFeeInformation": "Delivery Fee Information",
+      "selectAddress": "Select Address"
     },
     "filter": {
       "priceRange": "Price Range (RM)"
@@ -245,7 +247,8 @@
       "makeDefaultBillingAddress": "Make Default Billing Address",
       "deleteAddress": "Delete Address",
       "addAddress": "Add Address",
-      "editAddress": "Edit Address"
+      "editAddress": "Edit Address",
+      "useThis": "Use This"
     },
     
     "changeLanguageScreen": {

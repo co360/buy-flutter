@@ -134,7 +134,7 @@ class ProductDetailBloc extends Bloc<ProductDetailEvent, ProductDetailState> {
       yield ProductDetailSkuChecked();
     } else if (event is ProductDetailSkuViewMode) {
       yield ProductDetailSkuViewLoaded();
-    }else if (event is ProductDetailSelectSKU) {
+    } else if (event is ProductDetailSelectSKU) {
       yield ProductDetailPriceUpdateInProgress();
 
       // TODO set sku
@@ -148,6 +148,13 @@ class ProductDetailBloc extends Bloc<ProductDetailEvent, ProductDetailState> {
       yield ProductDetailAddToCartComplete();
 
       // TODO triger sales cart bloc to refresh...
+    } else if (event is ProductDetailSelectAddress) {
+      CompanyProfile userProfile = await _companyProfileService
+          .findByCompany(_storageService.loginUser.companyId);
+      userAddress = userProfile.locations
+          .where((element) => element.id == event.id)
+          .toList()[0];
+      yield ProductDetailSelectAddressComplete(userAddress);
     }
   }
 
@@ -294,6 +301,15 @@ class ProductDetailSkuChecked extends ProductDetailState {}
 
 class ProductDetailSkuViewLoaded extends ProductDetailState {}
 
+class ProductDetailSelectAddressComplete extends ProductDetailState {
+  final Location address;
+
+  ProductDetailSelectAddressComplete(this.address);
+
+  @override
+  List<Object> get props => [address];
+}
+
 // event
 abstract class ProductDetailEvent extends Equatable {
   @override
@@ -348,6 +364,15 @@ class ProductDetailVariantSelection extends ProductDetailEvent {
 
   @override
   List<Object> get props => [variantOption, this.value];
+}
+
+class ProductDetailSelectAddress extends ProductDetailEvent {
+  final int id;
+
+  ProductDetailSelectAddress(this.id);
+
+  @override
+  List<Object> get props => [id];
 }
 
 class ProductDetailSkuCheck extends ProductDetailEvent {}

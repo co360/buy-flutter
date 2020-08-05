@@ -1,38 +1,64 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
-import 'package:storeFlutter/screens/account/manage-address.dart';
+import 'package:storeFlutter/blocs/account/address-bloc.dart';
+import 'package:storeFlutter/components/app-button.dart';
 import 'package:storeFlutter/models/identity/location.dart';
 import 'package:storeFlutter/services/storage-service.dart';
-import 'package:storeFlutter/datasource/country-data-source.dart';
 import 'package:storeFlutter/util/app-theme.dart';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:storeFlutter/util/enums-util.dart';
 
 class AddressView extends StatelessWidget {
   final StorageService storageService = GetIt.I<StorageService>();
-  final CountryDataSource countryDataSource = GetIt.I<CountryDataSource>();
-  final List<Location> addresses;
+  final enumAddressViewType viewType;
+  final int selectId;
+  final Function(BuildContext, int) callBack;
 
-  AddressView(this.addresses);
+  AddressView(this.viewType, this.selectId, this.callBack);
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: _generateDynamicList(context, addresses));
+    return BlocProvider(
+        create: (context) => AddressBloc()
+          ..add(GetAddressEvent(storageService.loginUser.companyId)),
+        child: Builder(builder: (context) {
+          return BlocBuilder<AddressBloc, AddressState>(
+              builder: (context, state) {
+            print("current state $state");
+            List<Location> lists = [];
+            if (state is GetAddressSuccess) {
+              print(state.addresses);
+              if (state.addresses.length > 0) {
+                lists = state.addresses;
+              }
+            }
+
+            if (lists.length > 0) {
+              return SingleChildScrollView(
+                child: Column(children: generateDynamicList(context, lists)),
+              );
+            } else {
+              return SingleChildScrollView(
+                child: emptyList(context),
+              );
+            }
+          });
+        }));
   }
 
-  List<Widget> _generateDynamicList(
+  List<Widget> generateDynamicList(
       BuildContext _context, List<Location> _addresses) {
     List<Widget> list = List();
-    print("test");
-    print(_addresses);
     if (_addresses == null) return list;
 
     for (int i = 0; i < _addresses.length; i++) {
       if (_addresses[i] == null) continue;
       list.add(Container(
-          margin: const EdgeInsets.only(top: 20),
+          margin: const EdgeInsets.only(top: 10),
           padding: const EdgeInsets.only(bottom: 10),
           color: Colors.white,
           child: Column(
@@ -52,7 +78,7 @@ class AddressView extends StatelessWidget {
                     ),
                   ),
                   SizedBox(
-                    width: MediaQuery.of(_context).size.width * 0.60,
+                    width: MediaQuery.of(_context).size.width * 0.50,
                     child: Text(
                         _addresses[i].fullName == null
                             ? storageService.loginUser.firstName
@@ -60,26 +86,35 @@ class AddressView extends StatelessWidget {
                         style: TextStyle(fontWeight: FontWeight.bold)),
                   ),
                   SizedBox(
-                    width: MediaQuery.of(_context).size.width * 0.20,
+                    width: MediaQuery.of(_context).size.width * 0.35,
                     child: Container(
-                      alignment: Alignment.center,
-                      child: FlatButton(
-                        textColor: AppTheme.colorLink,
-                        onPressed: () => {
-                          Navigator.pushReplacement(
-                            _context,
-                            CupertinoPageRoute(
-                              builder: (context) =>
-                                  ManageAddressScreen(_addresses[i].id),
-                            ),
-                          )
-                        },
-                        child: Text(
-                            FlutterI18n.translate(_context, "account.edit")),
-                        shape: CircleBorder(
-                            side: BorderSide(color: Colors.transparent)),
-                      ),
-                    ),
+                        alignment: Alignment.centerRight,
+                        child: viewType == enumAddressViewType.SELECT
+                            ? Container(
+                                margin: EdgeInsets.only(right: 10),
+                                child: RaisedButton(
+                                  color: _addresses[i].id == selectId
+                                      ? AppTheme.colorOrange
+                                      : AppTheme.colorGray6,
+                                  textColor: Colors.white,
+                                  onPressed: () =>
+                                      callBack(_context, _addresses[i].id),
+                                  child: _addresses[i].defaultShipping
+                                      ? Text("Default")
+                                      : Text(FlutterI18n.translate(
+                                          _context, "account.address.useThis")),
+                                ),
+                              )
+                            : FlatButton(
+                                textColor: AppTheme.colorLink,
+                                onPressed: () =>
+                                    callBack(_context, _addresses[i].id),
+                                child: Text(FlutterI18n.translate(
+                                    _context, "account.edit")),
+                                shape: CircleBorder(
+                                  side: BorderSide(color: Colors.transparent),
+                                ),
+                              )),
                   ),
                 ],
               ),
@@ -162,7 +197,8 @@ class AddressView extends StatelessWidget {
                 ],
               ),
               SizedBox(height: 10),
-              _addresses[i].defaultShipping
+              _addresses[i].defaultShipping &&
+                      viewType == enumAddressViewType.EDIT
                   ? Row(
                       children: <Widget>[
                         SizedBox(
@@ -189,7 +225,8 @@ class AddressView extends StatelessWidget {
                       ],
                     )
                   : Container(),
-              _addresses[i].defaultBilling
+              _addresses[i].defaultBilling &&
+                      viewType == enumAddressViewType.EDIT
                   ? Row(
                       children: <Widget>[
                         SizedBox(
@@ -220,5 +257,32 @@ class AddressView extends StatelessWidget {
           )));
     }
     return list;
+  }
+
+  Widget emptyList(BuildContext _context) {
+    return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Container(
+              alignment: Alignment.center,
+              margin: const EdgeInsets.only(top: 40.0),
+              child: Text(
+                FlutterI18n.translate(_context, "account.noAddress"),
+                textAlign: TextAlign.center,
+              )),
+          Container(
+            alignment: Alignment.center,
+            margin: const EdgeInsets.only(top: 40.0),
+            child: SizedBox(
+              width: 264,
+              child: AppButton(
+                FlutterI18n.translate(_context, "account.addAddressNow"),
+                () => callBack(_context, 0),
+                size: AppButtonSize.small,
+                noPadding: true,
+              ),
+            ),
+          ),
+        ]);
   }
 }
