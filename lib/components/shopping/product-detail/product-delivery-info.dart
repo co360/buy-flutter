@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:storeFlutter/blocs/shopping/product-detail-bloc.dart';
 import 'package:storeFlutter/models/identity/location.dart';
 import 'package:storeFlutter/models/shopping/easy-parcel-response.dart';
 import 'package:storeFlutter/util/app-theme.dart';
@@ -17,6 +19,20 @@ class ProductDeliveryInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ProductDetailBloc productDetailBloc =
+        BlocProvider.of<ProductDetailBloc>(context);
+    return BlocBuilder<ProductDetailBloc, ProductDetailState>(
+      bloc: productDetailBloc,
+      builder: (context, state) {
+        if (state is ProductDetailSelectAddressComplete) {
+          return buildChild(context, state.address);
+        }
+        return buildChild(context, userAddress);
+      },
+    );
+  }
+
+  Widget buildChild(BuildContext context, Location address) {
     return Column(
       children: <Widget>[
         Row(
@@ -32,13 +48,13 @@ class ProductDeliveryInfo extends StatelessWidget {
             ),
             SizedBox(width: 15),
             Text(
-              userAddress == null
+              address == null
                   ? ""
-                  : (userAddress.city +
+                  : (address.city +
                       ", " +
-                      userAddress.state +
+                      address.state +
                       ", " +
-                      userAddress.postcode),
+                      address.postcode),
               textAlign: TextAlign.left,
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             )

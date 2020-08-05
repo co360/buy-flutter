@@ -144,7 +144,8 @@
       "noReviewsYet": "This product has no reviews",
       "standardDelivery": "Standard Delivery",
       "deliverTo": "Deliver To",
-      "deliveryFeeInformation": "Delivery Fee Information"
+      "deliveryFeeInformation": "Delivery Fee Information",
+      "selectAddress": "Select Address"
     },
     "filter": {
       "priceRange": "Price Range (RM)"
@@ -247,7 +248,8 @@
       "makeDefaultBillingAddress": "Make Default Billing Address",
       "deleteAddress": "Delete Address",
       "addAddress": "Add Address",
-      "editAddress": "Edit Address"
+      "editAddress": "Edit Address",
+      "useThis": "Use This"
     },
     
     "changeLanguageScreen": {

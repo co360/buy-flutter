@@ -143,7 +143,6 @@
     
     "addAddressNow": "Tambah alamat baru",
     "editAddress": "Edit Addresses",
-    "addAddressNow": "Add Address Now",
     "defaultShippingAddress": "Default Shipping Address",
     "defaultBillingAddress": "Default Billing Address",
     "address": {
@@ -164,7 +163,8 @@
       "makeDefaultBillingAddress": "Make Default Billing Address",
       "deleteAddress": "Delete Address",
       "addAddress": "Add Address",
-      "editAddress": "Edit Address"
+      "editAddress": "Edit Address",
+      "useThis": "Use This Location"
     },
     
     "changeLanguageScreen": {
