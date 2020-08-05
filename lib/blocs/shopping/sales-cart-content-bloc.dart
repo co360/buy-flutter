@@ -33,16 +33,22 @@ class SalesCartContentBloc
   SalesCart salesCart;
   List<CartGroup> cartGroups = [];
 
+  // checkout mode
   bool checkAll = false;
-
   String currency = "";
   int totalItemChecked = 0;
   double totalAmount = 0;
 
+  // edit mode
+  bool editCheckAll = false;
+  int totalItemEditChecked = 0;
+
+  ScreenMode screenMode = ScreenMode.checkout;
+
   SalesCartContentBloc(this.salesCartBloc) : super(SalesCartContentInitial()) {
     salesCartSubscription = salesCartBloc.listen((state) {
-      print("listen fired");
       if (state is SalesCartRefreshComplete) {
+        print("listen fired");
         salesCart = salesCartBloc.salesCart;
 
         populateCartGroup();
@@ -53,6 +59,11 @@ class SalesCartContentBloc
         add(SalesCartContentInitContent(completer: state.completer));
       }
     });
+  }
+
+  int get totalCart {
+    if (salesCart == null) return 0;
+    return salesCart.totalItems;
   }
 
   @override
@@ -77,10 +88,17 @@ class SalesCartContentBloc
       if (event.completer != null) event.completer.complete(true);
     } else if (event is SalesCartContentCheckQuotationItem) {
       yield SalesCartContentLoadingInProgress();
-      event.quoteItem.checked = event.checkState;
 
-      refreshCartCheckStatus();
-      calculateTotal();
+      if (screenMode == ScreenMode.edit) {
+        event.quoteItem.screenEditChecked = event.checkState;
+
+        refreshCartEditCheckStatus();
+      } else {
+        event.quoteItem.screenChecked = event.checkState;
+
+        refreshCartCheckStatus();
+        calculateTotal();
+      }
 
       yield SalesCartContentLoadingComplete();
     } else if (event is SalesCartContentCheckCompany) {
@@ -92,8 +110,12 @@ class SalesCartContentBloc
 
       if (selectedCG != null) checkAllCartGroup(selectedCG, event.checkState);
 
-      refreshCartCheckStatus();
-      calculateTotal();
+      if (screenMode == ScreenMode.edit) {
+        refreshCartEditCheckStatus();
+      } else {
+        refreshCartCheckStatus();
+        calculateTotal();
+      }
 
       yield SalesCartContentLoadingComplete();
     } else if (event is SalesCartContentCheckAll) {
@@ -103,8 +125,12 @@ class SalesCartContentBloc
       // check/uncheck all item
       checkAllItem(event.checkState);
 
-      refreshCartCheckStatus();
-      calculateTotal();
+      if (screenMode == ScreenMode.edit) {
+        refreshCartEditCheckStatus();
+      } else {
+        refreshCartCheckStatus();
+        calculateTotal();
+      }
 
       yield SalesCartContentLoadingComplete();
     } else if (event is SalesCartContentChangeQuantity) {
@@ -114,6 +140,17 @@ class SalesCartContentBloc
 
       refreshCartCheckStatus();
       calculateTotal();
+
+      yield SalesCartContentLoadingComplete();
+    } else if (event is SalesCartContentScreenEdit) {
+      yield SalesCartContentLoadingInProgress();
+      screenMode = ScreenMode.edit;
+      resetCartEditCheckStatus();
+
+      yield SalesCartContentLoadingComplete();
+    } else if (event is SalesCartContentScreenCheckout) {
+      yield SalesCartContentLoadingInProgress();
+      screenMode = ScreenMode.checkout;
 
       yield SalesCartContentLoadingComplete();
     }
@@ -126,7 +163,11 @@ class SalesCartContentBloc
       SalesQuotation sq = cg.cartDocs[j];
       for (int k = 0; k < sq.quoteItems.length; k++) {
         QuoteItem qi = sq.quoteItems[k];
-        qi.checked = checkState;
+        if (screenMode == ScreenMode.edit) {
+          qi.screenEditChecked = checkState;
+        } else {
+          qi.screenChecked = checkState;
+        }
       }
     }
   }
@@ -138,7 +179,11 @@ class SalesCartContentBloc
         SalesQuotation sq = cg.cartDocs[j];
         for (int k = 0; k < sq.quoteItems.length; k++) {
           QuoteItem qi = sq.quoteItems[k];
-          qi.checked = checkState;
+          if (screenMode == ScreenMode.edit) {
+            qi.screenEditChecked = checkState;
+          } else {
+            qi.screenChecked = checkState;
+          }
         }
       }
     }
@@ -151,7 +196,7 @@ class SalesCartContentBloc
 
     for (int i = 0; i < cartGroups.length; i++) {
       CartGroup cg = cartGroups[i];
-      cg.isChecked = true;
+      cg.screenChecked = true;
 
       for (int j = 0; j < cg.cartDocs.length; j++) {
         SalesQuotation sq = cg.cartDocs[j];
@@ -159,14 +204,14 @@ class SalesCartContentBloc
         for (int k = 0; k < sq.quoteItems.length; k++) {
           QuoteItem qi = sq.quoteItems[k];
 
-          cg.isChecked &= (qi.checked != null && qi.checked);
-          if (qi.checked != null && qi.checked) {
+          cg.screenChecked &= (qi.screenChecked != null && qi.screenChecked);
+          if (qi.screenChecked != null && qi.screenChecked) {
             totalItemChecked += qi.quantity.toInt();
           }
         }
       }
 
-      checkAll &= cg.isChecked;
+      checkAll &= cg.screenChecked;
     }
   }
 
@@ -181,8 +226,7 @@ class SalesCartContentBloc
         for (int k = 0; k < sq.quoteItems.length; k++) {
           QuoteItem qi = sq.quoteItems[k];
 
-          print("qi is checked ${qi.checked}");
-          if (qi.checked != null && qi.checked) {
+          if (qi.screenChecked != null && qi.screenChecked) {
             tempTotal += qi.invoicePrice * qi.quantity;
           }
         }
@@ -193,13 +237,59 @@ class SalesCartContentBloc
     this.totalAmount = tempTotal;
   }
 
+  refreshCartEditCheckStatus() {
+    totalItemEditChecked = 0;
+    // Note : can only populate based on item... not the other way round here
+    editCheckAll = true;
+
+    for (int i = 0; i < cartGroups.length; i++) {
+      CartGroup cg = cartGroups[i];
+      cg.screenEditChecked = true;
+
+      for (int j = 0; j < cg.cartDocs.length; j++) {
+        SalesQuotation sq = cg.cartDocs[j];
+
+        for (int k = 0; k < sq.quoteItems.length; k++) {
+          QuoteItem qi = sq.quoteItems[k];
+
+          cg.screenEditChecked &=
+              (qi.screenEditChecked != null && qi.screenEditChecked);
+          if (qi.screenEditChecked != null && qi.screenEditChecked) {
+            totalItemEditChecked++;
+          }
+        }
+      }
+
+      editCheckAll &= cg.screenEditChecked;
+    }
+  }
+
+  resetCartEditCheckStatus() {
+    totalItemEditChecked = 0;
+    editCheckAll = false;
+    for (int i = 0; i < cartGroups.length; i++) {
+      CartGroup cg = cartGroups[i];
+      cg.screenEditChecked = false;
+
+      for (int j = 0; j < cg.cartDocs.length; j++) {
+        SalesQuotation sq = cg.cartDocs[j];
+
+        for (int k = 0; k < sq.quoteItems.length; k++) {
+          QuoteItem qi = sq.quoteItems[k];
+
+          qi.screenEditChecked = false;
+        }
+      }
+    }
+  }
+
   bool hasCarts() {
     return this.salesCart != null &&
         this.salesCart.cartDocs != null &&
         this.salesCart.cartDocs.length > 0;
   }
 
-  populateCartGroup() {
+  populateCartGroup({bool checked = true}) {
     List<CartGroup> cartGroups = [];
 
     if (hasCarts()) {
@@ -216,13 +306,17 @@ class SalesCartContentBloc
           group.cartDocs.add(salesQuotation);
         } else {
           group = CartGroup();
-          group.isChecked = true;
+          group.screenChecked = checked;
           cartGroups.add(group);
           group.companyId = salesQuotation.quoteItems[0].product.companyId;
 //        group.company = await _companyService.getCompany(group.companyId);
           group.company = salesQuotation.quoteItems[0].product.sellerCompany;
           group.cartDocs.add(salesQuotation);
         }
+
+        salesQuotation.quoteItems
+            .map((e) => e.screenChecked = checked)
+            .toList();
       }
     }
 
@@ -257,7 +351,6 @@ class SalesCartContentBloc
               await _consumerProductListPriceService.getPrice(
                   qi.sku.productSkuID, qi.product.companyId, countryCode);
 
-          print("get price in updatePrice $price");
           if (price != null) {
             qi.invoicePrice = price.price;
             qi.currencyCode = price.currency.code;
@@ -354,9 +447,19 @@ class SalesCartContentChangeQuantity extends SalesCartContentEvent {
   List<Object> get props => [quoteItem, newQuantity];
 }
 
+class SalesCartContentScreenEdit extends SalesCartContentEvent {}
+
+class SalesCartContentScreenCheckout extends SalesCartContentEvent {}
+
+class SalesCartContentDelete extends SalesCartContentEvent {}
+
 class CartGroup {
   int companyId;
   Company company;
   List<SalesQuotation> cartDocs = [];
-  bool isChecked = false;
+
+  bool screenChecked = false;
+  bool screenEditChecked = false;
 }
+
+enum ScreenMode { checkout, edit }

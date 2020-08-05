@@ -25,7 +25,8 @@
     "deleteTitle": "Delete Confirmation",
     "deleteContent": "Are you sure you want to proceed ?",
     "noData": "No Data",
-    "edit" : "Edit"
+    "edit" : "Edit",
+    "delete" : "Delete"
   },
   "dataSource" : {
     "general": {

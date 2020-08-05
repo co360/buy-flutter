@@ -9,11 +9,11 @@ import 'package:storeFlutter/blocs/account/auth-bloc.dart';
 import 'package:storeFlutter/components/app-button.dart';
 import 'package:storeFlutter/components/app-list-tile.dart';
 import 'package:storeFlutter/components/app-list-title.dart';
-import 'package:storeFlutter/screens/account/change-language.dart';
-import 'package:storeFlutter/screens/account/view-profile.dart';
-import 'package:storeFlutter/screens/account/change-password.dart';
-import 'package:storeFlutter/screens/account/change-email.dart';
 import 'package:storeFlutter/screens/account/address.dart';
+import 'package:storeFlutter/screens/account/change-email.dart';
+import 'package:storeFlutter/screens/account/change-language.dart';
+import 'package:storeFlutter/screens/account/change-password.dart';
+import 'package:storeFlutter/screens/account/view-profile.dart';
 import 'package:storeFlutter/services/storage-service.dart';
 import 'package:storeFlutter/util/app-theme.dart';
 
@@ -111,7 +111,7 @@ class AccountScreen extends StatelessWidget {
             )
           },
         ),
-        AppListTile(FlutterI18n.translate(context, "account.bankAccounts")),
+//        AppListTile(FlutterI18n.translate(context, "account.bankAccounts")),
         AppListTitle(FlutterI18n.translate(context, "account.settings")),
         AppListTile(FlutterI18n.translate(context, "account.changeLanguage"),
             onTap: () => {
