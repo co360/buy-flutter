@@ -19,4 +19,16 @@ class SalesCart {
       _$SalesCartFromJson(json);
 
   Map<String, dynamic> toJson() => _$SalesCartToJson(this);
+
+  int get totalItems {
+    if (cartDocs == null || cartDocs.length == 0) return 0;
+    return cartDocs.fold(
+        0,
+        (value, element) =>
+            value +
+            element.quoteItems.fold(
+                0,
+                (previousValue, item) =>
+                    previousValue + item.quantity.toInt()));
+  }
 }

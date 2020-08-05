@@ -23,7 +23,8 @@ class SalesCartService extends BaseRestService {
   Future<SalesCart> getSalesCart(int accountId) async {
     var url = '$_endPoint/getSalesCart/$accountId';
     return await dio.get(url).then((value) {
-      return SalesCart.fromJson(value.data['object']);
+      return getResponseObject<SalesCart>(
+          value.data, (json) => SalesCart.fromJson(json));
     });
   }
 
@@ -31,7 +32,8 @@ class SalesCartService extends BaseRestService {
     var url = '$_endPoint/addToCartB2C/$accountId';
     return await dio.post(url, data: cartDoc.toJson()).then((value) {
       print("getting result here after addToCartB2C ${value.data['object']}");
-      return SalesCart.fromJson(value.data['object']);
+      return getResponseObject<SalesCart>(
+          value.data, (json) => SalesCart.fromJson(json));
     });
   }
 }

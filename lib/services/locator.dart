@@ -10,10 +10,10 @@ import 'package:storeFlutter/blocs/shopping/sales-cart-bloc.dart';
 import 'package:storeFlutter/blocs/shopping/shipment-bloc.dart';
 import 'package:storeFlutter/datasource/annual-revenue-data-source.dart';
 import 'package:storeFlutter/datasource/business-type-data-source.dart';
-import 'package:storeFlutter/datasource/total-employee-data-source.dart';
+import 'package:storeFlutter/datasource/city-data-source.dart';
 import 'package:storeFlutter/datasource/country-data-source.dart';
 import 'package:storeFlutter/datasource/state-data-source.dart';
-import 'package:storeFlutter/datasource/city-data-source.dart';
+import 'package:storeFlutter/datasource/total-employee-data-source.dart';
 import 'package:storeFlutter/services/account-service.dart';
 import 'package:storeFlutter/services/auth-service.dart';
 import 'package:storeFlutter/services/change-email-service.dart';
@@ -24,13 +24,18 @@ import 'package:storeFlutter/services/state-service.dart';
 import 'package:storeFlutter/services/city-service.dart';
 import 'package:storeFlutter/services/company-profile-service.dart';
 import 'package:storeFlutter/services/company-service.dart';
+import 'package:storeFlutter/services/consumer-product-list-price-service.dart';
+import 'package:storeFlutter/services/country-service.dart';
 import 'package:storeFlutter/services/forget-password-service.dart';
 import 'package:storeFlutter/services/initial-loading-service.dart';
+import 'package:storeFlutter/services/minimum-order-quantity-service.dart';
+import 'package:storeFlutter/services/order-rate-review-service.dart';
 import 'package:storeFlutter/services/product-category-service.dart';
 import 'package:storeFlutter/services/product-service.dart';
-import 'package:storeFlutter/services/order-rate-review-service.dart';
+import 'package:storeFlutter/services/product-stock-quantity-service.dart';
 import 'package:storeFlutter/services/sales-cart-service.dart';
 import 'package:storeFlutter/services/signup-service.dart';
+import 'package:storeFlutter/services/state-service.dart';
 import 'package:storeFlutter/services/storage-service.dart';
 import 'package:storeFlutter/services/variant-type-service.dart';
 
@@ -57,6 +62,13 @@ Future setupLocator() async {
   GetIt.I.registerSingleton<StateService>(StateService());
   GetIt.I.registerSingleton<CityService>(CityService());
   GetIt.I.registerSingleton<ShipmentService>(ShipmentService());
+
+  GetIt.I.registerSingleton<MinimumOrderQuantityService>(
+      MinimumOrderQuantityService());
+  GetIt.I.registerSingleton<ProductStockQuantityService>(
+      ProductStockQuantityService());
+  GetIt.I.registerSingleton<ConsumerProductListPriceService>(
+      ConsumerProductListPriceService());
 
   // Datasource
   GetIt.I.registerSingleton<BusinessTypeDataSource>(BusinessTypeDataSource());

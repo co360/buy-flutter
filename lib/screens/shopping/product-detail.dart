@@ -173,6 +173,7 @@ class ProductDetailScreen extends StatelessWidget {
   static void showProductDetailBottomSheet(
       BuildContext context, Product product,
       {ProductActionModalAction action: ProductActionModalAction.both}) {
+    ProductDetailBloc productDetailBloc = BlocProvider.of<ProductDetailBloc>(context);
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
@@ -182,19 +183,22 @@ class ProductDetailScreen extends StatelessWidget {
       backgroundColor: Colors.white,
       builder: (BuildContext context) {
         return ProductActionModalBody(
+          productDetailBloc,
           product,
           action: action,
         );
       },
-    );
+    ).whenComplete(() => productDetailBloc.add(ProductDetailSkuViewMode()));
   }
 }
 
 class ProductActionModalBody extends StatelessWidget {
   final ProductActionModalAction action;
   final Product product;
+  ProductDetailBloc productDetailBloc;
 
-  const ProductActionModalBody(
+  ProductActionModalBody(
+      this.productDetailBloc,
     this.product, {
     this.action = ProductActionModalAction.both,
     Key key,
@@ -218,7 +222,7 @@ class ProductActionModalBody extends StatelessWidget {
                   padding: EdgeInsets.all(AppTheme.paddingStandard),
                   child: Column(
                     children: <Widget>[
-                      ProductVariant(product, enumVariantViewType.SELECTION),
+                      ProductVariant(product, enumVariantViewType.SELECTION, productDetailBloc),
                     ],
                   ),
                 ),
@@ -689,10 +693,11 @@ class ProductDetailBody extends StatelessWidget {
       widgets.add(
         AppPanel(
           child: buildPanelContentWithAction(
-            ProductVariant(product, enumVariantViewType.ALL),
+            ProductVariant(product, enumVariantViewType.ALL, productDetailBloc),
             () => CheckSession.checkSession(
               context,
               () {
+                productDetailBloc.add(ProductDetailSkuInitiate(product.variantSkus));
                 ProductDetailScreen.showProductDetailBottomSheet(
                     context, product);
               },
@@ -788,7 +793,7 @@ class ProductDetailBody extends StatelessWidget {
     if (sellerCompanyProfile != null &&
         sellerCompanyProfile.locations != null) {
       Location location = sellerCompanyProfile.locations
-          .firstWhere((element) => element.supplyLocation);
+          .firstWhere((element) => element.supplyLocation, orElse: () => null);
 
       if (location != null) {
         if (isBlank(locationInfo))

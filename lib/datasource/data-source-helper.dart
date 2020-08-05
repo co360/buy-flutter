@@ -7,7 +7,8 @@ class DataSourceHelper {
   static String getLabel({String value, List<LabelValue> lvs}) {
     if (isBlank(value)) return "";
     if (lvs == null || lvs.length == 0) return value;
-    LabelValue lv = lvs.firstWhere((element) => element.value == value);
+    LabelValue lv =
+        lvs.firstWhere((element) => element.value == value, orElse: () => null);
 
     if (lv != null) return lv.label;
     return value;

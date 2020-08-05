@@ -136,7 +136,7 @@ class ProductListingGridItem extends StatelessWidget {
 
     if (product.sellerCompanyProfile != null) {
       Location location = product.sellerCompanyProfile.locations
-          .firstWhere((element) => element.supplyLocation);
+          .firstWhere((element) => element.supplyLocation, orElse: () => null);
 
       if (location != null) {
         if (isBlank(locationInfo))

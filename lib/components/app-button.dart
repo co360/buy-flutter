@@ -13,10 +13,13 @@ class AppButton extends StatelessWidget {
   final AppButtonType type;
   final AppButtonSize size;
 
+  final enabled;
+
   const AppButton(this.text, this.onPressed,
       {this.type = AppButtonType.orange,
       this.widget,
       this.noPadding = false,
+      this.enabled = true,
       this.bottomPadding = AppTheme.paddingStandard,
       this.size = AppButtonSize.big});
 
@@ -24,6 +27,7 @@ class AppButton extends StatelessWidget {
       {this.type = AppButtonType.orange,
       this.text,
       this.noPadding = false,
+      this.enabled = true,
       this.bottomPadding = AppTheme.paddingStandard,
       this.size = AppButtonSize.big});
 
@@ -40,8 +44,8 @@ class AppButton extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.only(bottom: this.noPadding ? 0 : this.bottomPadding),
       child: RaisedButton(
-        onPressed: this.onPressed,
-        color: this.type.backgroundColor,
+        onPressed: this.enabled ? this.onPressed : () {},
+        color: enabled ? this.type.backgroundColor : AppTheme.colorGray3,
         elevation: 3,
         padding: padding,
         shape: RoundedRectangleBorder(
@@ -52,7 +56,7 @@ class AppButton extends StatelessWidget {
             : AutoSizeText(this.text,
                 minFontSize: 12,
                 style: TextStyle(
-                  color: this.type.textColor,
+                  color: enabled ? this.type.textColor : AppTheme.colorGray5,
                   fontSize: fontSize,
                   fontWeight: FontWeight.bold,
                 )),

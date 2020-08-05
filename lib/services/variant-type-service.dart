@@ -9,6 +9,7 @@ class VariantTypeService extends BaseRestService {
     var url = '$_endPoint/get/$id';
     final response = await dio.get(url);
 
-    return VariantType.fromJson(response.data["object"]);
+    return getResponseObject<VariantType>(
+        response.data, (json) => VariantType.fromJson(json));
   }
 }

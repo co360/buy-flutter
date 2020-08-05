@@ -33,4 +33,10 @@ abstract class BaseRestService {
 
     // TODO check is it expiry? or only through the invocation?
   }
+
+  T getResponseObject<T>(
+      Map<String, dynamic> data, T Function(Map<String, dynamic> json) func) {
+    if (data == null || data['object'] == null) return null;
+    return func(data['object']);
+  }
 }

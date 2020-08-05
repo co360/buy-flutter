@@ -15,17 +15,15 @@ class AccountService extends BaseRestService {
     var url = '$_endPoint/$id';
     final response = await dio.get(url);
 
-    return Account.fromJson(response.data['object']);
+    return getResponseObject<Account>(
+        response.data, (json) => Account.fromJson(json));
   }
 
   Future<Account> updateAccountByID(int id, Account account) async {
     var url = '$_endPoint/$id';
     final response = await dio.put(url, data: account.toJson());
 
-    if (response.data['object'] != null) {
-      return Account.fromJson(response.data['object']);
-    } else {
-      return null;
-    }
+    return getResponseObject<Account>(
+        response.data, (json) => Account.fromJson(json));
   }
 }

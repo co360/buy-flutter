@@ -10,11 +10,9 @@ class ChangePasswordService extends BaseRestService {
     try {
       final response = await dio.put(url, data: data.toJson());
       print(response.data);
-      if (response.data['object'] != null) {
-        return ChangePasswordBody.fromJson(response.data['object']);
-      } else {
-        return null;
-      }
+
+      return getResponseObject<ChangePasswordBody>(
+          response.data, (json) => ChangePasswordBody.fromJson(json));
     } catch (e) {
       return null;
     }
