@@ -41,7 +41,9 @@ class ShoppingCartIcon extends StatelessWidget {
               builder: (context, state) {
                 int total = 0;
                 if (state is SalesCartRefreshComplete) {
-                  total = state.cart.totalItems;
+                  if (state.cart != null) {
+                    total = state.cart.totalItems;
+                  }
                 }
 
                 if (total > 0) {

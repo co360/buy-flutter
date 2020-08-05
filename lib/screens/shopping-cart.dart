@@ -68,7 +68,9 @@ class ShoppingCartBody extends StatelessWidget {
 //          return ShoppingCartBodyWithConten(state.cart);
 
 //          return buildEmptyShoppingCart(context);
-          return state.cart.cartDocs != null && state.cart.cartDocs.length > 0
+          return state.cart != null &&
+                  state.cart.cartDocs != null &&
+                  state.cart.cartDocs.length > 0
               ? ShoppingCartBodyWithContent()
               : buildEmptyShoppingCart(context);
         }

@@ -59,7 +59,7 @@ class SalesCartContentBloc
 
       // TODO by right should have default currency by their own country, or hard code to MYR for eDagang
       // then each for the sales quotation need to do currency conversion to convert
-      if (salesCart.cartDocs.length > 0) {
+      if (salesCart != null && salesCart.cartDocs.length > 0) {
         currency = salesCart.cartDocs[0].quoteItems[0].currencyCode;
       }
 
