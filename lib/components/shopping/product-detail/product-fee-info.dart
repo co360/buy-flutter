@@ -1,15 +1,21 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:storeFlutter/blocs/shopping/product-detail-bloc.dart';
 import 'package:storeFlutter/components/app-list-tile-two-cols-icon.dart';
 import 'package:storeFlutter/components/app-list-title.dart';
+import 'package:storeFlutter/components/shopping/product-detail/product-select-address.dart';
 import 'package:storeFlutter/models/identity/location.dart';
 import 'package:storeFlutter/models/shopping/easy-parcel-response.dart';
 import 'package:storeFlutter/util/app-theme.dart';
 
 abstract class ProductFeeInfo extends StatelessWidget {
   static void showProductDetailBottomSheet(BuildContext context,
-      Location userAddress, List<EasyParcelResponse> shipments) {
+      Location address, List<EasyParcelResponse> shipments) {
+    ProductDetailBloc productDetailBloc =
+        BlocProvider.of<ProductDetailBloc>(context);
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
@@ -18,7 +24,7 @@ abstract class ProductFeeInfo extends StatelessWidget {
       ),
       backgroundColor: AppTheme.colorBg,
       builder: (BuildContext context) {
-        return ProductFeeInfoModalBody(userAddress, shipments);
+        return ProductFeeInfoModalBody(address, shipments, productDetailBloc);
       },
     );
   }
@@ -27,15 +33,29 @@ abstract class ProductFeeInfo extends StatelessWidget {
 class ProductFeeInfoModalBody extends StatelessWidget {
   final Location userAddress;
   final List<EasyParcelResponse> shipments;
+  final ProductDetailBloc productDetailBloc;
 
   ProductFeeInfoModalBody(
     this.userAddress,
-    this.shipments, {
+    this.shipments,
+    this.productDetailBloc, {
     Key key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    return BlocBuilder<ProductDetailBloc, ProductDetailState>(
+      bloc: productDetailBloc,
+      builder: (context, state) {
+        if (state is ProductDetailSelectAddressComplete) {
+          return buildChild(context, state.address);
+        }
+        return buildChild(context, userAddress);
+      },
+    );
+  }
+
+  Widget buildChild(BuildContext context, Location address) {
     return ConstrainedBox(
       constraints: BoxConstraints(
         maxHeight: 500,
@@ -88,35 +108,48 @@ class ProductFeeInfoModalBody extends StatelessWidget {
                     style:
                         TextStyle(fontWeight: FontWeight.normal, fontSize: 14),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: <Widget>[
-                      Text(
-                        userAddress == null ||
-                                userAddress.city == null ||
-                                userAddress.state == null ||
-                                userAddress.postcode == null
-                            ? ""
-                            : (userAddress.city +
-                                ", " +
-                                userAddress.state +
-                                ", " +
-                                userAddress.postcode),
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                            fontWeight: FontWeight.normal,
-                            color: AppTheme.colorPrimary,
-                            fontSize: 14),
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      FaIcon(
-                        FontAwesomeIcons.lightChevronRight,
-                        size: 15,
-                      )
-                    ],
-                  )
+                  GestureDetector(
+                    behavior: HitTestBehavior.translucent,
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        CupertinoPageRoute(
+                          builder: (context) => ProductSelectAddress(
+                              productDetailBloc, address.id),
+                        ),
+                      );
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[
+                        Text(
+                          address == null ||
+                                  address.city == null ||
+                                  address.state == null ||
+                                  address.postcode == null
+                              ? ""
+                              : (address.city +
+                                  ", " +
+                                  address.state +
+                                  ", " +
+                                  address.postcode),
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                              fontWeight: FontWeight.normal,
+                              color: AppTheme.colorPrimary,
+                              fontSize: 14),
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        FaIcon(
+                          FontAwesomeIcons.lightChevronRight,
+                          size: 15,
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -125,7 +158,7 @@ class ProductFeeInfoModalBody extends StatelessWidget {
                   context, "shopping.productDetail.standardDelivery"),
               size: 14,
             ),
-            userAddress == null
+            address == null
                 ? Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
