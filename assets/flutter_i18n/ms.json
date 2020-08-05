@@ -19,7 +19,8 @@
     "done": "Done",
     "noMoreResults": "No More Results",
     "deleteTitle": "Delete Confirmation",
-    "deleteContent": "Are you sure you want to proceed ?"
+    "deleteContent": "Are you sure you want to proceed ?",
+    "noData": "No Data"
   },
   "screen" : {
     "bottomNavigation": {
@@ -35,7 +36,6 @@
     "browse": "Layar",
     "searchWith" : "Cari dengan {query}",
     "productDetail": {
-      "name" : "Product Info",
       "productInformation": "Maklumat Produk",
       "delivery": "Delivery",
       "cost": "Cost",
@@ -69,7 +69,10 @@
       "easeOfDoingBusiness": "Ease Of Doing Business",
       "seeAll": "See All",
       "seeLess": "See Less",
-      "noReviewsYet": "This product has no reviews"
+      "noReviewsYet": "This product has no reviews",
+      "standardDelivery": "Standard Delivery",
+      "deliverTo": "Deliver To",
+      "deliveryFeeInformation": "Delivery Fee Information"
     },
     "sellerStorePage": {
       "overview": "Company Overview",

@@ -4,8 +4,9 @@ import 'package:storeFlutter/util/app-theme.dart';
 class AppPanel extends StatelessWidget {
   final Widget child;
   final List<Widget> children;
+  final double padding;
 
-  AppPanel({this.child, this.children});
+  AppPanel({this.child, this.children, this.padding = 15});
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +45,7 @@ class AppPanel extends StatelessWidget {
         .expand(
           (e) => [
             Padding(
-              padding: EdgeInsets.all(15),
+              padding: EdgeInsets.all(padding),
               child: e,
             ),
             border
