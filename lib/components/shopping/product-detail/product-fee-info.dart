@@ -157,6 +157,7 @@ class ProductFeeInfoModalBody extends StatelessWidget {
         f.courier_name,
         "RM " + f.price.toStringAsFixed(2),
         FlutterI18n.translate(context, "shopping.productDetail.receivedBy") +
+            " " +
             f.delivery_dates.from.day.toString() +
             " " +
             reformatMonth(f.delivery_dates.from.month) +
