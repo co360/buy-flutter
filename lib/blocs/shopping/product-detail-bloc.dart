@@ -7,12 +7,17 @@ import 'package:storeFlutter/datasource/business-type-data-source.dart';
 import 'package:storeFlutter/datasource/total-employee-data-source.dart';
 import 'package:storeFlutter/models/identity/company-profile.dart';
 import 'package:storeFlutter/models/identity/company.dart';
+import 'package:storeFlutter/models/identity/location.dart';
 import 'package:storeFlutter/models/label-value.dart';
+import 'package:storeFlutter/models/shopping/easy-parcel-param.dart';
+import 'package:storeFlutter/models/shopping/easy-parcel-response.dart';
 import 'package:storeFlutter/models/shopping/product.dart';
 import 'package:storeFlutter/models/shopping/sales-quotation.dart';
 import 'package:storeFlutter/models/shopping/sku.dart';
 import 'package:storeFlutter/services/company-profile-service.dart';
 import 'package:storeFlutter/services/company-service.dart';
+import 'package:storeFlutter/services/shipment-service.dart';
+import 'package:storeFlutter/services/storage-service.dart';
 
 // bloc
 class ProductDetailBloc extends Bloc<ProductDetailEvent, ProductDetailState> {
@@ -22,10 +27,14 @@ class ProductDetailBloc extends Bloc<ProductDetailEvent, ProductDetailState> {
 
   CompanyProfile sellerCompanyProfile;
   Company sellerCompany;
+  Location userAddress;
+  List<EasyParcelResponse> shipment;
 
   CompanyService _companyService = GetIt.I<CompanyService>();
   CompanyProfileService _companyProfileService =
       GetIt.I<CompanyProfileService>();
+  ShipmentService _shipmentService = GetIt.I<ShipmentService>();
+  StorageService _storageService = GetIt.I<StorageService>();
 
   BusinessTypeDataSource _businessTypeDataSource =
       GetIt.I<BusinessTypeDataSource>();
@@ -58,6 +67,37 @@ class ProductDetailBloc extends Bloc<ProductDetailEvent, ProductDetailState> {
       sellerCompany = await _companyService.getCompany(product.companyId);
       sellerCompanyProfile =
           await _companyProfileService.findByCompany(product.companyId);
+
+      // get user's location
+      CompanyProfile userProfile = await _companyProfileService
+          .findByCompany(_storageService.loginUser.companyId);
+      if (userProfile != null &&
+          userProfile.locations != null &&
+          userProfile.locations.length > 0) {
+        userAddress = userProfile.locations
+            .where((element) => element.defaultShipping == true)
+            .toList()[0];
+      }
+
+      // get shipment
+      shipment = await _shipmentService.getEasyParcel(new EasyParcelParam(
+          senderPostcode: sellerCompany.postcode,
+          senderCountry: sellerCompany.country,
+          senderState: sellerCompany.state,
+          receiverCountry:
+              userAddress == null || userAddress.countryCode == null
+                  ? "MY"
+                  : userAddress.countryCode,
+          receiverPostcode: userAddress == null || userAddress.postcode == null
+              ? "45000"
+              : userAddress.postcode,
+          receiverState: userAddress == null || userAddress.state == null
+              ? "Selangor"
+              : userAddress.state,
+          weight: product.weight,
+          height: product.height,
+          width: product.width,
+          length: product.length));
 
       // some other data source to resolve?
       businessTypeLvs =

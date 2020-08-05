@@ -14,6 +14,7 @@ import 'package:storeFlutter/components/app-list-title.dart';
 import 'package:storeFlutter/components/app-panel.dart';
 import 'package:storeFlutter/components/form/quantity-input.dart';
 import 'package:storeFlutter/components/shopping/product-detail/product-delivery-info.dart';
+import 'package:storeFlutter/components/shopping/product-detail/product-fee-info.dart';
 import 'package:storeFlutter/components/shopping/product-detail/product-image-slider.dart';
 import 'package:storeFlutter/components/shopping/product-detail/product-review.dart';
 import 'package:storeFlutter/components/shopping/product-detail/product-variant.dart';
@@ -25,6 +26,7 @@ import 'package:storeFlutter/datasource/data-source-helper.dart';
 import 'package:storeFlutter/models/identity/company-profile.dart';
 import 'package:storeFlutter/models/identity/company.dart';
 import 'package:storeFlutter/models/identity/location.dart';
+import 'package:storeFlutter/models/shopping/easy-parcel-response.dart';
 import 'package:storeFlutter/models/shopping/product.dart';
 import 'package:storeFlutter/util/app-theme.dart';
 import 'package:storeFlutter/util/format-util.dart';
@@ -55,6 +57,8 @@ class ProductDetailScreen extends StatelessWidget {
 
               var sellerCompanyProfile = bloc.sellerCompanyProfile;
               var sellerCompany = bloc.sellerCompany;
+              var userAddress = bloc.userAddress;
+              var shipment = bloc.shipment;
 
               return Scaffold(
                 backgroundColor: AppTheme.colorBg2,
@@ -81,8 +85,8 @@ class ProductDetailScreen extends StatelessWidget {
                 ),
                 bottomNavigationBar: buildBottomAppBar(
                     product, sellerCompany, sellerCompanyProfile, context),
-                body: ProductDetailBody(
-                    product, sellerCompany, sellerCompanyProfile),
+                body: ProductDetailBody(product, sellerCompany,
+                    sellerCompanyProfile, userAddress, shipment),
               );
             },
           );
@@ -381,13 +385,17 @@ class ProductDetailBody extends StatelessWidget {
   final Product product;
   final Company sellerCompany;
   final CompanyProfile sellerCompanyProfile;
+  final Location userAddress;
+  final List<EasyParcelResponse> shipment;
 
   ProductDetailBloc productDetailBloc;
 
   ProductDetailBody(
     this.product,
     this.sellerCompany,
-    this.sellerCompanyProfile, {
+    this.sellerCompanyProfile,
+    this.userAddress,
+    this.shipment, {
     Key key,
   }) : super(key: key);
 
@@ -405,7 +413,12 @@ class ProductDetailBody extends StatelessWidget {
               context, "shopping.productDetail.delivery")),
           AppPanel(
             child: buildPanelContentWithAction(
-                ProductDeliveryInfo(product), () => {}),
+                ProductDeliveryInfo(userAddress, shipment), () {
+              CheckSession.checkSession(context, () {
+                ProductFeeInfo.showProductDetailBottomSheet(
+                    context, userAddress, shipment);
+              });
+            }),
           ),
           ...buildProductOption(context),
           AppListTitle.noTopPadding(FlutterI18n.translate(

@@ -7,6 +7,7 @@ import 'package:storeFlutter/blocs/navigation/bottom-navigation-bloc.dart';
 import 'package:storeFlutter/blocs/shopping/product-category-bloc.dart';
 import 'package:storeFlutter/blocs/shopping/rating-bloc.dart';
 import 'package:storeFlutter/blocs/shopping/sales-cart-bloc.dart';
+import 'package:storeFlutter/blocs/shopping/shipment-bloc.dart';
 import 'package:storeFlutter/datasource/annual-revenue-data-source.dart';
 import 'package:storeFlutter/datasource/business-type-data-source.dart';
 import 'package:storeFlutter/datasource/total-employee-data-source.dart';
@@ -18,6 +19,7 @@ import 'package:storeFlutter/services/auth-service.dart';
 import 'package:storeFlutter/services/change-email-service.dart';
 import 'package:storeFlutter/services/change-password-service.dart';
 import 'package:storeFlutter/services/country-service.dart';
+import 'package:storeFlutter/services/shipment-service.dart';
 import 'package:storeFlutter/services/state-service.dart';
 import 'package:storeFlutter/services/city-service.dart';
 import 'package:storeFlutter/services/company-profile-service.dart';
@@ -54,6 +56,7 @@ Future setupLocator() async {
   GetIt.I.registerSingleton<CountryService>(CountryService());
   GetIt.I.registerSingleton<StateService>(StateService());
   GetIt.I.registerSingleton<CityService>(CityService());
+  GetIt.I.registerSingleton<ShipmentService>(ShipmentService());
 
   // Datasource
   GetIt.I.registerSingleton<BusinessTypeDataSource>(BusinessTypeDataSource());
@@ -75,4 +78,5 @@ Future setupLocator() async {
   GetIt.I.registerSingleton<ProductCategoryBloc>(ProductCategoryBloc());
   GetIt.I.registerSingleton<SignUpBloc>(SignUpBloc());
   GetIt.I.registerSingleton<RatingBloc>(RatingBloc());
+  GetIt.I.registerSingleton<ShipmentBloc>(ShipmentBloc());
 }
