@@ -6,48 +6,59 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:storeFlutter/blocs/account/address-bloc.dart';
 import 'package:storeFlutter/components/app-button.dart';
+import 'package:storeFlutter/components/app-loading-dialog.dart';
 import 'package:storeFlutter/models/identity/location.dart';
 import 'package:storeFlutter/services/storage-service.dart';
 import 'package:storeFlutter/util/app-theme.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:storeFlutter/util/enums-util.dart';
 
-class AddressView extends StatelessWidget {
-  final StorageService storageService = GetIt.I<StorageService>();
+class AddressView extends StatefulWidget {
   final enumAddressViewType viewType;
   final int selectId;
   final Function(BuildContext, int) callBack;
 
   AddressView(this.viewType, this.selectId, this.callBack);
+  @override
+  _AddressViewState createState() => _AddressViewState();
+}
+
+class _AddressViewState extends State<AddressView> {
+  final StorageService storageService = GetIt.I<StorageService>();
+  bool hasDialog = false;
+  @override
+  void initState() {
+    print("Initialize AddressView and State");
+
+    GetIt.I<AddressBloc>()
+        .add(GetAddressEvent(storageService.loginUser.companyId));
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-        create: (context) => AddressBloc()
-          ..add(GetAddressEvent(storageService.loginUser.companyId)),
-        child: Builder(builder: (context) {
-          return BlocBuilder<AddressBloc, AddressState>(
-              builder: (context, state) {
-            print("current state $state");
-            List<Location> lists = [];
-            if (state is GetAddressSuccess) {
-              print(state.addresses);
-              if (state.addresses.length > 0) {
-                lists = state.addresses;
-              }
+    return BlocBuilder<AddressBloc, AddressState>(
+        bloc: GetIt.I<AddressBloc>(),
+        builder: (context, state) {
+          print("[AddressView] current state $state");
+          List<Location> lists = [];
+          if (state is GetAddressSuccess) {
+            print(state.addresses);
+            if (state.addresses.length > 0) {
+              lists = state.addresses;
             }
+          }
 
-            if (lists.length > 0) {
-              return SingleChildScrollView(
-                child: Column(children: generateDynamicList(context, lists)),
-              );
-            } else {
-              return SingleChildScrollView(
-                child: emptyList(context),
-              );
-            }
-          });
-        }));
+          if (lists.length > 0) {
+            return SingleChildScrollView(
+              child: Column(children: generateDynamicList(context, lists)),
+            );
+          } else {
+            return SingleChildScrollView(
+              child: emptyList(context),
+            );
+          }
+        });
   }
 
   List<Widget> generateDynamicList(
@@ -89,16 +100,16 @@ class AddressView extends StatelessWidget {
                     width: MediaQuery.of(_context).size.width * 0.35,
                     child: Container(
                         alignment: Alignment.centerRight,
-                        child: viewType == enumAddressViewType.SELECT
+                        child: widget.viewType == enumAddressViewType.SELECT
                             ? Container(
                                 margin: EdgeInsets.only(right: 10),
                                 child: RaisedButton(
-                                  color: _addresses[i].id == selectId
+                                  color: _addresses[i].id == widget.selectId
                                       ? AppTheme.colorOrange
                                       : AppTheme.colorGray6,
                                   textColor: Colors.white,
-                                  onPressed: () =>
-                                      callBack(_context, _addresses[i].id),
+                                  onPressed: () => widget.callBack(
+                                      _context, _addresses[i].id),
                                   child: _addresses[i].defaultShipping
                                       ? Text("Default")
                                       : Text(FlutterI18n.translate(
@@ -108,7 +119,7 @@ class AddressView extends StatelessWidget {
                             : FlatButton(
                                 textColor: AppTheme.colorLink,
                                 onPressed: () =>
-                                    callBack(_context, _addresses[i].id),
+                                    widget.callBack(_context, _addresses[i].id),
                                 child: Text(FlutterI18n.translate(
                                     _context, "account.edit")),
                                 shape: CircleBorder(
@@ -198,7 +209,7 @@ class AddressView extends StatelessWidget {
               ),
               SizedBox(height: 10),
               _addresses[i].defaultShipping &&
-                      viewType == enumAddressViewType.EDIT
+                      widget.viewType == enumAddressViewType.EDIT
                   ? Row(
                       children: <Widget>[
                         SizedBox(
@@ -226,7 +237,7 @@ class AddressView extends StatelessWidget {
                     )
                   : Container(),
               _addresses[i].defaultBilling &&
-                      viewType == enumAddressViewType.EDIT
+                      widget.viewType == enumAddressViewType.EDIT
                   ? Row(
                       children: <Widget>[
                         SizedBox(
@@ -260,29 +271,46 @@ class AddressView extends StatelessWidget {
   }
 
   Widget emptyList(BuildContext _context) {
-    return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Container(
-              alignment: Alignment.center,
-              margin: const EdgeInsets.only(top: 40.0),
-              child: Text(
-                FlutterI18n.translate(_context, "account.noAddress"),
-                textAlign: TextAlign.center,
-              )),
-          Container(
-            alignment: Alignment.center,
-            margin: const EdgeInsets.only(top: 40.0),
-            child: SizedBox(
-              width: 264,
-              child: AppButton(
-                FlutterI18n.translate(_context, "account.addAddressNow"),
-                () => callBack(_context, 0),
-                size: AppButtonSize.small,
-                noPadding: true,
+    return BlocListener<AddressBloc, AddressState>(
+        bloc: GetIt.I<AddressBloc>(),
+        listener: (context, state) {
+          print("[AddressView] current state $state, $hasDialog");
+          if (state is AddressInProgress) {
+            AppLoadingDialog(context);
+
+            if (!hasDialog) {
+              hasDialog = true;
+            }
+          } else {
+            if (hasDialog) {
+              Navigator.of(context).pop();
+              hasDialog = false;
+            }
+          }
+        },
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Container(
+                  alignment: Alignment.center,
+                  margin: const EdgeInsets.only(top: 40.0),
+                  child: Text(
+                    FlutterI18n.translate(_context, "account.noAddress"),
+                    textAlign: TextAlign.center,
+                  )),
+              Container(
+                alignment: Alignment.center,
+                margin: const EdgeInsets.only(top: 40.0),
+                child: SizedBox(
+                  width: 264,
+                  child: AppButton(
+                    FlutterI18n.translate(_context, "account.addAddressNow"),
+                    () => widget.callBack(_context, 0),
+                    size: AppButtonSize.small,
+                    noPadding: true,
+                  ),
+                ),
               ),
-            ),
-          ),
-        ]);
+            ]));
   }
 }
