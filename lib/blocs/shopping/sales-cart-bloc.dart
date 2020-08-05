@@ -14,6 +14,8 @@ class SalesCartBloc extends Bloc<SalesCartEvent, SalesCartState> {
   final AuthBloc authBloc;
   StreamSubscription authSubscription;
 
+  SalesCart salesCart;
+
   SalesCartBloc(this.authBloc) : super(SalesCartInitial()) {
     authSubscription = authBloc.listen((state) {
       if (state is LoginSuccess) {
@@ -25,14 +27,19 @@ class SalesCartBloc extends Bloc<SalesCartEvent, SalesCartState> {
     });
   }
 
+  int get totalCart {
+    if (salesCart == null) return 0;
+    return salesCart.totalItems;
+  }
+
   @override
   Stream<SalesCartState> mapEventToState(SalesCartEvent event) async* {
     if (event is SalesCartRefresh) {
       yield SalesCartRefreshInProgress();
 
       try {
-        SalesCart salesCart = await _salesCartService.refreshSalesCart();
-        yield SalesCartRefreshComplete(salesCart);
+        salesCart = await _salesCartService.refreshSalesCart();
+        yield SalesCartRefreshComplete();
       } catch (_, stacktrace) {
         print(stacktrace);
         yield SalesCartRefreshFailed(_.toString());
@@ -54,12 +61,12 @@ class SalesCartInitial extends SalesCartState {}
 class SalesCartRefreshInProgress extends SalesCartState {}
 
 class SalesCartRefreshComplete extends SalesCartState {
-  final SalesCart cart;
-
-  SalesCartRefreshComplete(this.cart);
-
-  @override
-  List<Object> get props => [cart];
+//  final SalesCart cart;
+//
+//  SalesCartRefreshComplete(this.cart);
+//
+//  @override
+//  List<Object> get props => [cart];
 }
 
 class SalesCartRefreshFailed extends SalesCartState {

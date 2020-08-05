@@ -41,8 +41,15 @@ class SalesCartContentBloc
 
   SalesCartContentBloc(this.salesCartBloc) : super(SalesCartContentInitial()) {
     salesCartSubscription = salesCartBloc.listen((state) {
+      print("listen fired");
       if (state is SalesCartRefreshComplete) {
-        salesCart = state.cart;
+        salesCart = salesCartBloc.salesCart;
+
+        populateCartGroup();
+
+        refreshCartCheckStatus();
+        calculateTotal();
+
         add(SalesCartContentInitContent());
       }
     });
@@ -52,18 +59,17 @@ class SalesCartContentBloc
   Stream<SalesCartContentState> mapEventToState(
       SalesCartContentEvent event) async* {
     if (event is SalesCartContentInitContent) {
-      yield SalesCartContentLoadingInProgress();
-
-      await populateCartGroup();
-      await updatePriceAndQuantity();
-
       // TODO by right should have default currency by their own country, or hard code to MYR for eDagang
       // then each for the sales quotation need to do currency conversion to convert
       if (salesCart.cartDocs.length > 0) {
         currency = salesCart.cartDocs[0].quoteItems[0].currencyCode;
       }
 
-      refreshCartCheckStatus();
+      yield SalesCartContentLoadingInProgress();
+      await updateCartGroupCompany();
+      await updatePriceAndQuantity();
+
+//      refreshCartCheckStatus();
       calculateTotal();
 
       yield SalesCartContentLoadingComplete();
@@ -103,6 +109,8 @@ class SalesCartContentBloc
       yield SalesCartContentLoadingInProgress();
 
       event.quoteItem.quantity = event.newQuantity.toDouble();
+
+      refreshCartCheckStatus();
       calculateTotal();
 
       yield SalesCartContentLoadingComplete();
@@ -139,12 +147,10 @@ class SalesCartContentBloc
     // Note : can only populate based on item... not the other way round here
     checkAll = true;
 
-//    bool checkAllRunner = true;
     for (int i = 0; i < cartGroups.length; i++) {
       CartGroup cg = cartGroups[i];
       cg.isChecked = true;
 
-//      bool checkGroupRunner = true;
       for (int j = 0; j < cg.cartDocs.length; j++) {
         SalesQuotation sq = cg.cartDocs[j];
 
@@ -153,22 +159,13 @@ class SalesCartContentBloc
 
           cg.isChecked &= (qi.checked != null && qi.checked);
           if (qi.checked != null && qi.checked) {
-            cg.isChecked &= true;
             totalItemChecked += qi.quantity.toInt();
-          } else {
-            cg.isChecked &= false;
           }
         }
       }
 
-//      cg.isChecked = checkGroupRunner;
-
       checkAll &= cg.isChecked;
     }
-
-    // set cart group checkbox
-
-    // set cart all checkbox
   }
 
   calculateTotal() {
@@ -194,7 +191,7 @@ class SalesCartContentBloc
     this.totalAmount = tempTotal;
   }
 
-  Future<void> populateCartGroup() async {
+  populateCartGroup() {
     List<CartGroup> cartGroups = [];
 
     for (int i = 0; i < this.salesCart.cartDocs.length; i++) {
@@ -212,7 +209,8 @@ class SalesCartContentBloc
         group.isChecked = true;
         cartGroups.add(group);
         group.companyId = salesQuotation.quoteItems[0].product.companyId;
-        group.company = await _companyService.getCompany(group.companyId);
+//        group.company = await _companyService.getCompany(group.companyId);
+        group.company = salesQuotation.quoteItems[0].product.sellerCompany;
         group.cartDocs.add(salesQuotation);
       }
     }
@@ -220,6 +218,14 @@ class SalesCartContentBloc
     this.salesCart.cartDocs.map((salesQuotation) async {}).toList();
 
     this.cartGroups = cartGroups;
+  }
+
+  Future<void> updateCartGroupCompany() async {
+    for (int i = 0; i < this.cartGroups.length; i++) {
+      CartGroup group = cartGroups[i];
+
+      group.company = await _companyService.getCompany(group.companyId);
+    }
   }
 
   Future<void> updatePriceAndQuantity() async {

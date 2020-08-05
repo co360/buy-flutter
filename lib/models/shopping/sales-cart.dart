@@ -21,6 +21,7 @@ class SalesCart {
   Map<String, dynamic> toJson() => _$SalesCartToJson(this);
 
   int get totalItems {
+//    return 0;
     if (cartDocs == null || cartDocs.length == 0) return 0;
     return cartDocs.fold(
         0,

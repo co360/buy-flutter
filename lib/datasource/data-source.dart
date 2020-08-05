@@ -7,7 +7,6 @@ abstract class DataSource {
       {dynamic param}) async {
     List<LabelValue> lvs = await prepareDataSource(context, param: param);
 
-    print("data source $lvs");
     if (needTranslate) {
       lvs = lvs.map((e) {
         LabelValue translated = LabelValue.fromJson(e.toJson());
@@ -25,9 +24,7 @@ abstract class DataSource {
 
   @protected
   String translate(BuildContext context, LabelValue labelValue) {
-    print("try to translate $translateKeyPrefix ${labelValue.value}");
     final key = translateKeyPrefix + labelValue.value;
-    print("translate for $key");
     return FlutterI18n.translate(context, key);
   }
 

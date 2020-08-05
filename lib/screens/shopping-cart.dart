@@ -15,27 +15,26 @@ import 'package:storeFlutter/components/form/quantity-input.dart';
 import 'package:storeFlutter/models/identity/company.dart';
 import 'package:storeFlutter/models/shopping/quote-item.dart';
 import 'package:storeFlutter/models/shopping/sales-quotation.dart';
-import 'package:storeFlutter/services/storage-service.dart';
 import 'package:storeFlutter/util/app-theme.dart';
 import 'package:storeFlutter/util/format-util.dart';
 import 'package:storeFlutter/util/resource-util.dart';
 
-class ShoppingCartScreen extends StatefulWidget {
-  @override
-  _ShoppingCartScreenState createState() => _ShoppingCartScreenState();
-}
-
-class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
+class ShoppingCartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    StorageService storageService = GetIt.I<StorageService>();
     return Scaffold(
       backgroundColor: AppTheme.colorBg2,
       appBar: AppBar(
-        title: Text(
-          FlutterI18n.translate(context, "screen.bottomNavigation.cart"),
-          style: TextStyle(color: Colors.white),
-        ),
+        title: BlocBuilder<SalesCartBloc, SalesCartState>(
+            bloc: GetIt.I<SalesCartBloc>(),
+            builder: (context, state) {
+              int total = GetIt.I<SalesCartBloc>().totalCart;
+              return Text(
+                FlutterI18n.translate(context, "screen.bottomNavigation.cart") +
+                    (total > 0 ? " ($total)" : ""),
+                style: TextStyle(color: Colors.white),
+              );
+            }),
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -46,9 +45,34 @@ class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
           ),
         ),
         iconTheme: IconThemeData(color: Colors.white),
+        actions: <Widget>[
+          BlocBuilder<SalesCartBloc, SalesCartState>(
+              bloc: GetIt.I<SalesCartBloc>(),
+              builder: (context, state) {
+                int total = GetIt.I<SalesCartBloc>().totalCart;
+                if (total > 0) {
+                  return FlatButton(
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    child: Text(
+                      FlutterI18n.translate(context, "general.edit"),
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                    onPressed: () {},
+                  );
+                } else {
+                  return SizedBox.shrink();
+                }
+              }),
+        ],
       ),
       body: CheckSession(
-        child: ShoppingCartBody(),
+        child: BlocProvider(
+          create: (context) => SalesCartContentBloc(GetIt.I<SalesCartBloc>()),
+          child: ShoppingCartBody(),
+        ),
       ),
     );
   }
@@ -57,6 +81,56 @@ class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
 class ShoppingCartBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    return BlocBuilder<SalesCartContentBloc, SalesCartContentState>(
+      builder: (context, state) {
+        SalesCartContentBloc bloc =
+            BlocProvider.of<SalesCartContentBloc>(context);
+
+        if (state is SalesCartContentLoadingComplete) {}
+        if (state is SalesCartContentLoadingComplete) {}
+
+        bool hasCartDocs = false;
+
+        if (bloc.salesCart != null &&
+            bloc.salesCart.cartDocs != null &&
+            bloc.salesCart.totalItems > 0) {
+          hasCartDocs = true;
+        }
+
+        // TODO show loading indicator
+        // TODO comine salescartbloc here
+        return Scaffold(
+          bottomNavigationBar: hasCartDocs ? buildBottomAppBar(context) : null,
+          body: ListView(
+            children: [
+              ...(hasCartDocs)
+                  ? [
+                      SizedBox(height: 20),
+                      FlatButton(
+                        child: Text("RELOAD - to be removed"),
+                        onPressed: () {
+                          GetIt.I<SalesCartBloc>().add(SalesCartRefresh());
+                        },
+                      ),
+                      SizedBox(height: 20),
+                      showCartLoadingStatus(context),
+                      ...bloc.cartGroups
+                          .map((e) => buildCartGroup(context, e))
+                          .toList()
+                    ]
+                  : [
+                      showCartLoadingStatus(context),
+                    ]
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget showCartLoadingStatus(BuildContext context) {
+    SalesCartBloc bloc = GetIt.I<SalesCartBloc>();
+
     return BlocBuilder<SalesCartBloc, SalesCartState>(
       bloc: GetIt.I<SalesCartBloc>(),
       builder: (context, state) {
@@ -67,12 +141,15 @@ class ShoppingCartBody extends StatelessWidget {
         } else if (state is SalesCartRefreshComplete) {
 //          return ShoppingCartBodyWithConten(state.cart);
 
-//          return buildEmptyShoppingCart(context);
-          return state.cart.cartDocs != null && state.cart.cartDocs.length > 0
-              ? ShoppingCartBodyWithContent()
-              : buildEmptyShoppingCart(context);
+          if (bloc.totalCart == 0) {
+            return buildEmptyShoppingCart(context);
+          }
+//          return bloc.salesCart.cartDocs != null &&
+//                  bloc.salesCart.cartDocs.length > 0
+//              ? ShoppingCartBodyWithContent()
+//              : buildEmptyShoppingCart(context);
         }
-        return Container();
+        return SizedBox.shrink();
       },
     );
   }
@@ -122,55 +199,39 @@ class ShoppingCartBody extends StatelessWidget {
       ),
     );
   }
-}
-
-class ShoppingCartBodyWithContent extends StatelessWidget {
-  static double radioWidth = 50;
-
-//  final SalesCart salesCart;
-
-//  ShoppingCartBodyWithContent(this.salesCart);
-
-//  final CompanyService _companyService = GetIt.I<CompanyService>();
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider<SalesCartContentBloc>(
-      create: (context) => SalesCartContentBloc(GetIt.I<SalesCartBloc>()),
-      child: Builder(
-        builder: (context) {
-          return BlocBuilder<SalesCartContentBloc, SalesCartContentState>(
-              builder: (context, state) {
-            SalesCartContentBloc bloc =
-                BlocProvider.of<SalesCartContentBloc>(context);
-
-            if (state is SalesCartContentLoadingComplete) {}
-            if (state is SalesCartContentLoadingComplete) {}
-            // TODO show loading indicator
-            return Scaffold(
-              bottomNavigationBar: buildBottomAppBar(context),
-              body: ListView(
-                children: [
-                  SizedBox(height: 20),
-                  ...bloc.cartGroups
-                      .map((e) => buildCartGroup(context, e))
-                      .toList()
-                ],
-              ),
-            );
-          });
-        },
-      ),
-//      child: Column(
-//        children: <Widget>[
-//          Text("not empty really"),
-//          ...salesCart.cartDocs.map((e) {
-//            return Text(e.quoteItems[0].product.name);
-//          }).toList()
-//        ],
+//}
+//
+//class ShoppingCartBodyWithContent extends StatelessWidget {
+//  @override
+//  Widget build(BuildContext context) {
+//    return BlocProvider<SalesCartContentBloc>(
+//      create: (context) => SalesCartContentBloc(GetIt.I<SalesCartBloc>()),
+//      child: Builder(
+//        builder: (context) {
+//          return BlocBuilder<SalesCartContentBloc, SalesCartContentState>(
+//              builder: (context, state) {
+//            SalesCartContentBloc bloc =
+//                BlocProvider.of<SalesCartContentBloc>(context);
+//
+//            if (state is SalesCartContentLoadingComplete) {}
+//            if (state is SalesCartContentLoadingComplete) {}
+//            // TODO show loading indicator
+//            return Scaffold(
+//              bottomNavigationBar: buildBottomAppBar(context),
+//              body: ListView(
+//                children: [
+//                  SizedBox(height: 20),
+//                  ...bloc.cartGroups
+//                      .map((e) => buildCartGroup(context, e))
+//                      .toList()
+//                ],
+//              ),
+//            );
+//          });
+//        },
 //      ),
-    );
-  }
+//    );
+//  }
 
   Widget buildCartGroup(BuildContext context, CartGroup cartGroup) {
     return AppPanel(
@@ -247,83 +308,92 @@ class ShoppingCartBodyWithContent extends StatelessWidget {
       BuildContext context, SalesQuotation quotation, QuoteItem item) {
     SalesCartContentBloc bloc = BlocProvider.of<SalesCartContentBloc>(context);
 
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        GestureDetector(
-          behavior: HitTestBehavior.translucent,
-          onTap: () {
-            bloc.add(SalesCartContentCheckQuotationItem(item, !item.checked));
-          },
-          child: Row(
-            children: <Widget>[
-              Container(
-                height: 80,
-                child: Center(
-                  child: !item.checked
-                      ? FaIcon(
-                          FontAwesomeIcons.lightCircle,
-                          color: AppTheme.colorGray4,
-                          size: 20,
-                        )
-                      : FaIcon(
-                          FontAwesomeIcons.solidCheckCircle,
-                          color: AppTheme.colorGray7,
-                          size: 20,
-                        ),
-                ),
-              ),
-              SizedBox(width: 10),
-              ClipRRect(
-                borderRadius: BorderRadius.vertical(
-                  top: Radius.circular(5),
-                ),
-                child: Image.network(
-                  ResourceUtil.fullPath(item.product.images[0].imageUrl),
-                  fit: BoxFit.cover,
+    return BlocBuilder<SalesCartContentBloc, SalesCartContentState>(
+        builder: (context, state) {
+      bool loading = state is SalesCartContentLoadingInProgress;
+
+      return Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: () {
+              bloc.add(SalesCartContentCheckQuotationItem(item, !item.checked));
+            },
+            child: Row(
+              children: <Widget>[
+                Container(
                   height: 80,
-                  width: 80,
-                ),
-              ),
-              SizedBox(width: 10),
-            ],
-          ),
-        ),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(item.product.name),
-              SizedBox(height: 10),
-              ...buildVariantValue(quotation, item),
-              Text(
-                "${item.currencyCode} ${FormatUtil.formatPrice(item.invoicePrice)}",
-                style: TextStyle(
-                    color: AppTheme.colorOrange, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 10),
-              Row(
-                children: <Widget>[
-                  ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: 200),
-                    child: QuantityInput(
-                      quantity: item.quantity.toInt(),
-                      min: item.minOrderQty,
-                      max: item.maxOrderQty,
-                      onChanged: (num) {
-                        bloc.add(SalesCartContentChangeQuantity(item, num));
-                      },
-                    ),
+                  child: Center(
+                    child: !item.checked
+                        ? FaIcon(
+                            FontAwesomeIcons.lightCircle,
+                            color: AppTheme.colorGray4,
+                            size: 20,
+                          )
+                        : FaIcon(
+                            FontAwesomeIcons.solidCheckCircle,
+                            color: AppTheme.colorGray7,
+                            size: 20,
+                          ),
                   ),
-                  SizedBox(width: 10),
-                  Text(item.uomCode),
-                ],
-              )
-            ],
+                ),
+                SizedBox(width: 10),
+                ClipRRect(
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(5),
+                  ),
+                  child: Image.network(
+                    ResourceUtil.fullPath(item.product.images[0].imageUrl),
+                    fit: BoxFit.cover,
+                    height: 80,
+                    width: 80,
+                  ),
+                ),
+                SizedBox(width: 10),
+              ],
+            ),
           ),
-        ),
-      ],
-    );
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(item.product.name),
+                SizedBox(height: 10),
+                ...buildVariantValue(quotation, item),
+                Text(
+                  loading
+                      ? "${item.currencyCode} -"
+                      : "${item.currencyCode} ${FormatUtil.formatPrice(item.invoicePrice)}",
+                  style: TextStyle(
+                      color: AppTheme.colorOrange, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 10),
+                Row(
+                  children: <Widget>[
+                    ConstrainedBox(
+                      constraints: BoxConstraints(maxWidth: 200),
+                      child: QuantityInput(
+                        key: UniqueKey(),
+                        quantity: item.quantity.toInt(),
+                        min: item.minOrderQty,
+                        max: item.maxOrderQty,
+                        enabled: !loading,
+                        onChanged: (num) {
+                          bloc.add(SalesCartContentChangeQuantity(item, num));
+                        },
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    Text(item.uomCode),
+                  ],
+                )
+              ],
+            ),
+          ),
+        ],
+      );
+    });
   }
 
   List<Widget> buildVariantValue(SalesQuotation quotation, QuoteItem item) {
@@ -389,71 +459,78 @@ class ShoppingCartBodyWithContent extends StatelessWidget {
           horizontal: 20,
           vertical: 5.0,
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              onTap: () {
-                bloc.add(SalesCartContentCheckAll(!bloc.checkAll));
-              },
-              child: Row(
-                children: <Widget>[
-                  !bloc.checkAll
-                      ? FaIcon(
-                          FontAwesomeIcons.lightCircle,
-                          color: AppTheme.colorGray4,
-                          size: 20,
-                        )
-                      : FaIcon(
-                          FontAwesomeIcons.solidCheckCircle,
-                          color: AppTheme.colorGray7,
-                          size: 20,
-                        ),
-                  SizedBox(width: 10),
-                  Text(
-                    FlutterI18n.translate(context, "cart.all"),
-                    style: TextStyle(fontWeight: FontWeight.w500),
-                  ),
-                ],
-              ),
-            ),
-            Row(
+        child: BlocBuilder<SalesCartContentBloc, SalesCartContentState>(
+          builder: (context, state) {
+            bool loading = state is SalesCartContentLoadingInProgress;
+            return Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  mainAxisSize: MainAxisSize.min,
+                GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onTap: () {
+                    bloc.add(SalesCartContentCheckAll(!bloc.checkAll));
+                  },
+                  child: Row(
+                    children: <Widget>[
+                      !bloc.checkAll
+                          ? FaIcon(
+                              FontAwesomeIcons.lightCircle,
+                              color: AppTheme.colorGray4,
+                              size: 20,
+                            )
+                          : FaIcon(
+                              FontAwesomeIcons.solidCheckCircle,
+                              color: AppTheme.colorGray7,
+                              size: 20,
+                            ),
+                      SizedBox(width: 10),
+                      Text(
+                        FlutterI18n.translate(context, "cart.all"),
+                        style: TextStyle(fontWeight: FontWeight.w500),
+                      ),
+                    ],
+                  ),
+                ),
+                Row(
                   children: <Widget>[
-                    Text(
-                      FlutterI18n.translate(context, "cart.total"),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Text(
+                          FlutterI18n.translate(context, "cart.total"),
 //                      style: TextStyle(
 ////                          color: AppTheme.colorGray4,
 //                          fontWeight: FontWeight.w500),
+                        ),
+                        SizedBox(height: 3),
+                        Text(
+                          loading
+                              ? "${bloc.currency} -"
+                              : "${bloc.currency} ${FormatUtil.formatPrice(bloc.totalAmount)}",
+                          style: TextStyle(
+                              color: AppTheme.colorOrange,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ],
                     ),
-                    SizedBox(height: 3),
-                    Text(
-                      "${bloc.currency} ${FormatUtil.formatPrice(bloc.totalAmount)}",
-                      style: TextStyle(
-                          color: AppTheme.colorOrange,
-                          fontWeight: FontWeight.bold),
+                    SizedBox(width: 10),
+                    AppButton(
+                      FlutterI18n.translate(context, "cart.checkout") +
+                          ((bloc.totalItemChecked > 0 && !loading)
+                              ? " (${bloc.totalItemChecked})"
+                              : ""),
+                      () {},
+                      size: AppButtonSize.small,
+                      enabled: bloc.totalItemChecked > 0 && !loading,
+                      noPadding: true,
                     ),
                   ],
                 ),
-                SizedBox(width: 10),
-                AppButton(
-                  FlutterI18n.translate(context, "cart.checkout") +
-                      (bloc.totalItemChecked > 0
-                          ? " (${bloc.totalItemChecked})"
-                          : ""),
-                  () {},
-                  size: AppButtonSize.small,
-                  enabled: bloc.totalItemChecked > 0,
-                  noPadding: true,
-                ),
               ],
-            ),
-          ],
+            );
+          },
         ),
       ),
     );
