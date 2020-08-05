@@ -15,6 +15,7 @@ import 'package:storeFlutter/services/company-service.dart';
 import 'package:storeFlutter/services/consumer-product-list-price-service.dart';
 import 'package:storeFlutter/services/minimum-order-quantity-service.dart';
 import 'package:storeFlutter/services/product-stock-quantity-service.dart';
+import 'package:storeFlutter/services/sales-cart-service.dart';
 
 // bloc
 class SalesCartContentBloc
@@ -27,6 +28,7 @@ class SalesCartContentBloc
       GetIt.I<ProductStockQuantityService>();
   final ConsumerProductListPriceService _consumerProductListPriceService =
       GetIt.I<ConsumerProductListPriceService>();
+  final SalesCartService _salesCartService = GetIt.I<SalesCartService>();
 
   StreamSubscription salesCartSubscription;
 
@@ -153,6 +155,30 @@ class SalesCartContentBloc
       screenMode = ScreenMode.checkout;
 
       yield SalesCartContentLoadingComplete();
+    } else if (event is SalesCartContentDelete) {
+      yield SalesCartContentLoadingInProgress();
+
+      for (int j = 0; j < salesCart.cartDocs.length; j++) {
+        SalesQuotation sq = salesCart.cartDocs[j];
+        for (int k = 0; k < sq.quoteItems.length; k++) {
+          QuoteItem qi = sq.quoteItems[k];
+
+          if (qi.screenEditChecked) {
+            await _salesCartService.removeItemFromCart(qi);
+          }
+        }
+      }
+
+      // switch back to checkout screen and reset
+      screenMode = ScreenMode.checkout;
+      totalItemEditChecked = 0;
+      totalItemChecked = 0;
+      totalAmount = 0;
+
+      yield SalesCartContentLoadingComplete();
+
+      // refresh again
+      salesCartBloc.add(SalesCartRefresh());
     }
   }
 

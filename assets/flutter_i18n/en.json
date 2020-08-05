@@ -18,6 +18,7 @@
   },
   "general": {
     "pleaseWait": "Please Wait...",
+    "ok": "OK",
     "cancel": "Cancel",
     "reset": "Reset",
     "done": "Done",
@@ -26,7 +27,9 @@
     "deleteContent": "Are you sure you want to proceed ?",
     "noData": "No Data",
     "edit" : "Edit",
-    "delete" : "Delete"
+    "delete" : "Delete",
+    "confirm": "Confirm",
+    "promptContinue": "Are you sure you want to continue?"
   },
   "dataSource" : {
     "general": {
@@ -175,7 +178,8 @@
     "goShoppingNow": "Go Shopping Now",
     "all": "All",
     "checkout": "Checkout",
-    "total": "Total"
+    "total": "Total",
+    "confirmDelete" : "Are you sure you want to delete the selected products from your cart?"
   },
   "account" : {
     "login": "Login",

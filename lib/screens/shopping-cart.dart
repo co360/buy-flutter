@@ -10,6 +10,7 @@ import 'package:storeFlutter/blocs/shopping/sales-cart-bloc.dart';
 import 'package:storeFlutter/blocs/shopping/sales-cart-content-bloc.dart';
 import 'package:storeFlutter/components/account/check-session.dart';
 import 'package:storeFlutter/components/app-button.dart';
+import 'package:storeFlutter/components/app-confirmation-dialog.dart';
 import 'package:storeFlutter/components/app-general-error-info.dart';
 import 'package:storeFlutter/components/app-loading.dart';
 import 'package:storeFlutter/components/app-panel.dart';
@@ -430,7 +431,7 @@ class ShoppingCartBody extends StatelessWidget {
     SalesCartContentBloc bloc = BlocProvider.of<SalesCartContentBloc>(context);
     bool loading = bloc.state is SalesCartContentLoadingInProgress;
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5.0),
+      padding: EdgeInsets.only(right: 20, top: 5.0, bottom: 5.0),
       child: Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -440,19 +441,22 @@ class ShoppingCartBody extends StatelessWidget {
             onTap: () {
               bloc.add(SalesCartContentCheckAll(!bloc.checkAll));
             },
-            child: Row(
-              children: <Widget>[
-                !bloc.checkAll
-                    ? FaIcon(FontAwesomeIcons.lightCircle,
-                        color: AppTheme.colorGray4, size: 20)
-                    : FaIcon(FontAwesomeIcons.solidCheckCircle,
-                        color: AppTheme.colorGray7, size: 20),
-                SizedBox(width: 10),
-                Text(
-                  FlutterI18n.translate(context, "cart.all"),
-                  style: TextStyle(fontWeight: FontWeight.w500),
-                ),
-              ],
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
+              child: Row(
+                children: <Widget>[
+                  !bloc.checkAll
+                      ? FaIcon(FontAwesomeIcons.lightCircle,
+                          color: AppTheme.colorGray4, size: 20)
+                      : FaIcon(FontAwesomeIcons.solidCheckCircle,
+                          color: AppTheme.colorGray7, size: 20),
+                  SizedBox(width: 10),
+                  Text(
+                    FlutterI18n.translate(context, "cart.all"),
+                    style: TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                ],
+              ),
             ),
           ),
           Row(
@@ -495,7 +499,7 @@ class ShoppingCartBody extends StatelessWidget {
     SalesCartContentBloc bloc = BlocProvider.of<SalesCartContentBloc>(context);
     bool hasItem = bloc.totalItemEditChecked > 0;
     return Padding(
-      padding: EdgeInsets.only(left: 20, top: 5.0, bottom: 5.0),
+      padding: EdgeInsets.symmetric(vertical: 5.0),
       child: Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -505,19 +509,22 @@ class ShoppingCartBody extends StatelessWidget {
             onTap: () {
               bloc.add(SalesCartContentCheckAll(!bloc.editCheckAll));
             },
-            child: Row(
-              children: <Widget>[
-                !bloc.editCheckAll
-                    ? FaIcon(FontAwesomeIcons.lightCircle,
-                        color: AppTheme.colorGray4, size: 20)
-                    : FaIcon(FontAwesomeIcons.solidCheckCircle,
-                        color: AppTheme.colorGray7, size: 20),
-                SizedBox(width: 10),
-                Text(
-                  FlutterI18n.translate(context, "cart.all"),
-                  style: TextStyle(fontWeight: FontWeight.w500),
-                ),
-              ],
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
+              child: Row(
+                children: <Widget>[
+                  !bloc.editCheckAll
+                      ? FaIcon(FontAwesomeIcons.lightCircle,
+                          color: AppTheme.colorGray4, size: 20)
+                      : FaIcon(FontAwesomeIcons.solidCheckCircle,
+                          color: AppTheme.colorGray7, size: 20),
+                  SizedBox(width: 10),
+                  Text(
+                    FlutterI18n.translate(context, "cart.all"),
+                    style: TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                ],
+              ),
             ),
           ),
           FlatButton(
@@ -531,9 +538,11 @@ class ShoppingCartBody extends StatelessWidget {
             ),
             onPressed: hasItem
                 ? () {
-                    print("called here....");
-                    // TODO prompt...
-                    // TODO calling the bloc to delete
+                    AppConfirmationDialog(context,
+                        content: FlutterI18n.translate(
+                            context, "cart.confirmDelete"),
+                        delete: true,
+                        cb: () => bloc.add(SalesCartContentDelete()));
                   }
                 : null,
           ),
