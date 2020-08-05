@@ -39,7 +39,7 @@ class ProductDeliveryInfo extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             Container(
-              width: 100,
+              width: MediaQuery.of(context).size.width * 0.25,
               alignment: Alignment.centerRight,
               child: FaIcon(
                 FontAwesomeIcons.lightTruck,
@@ -47,17 +47,22 @@ class ProductDeliveryInfo extends StatelessWidget {
               ),
             ),
             SizedBox(width: 15),
-            Text(
-              address == null
-                  ? ""
-                  : (address.city +
-                      ", " +
-                      address.state +
-                      ", " +
-                      address.postcode),
-              textAlign: TextAlign.left,
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-            )
+            Container(
+              width: MediaQuery.of(context).size.width * 0.55,
+              child: Text(
+                address == null
+                    ? ""
+                    : (address.city +
+                        ", " +
+                        address.state +
+                        ", " +
+                        address.postcode),
+                textAlign: TextAlign.left,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+              ),
+            ),
           ],
         ),
         SizedBox(height: 10),
@@ -91,7 +96,7 @@ class ProductDeliveryInfo extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           SizedBox(
-            width: 100,
+            width: MediaQuery.of(context).size.width * 0.25,
             child: Text(
               FlutterI18n.translate(context, "shopping.productDetail.cost"),
               textAlign: TextAlign.right,
@@ -99,16 +104,19 @@ class ProductDeliveryInfo extends StatelessWidget {
             ),
           ),
           SizedBox(width: 15),
-          Text(
-            shipments != null && shipments.length > 1
-                ? "RM " +
-                    minCost.toStringAsFixed(2) +
-                    " - RM " +
-                    maxCost.toStringAsFixed(2)
-                : "RM " + minCost.toStringAsFixed(2),
-            textAlign: TextAlign.left,
-            style: TextStyle(color: AppTheme.colorOrange, fontSize: 14),
-          )
+          Container(
+            width: MediaQuery.of(context).size.width * 0.55,
+            child: Text(
+              shipments != null && shipments.length > 1
+                  ? "RM " +
+                      minCost.toStringAsFixed(2) +
+                      " - RM " +
+                      maxCost.toStringAsFixed(2)
+                  : "RM " + minCost.toStringAsFixed(2),
+              textAlign: TextAlign.left,
+              style: TextStyle(color: AppTheme.colorOrange, fontSize: 14),
+            ),
+          ),
         ],
       ),
       SizedBox(height: 10),
@@ -116,7 +124,7 @@ class ProductDeliveryInfo extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           SizedBox(
-            width: 100,
+            width: MediaQuery.of(context).size.width * 0.25,
             child: Text(
               FlutterI18n.translate(
                   context, "shopping.productDetail.receivedBy"),
@@ -125,16 +133,19 @@ class ProductDeliveryInfo extends StatelessWidget {
             ),
           ),
           SizedBox(width: 15),
-          Text(
-            minDate.day.toString() +
-                " " +
-                reformatMonth(minDate.month) +
-                " - " +
-                maxDate.day.toString() +
-                " " +
-                reformatMonth(maxDate.month),
-            textAlign: TextAlign.left,
-            style: TextStyle(fontSize: 14),
+          Container(
+            width: MediaQuery.of(context).size.width * 0.55,
+            child: Text(
+              minDate.day.toString() +
+                  " " +
+                  reformatMonth(minDate.month) +
+                  " - " +
+                  maxDate.day.toString() +
+                  " " +
+                  reformatMonth(maxDate.month),
+              textAlign: TextAlign.left,
+              style: TextStyle(fontSize: 14),
+            ),
           )
         ],
       ),

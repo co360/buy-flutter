@@ -123,22 +123,27 @@ class ProductFeeInfoModalBody extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: <Widget>[
-                        Text(
-                          address == null ||
-                                  address.city == null ||
-                                  address.state == null ||
-                                  address.postcode == null
-                              ? ""
-                              : (address.city +
-                                  ", " +
-                                  address.state +
-                                  ", " +
-                                  address.postcode),
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                              fontWeight: FontWeight.normal,
-                              color: AppTheme.colorPrimary,
-                              fontSize: 14),
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.55,
+                          child: Text(
+                            address == null ||
+                                    address.city == null ||
+                                    address.state == null ||
+                                    address.postcode == null
+                                ? ""
+                                : (address.city +
+                                    ", " +
+                                    address.state +
+                                    ", " +
+                                    address.postcode),
+                            textAlign: TextAlign.right,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 2,
+                            style: TextStyle(
+                                fontWeight: FontWeight.normal,
+                                color: AppTheme.colorPrimary,
+                                fontSize: 14),
+                          ),
                         ),
                         SizedBox(
                           width: 10,

@@ -39,10 +39,10 @@ class _ManageAddressScreenState extends State<ManageAddressScreen> {
 
     // Call service api
     if (!isNew) {
-      print("Existing case - ${widget.id}");
+      print("[ManageAddressScreen] Existing case - ${widget.id}");
       GetIt.I<AddressBloc>().add(GetAddressByIDEvent(context, widget.id));
     } else {
-      print("New case");
+      print("[ManageAddressScreen] New case");
       GetIt.I<AddressBloc>().add(GetCountryListEvent(context));
     }
     super.initState();
@@ -66,16 +66,11 @@ class _ManageAddressScreenState extends State<ManageAddressScreen> {
     return BlocListener<AddressBloc, AddressState>(
       bloc: GetIt.I<AddressBloc>(),
       listener: (context, state) {
-        print("[AddressManage] current state $state, $hasDialog");
+        print("[[ManageAddressScreen]] current state $state, $hasDialog");
         if (state is AddressInProgress) {
           AppLoadingDialog(context);
           if (!hasDialog) {
             hasDialog = true;
-          }
-        } else if (state is AddressInitial) {
-          if (hasDialog) {
-            Navigator.of(context).pop();
-            hasDialog = false;
           }
         } else {
           if (hasDialog) {
@@ -86,13 +81,11 @@ class _ManageAddressScreenState extends State<ManageAddressScreen> {
             AppNotification(
                     FlutterI18n.translate(context, "error.pleaseTryAgain"))
                 .show(context);
-            GetIt.I<AddressBloc>().add(InitAddressEvent());
-          } else if (state is SetAddressSuccess) {
-            // Navigator.pop(context);
-            Navigator.popUntil(context, ModalRoute.withName('/'));
-          } else if (state is DeleteAddressSuccess) {
-            // Navigator.pop(context);
-            Navigator.popUntil(context, ModalRoute.withName('/'));
+          } else if (state is SetAddressSuccess ||
+              state is DeleteAddressSuccess) {
+            print("Route here");
+            Navigator.pop(context);
+            // Navigator.popUntil(context, ModalRoute.withName('/'));
           }
         }
       },
@@ -123,41 +116,5 @@ class _ManageAddressScreenState extends State<ManageAddressScreen> {
         ),
       ),
     );
-  }
-
-  void pop() {
-    showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext context) {
-          return WillPopScope(
-            onWillPop: () {},
-            child: new AlertDialog(
-              content: ConstrainedBox(
-                constraints: BoxConstraints(maxHeight: 200),
-                child: Column(
-                  children: <Widget>[
-                    CircularProgressIndicator(),
-                    Text("Please wait...")
-                  ],
-                ),
-              ),
-              actions: <Widget>[
-                new FlatButton(
-                  onPressed: () {
-                    //Function called
-                  },
-                  child: new Text('Ok Done!'),
-                ),
-                new FlatButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: new Text('Go Back'),
-                ),
-              ],
-            ),
-          );
-        });
   }
 }
