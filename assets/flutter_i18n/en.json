@@ -23,7 +23,8 @@
     "done": "Done",
     "noMoreResults": "No More Results",
     "deleteTitle": "Delete Confirmation",
-    "deleteContent": "Are you sure you want to proceed ?"
+    "deleteContent": "Are you sure you want to proceed ?",
+    "noData": "No Data"
   },
   "dataSource" : {
     "general": {
@@ -100,11 +101,10 @@
       "popularity" : "Popularity"
     },
     "productDetail": {
-      "name" : "Product Detail",
       "productInformation": "Product Information",
       "delivery" : "Delivery",
       "cost" : "Cost",
-      "Received By" : "Received By",
+      "receivedBy": "Received By",
 
       "productOption": "Product Option",
       "productDetail": "Product Detail",
@@ -139,7 +139,10 @@
       "easeOfDoingBusiness": "Ease Of Doing Business",
       "seeAll": "See All",
       "seeLess": "See Less",
-      "noReviewsYet": "This product has no reviews"
+      "noReviewsYet": "This product has no reviews",
+      "standardDelivery": "Standard Delivery",
+      "deliverTo": "Deliver To",
+      "deliveryFeeInformation": "Delivery Fee Information"
     },
     "filter": {
       "priceRange": "Price Range (RM)"
