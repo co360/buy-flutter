@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
@@ -86,42 +88,36 @@ class ShoppingCartBody extends StatelessWidget {
         SalesCartContentBloc bloc =
             BlocProvider.of<SalesCartContentBloc>(context);
 
-        if (state is SalesCartContentLoadingComplete) {}
-        if (state is SalesCartContentLoadingComplete) {}
-
         bool hasCartDocs = false;
 
-        if (bloc.salesCart != null &&
-            bloc.salesCart.cartDocs != null &&
-            bloc.salesCart.totalItems > 0) {
+        if (bloc.salesCart != null && bloc.salesCart.totalItems > 0) {
           hasCartDocs = true;
         }
 
-        // TODO show loading indicator
-        // TODO comine salescartbloc here
         return Scaffold(
           bottomNavigationBar: hasCartDocs ? buildBottomAppBar(context) : null,
-          body: ListView(
-            children: [
-              ...(hasCartDocs)
-                  ? [
-                      SizedBox(height: 20),
-                      FlatButton(
-                        child: Text("RELOAD - to be removed"),
-                        onPressed: () {
-                          GetIt.I<SalesCartBloc>().add(SalesCartRefresh());
-                        },
-                      ),
-                      SizedBox(height: 20),
-                      showCartLoadingStatus(context),
-                      ...bloc.cartGroups
-                          .map((e) => buildCartGroup(context, e))
-                          .toList()
-                    ]
-                  : [
-                      showCartLoadingStatus(context),
-                    ]
-            ],
+          body: RefreshIndicator(
+            color: Colors.white,
+            backgroundColor: AppTheme.colorOrange,
+            onRefresh: () async {
+              Completer completer = Completer();
+              GetIt.I<SalesCartBloc>()
+                  .add(SalesCartRefresh(completer: completer));
+              return completer.future;
+            },
+            child: ListView(
+              children: [
+                ...(hasCartDocs)
+                    ? [
+                        SizedBox(height: 20),
+                        showCartLoadingStatus(context),
+                        ...bloc.cartGroups
+                            .map((e) => buildCartGroup(context, e))
+                            .toList()
+                      ]
+                    : [showCartLoadingStatus(context)]
+              ],
+            ),
           ),
         );
       },
@@ -136,18 +132,13 @@ class ShoppingCartBody extends StatelessWidget {
       builder: (context, state) {
         if (state is SalesCartRefreshFailed) {
           return AppGeneralErrorInfo(state.error);
-        } else if (state is SalesCartRefreshInProgress) {
+        } else if (state is SalesCartRefreshInProgress &&
+            state.completer == null) {
           return AppLoading();
         } else if (state is SalesCartRefreshComplete) {
-//          return ShoppingCartBodyWithConten(state.cart);
-
           if (bloc.totalCart == 0) {
             return buildEmptyShoppingCart(context);
           }
-//          return bloc.salesCart.cartDocs != null &&
-//                  bloc.salesCart.cartDocs.length > 0
-//              ? ShoppingCartBodyWithContent()
-//              : buildEmptyShoppingCart(context);
         }
         return SizedBox.shrink();
       },
@@ -163,12 +154,12 @@ class ShoppingCartBody extends StatelessWidget {
           SizedBox(
             height: 30,
           ),
-          FlatButton(
-            child: Text("RELOAD - to be removed"),
-            onPressed: () {
-              GetIt.I<SalesCartBloc>().add(SalesCartRefresh());
-            },
-          ),
+//          FlatButton(
+//            child: Text("RELOAD - to be removed"),
+//            onPressed: () {
+//              GetIt.I<SalesCartBloc>().add(SalesCartRefresh());
+//            },
+//          ),
           Text(
             FlutterI18n.translate(context, "cart.shoppingCartEmpty"),
             textAlign: TextAlign.center,
@@ -199,39 +190,6 @@ class ShoppingCartBody extends StatelessWidget {
       ),
     );
   }
-//}
-//
-//class ShoppingCartBodyWithContent extends StatelessWidget {
-//  @override
-//  Widget build(BuildContext context) {
-//    return BlocProvider<SalesCartContentBloc>(
-//      create: (context) => SalesCartContentBloc(GetIt.I<SalesCartBloc>()),
-//      child: Builder(
-//        builder: (context) {
-//          return BlocBuilder<SalesCartContentBloc, SalesCartContentState>(
-//              builder: (context, state) {
-//            SalesCartContentBloc bloc =
-//                BlocProvider.of<SalesCartContentBloc>(context);
-//
-//            if (state is SalesCartContentLoadingComplete) {}
-//            if (state is SalesCartContentLoadingComplete) {}
-//            // TODO show loading indicator
-//            return Scaffold(
-//              bottomNavigationBar: buildBottomAppBar(context),
-//              body: ListView(
-//                children: [
-//                  SizedBox(height: 20),
-//                  ...bloc.cartGroups
-//                      .map((e) => buildCartGroup(context, e))
-//                      .toList()
-//                ],
-//              ),
-//            );
-//          });
-//        },
-//      ),
-//    );
-//  }
 
   Widget buildCartGroup(BuildContext context, CartGroup cartGroup) {
     return AppPanel(
@@ -297,7 +255,6 @@ class ShoppingCartBody extends StatelessWidget {
           child: Image.network(
             ResourceUtil.fullPath(company.image.imageUrl),
             fit: BoxFit.cover,
-//          width: MediaQuery.of(context).size.width,
           ),
         ),
       ),
