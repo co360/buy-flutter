@@ -45,7 +45,7 @@ class _ProductListingGridState extends State<ProductListingGrid> {
         loadingMore = true;
 
         BlocProvider.of<ProductListingBloc>(context).add(ProductListingNextPage(
-            completeState.queryFilter, completeState.result));
+            context, completeState.queryFilter, completeState.result));
       }
     }
   }
