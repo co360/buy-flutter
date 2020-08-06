@@ -1,18 +1,15 @@
 import 'package:flutter/cupertino.dart';
-import 'package:get_it/get_it.dart';
-import 'package:storeFlutter/datasource/country-data-source.dart';
 import 'package:storeFlutter/services/base-rest-service.dart';
 import 'package:storeFlutter/models/label-value.dart';
 import 'package:storeFlutter/models/identity/country.dart';
 
 class CountryService extends BaseRestService {
   String _endPoint = 'store-identity-service/country';
-  CountryDataSource _countryDataSource = GetIt.I<CountryDataSource>();
+  List<LabelValue> countries = [];
 
   Future<List<LabelValue>> getCountryList() async {
     String url = '$_endPoint/dataSource';
     final response = await dio.get(url);
-    List<LabelValue> countries = [];
     for (var f in response.data) {
       countries.add(LabelValue.fromJson(f));
     }
@@ -21,8 +18,6 @@ class CountryService extends BaseRestService {
 
   Future<List<LabelValue>> filterCountryByName(
       BuildContext context, String filter) async {
-    List<LabelValue> countries =
-        await _countryDataSource.getDataSource(context);
     RegExp exp = new RegExp(
       "$filter",
       caseSensitive: false,
