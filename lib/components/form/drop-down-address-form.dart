@@ -1,11 +1,17 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:storeFlutter/blocs/account/address-bloc.dart';
+import 'package:storeFlutter/components/list/city-list.dart';
+import 'package:storeFlutter/components/list/country-list.dart';
+import 'package:storeFlutter/components/list/state-list.dart';
 import 'package:storeFlutter/models/label-value.dart';
 import 'package:storeFlutter/util/app-theme.dart';
+import 'package:storeFlutter/util/form-util.dart';
 
 class DropDownAddressForm extends StatefulWidget {
   DropDownAddressForm({
@@ -17,21 +23,28 @@ class DropDownAddressForm extends StatefulWidget {
 }
 
 class _DropDownAddressFormState extends State<DropDownAddressForm> {
-  List<LabelValue> countries = [];
-  List<LabelValue> states = [];
-  List<LabelValue> cities = [];
+  final _countryController = TextEditingController();
+  final _stateController = TextEditingController();
+  final _cityController = TextEditingController();
 
-  String selectCountry;
-  String selectState;
-  String selectCity;
+  String selectCountryCode;
 
   @override
   void initState() {
     print("[DropDownAddressForm] Initialize");
-    selectCountry = "None";
-    selectState = "None";
-    selectCity = "None";
+
+    _countryController.text = "None";
+    _stateController.text = "None";
+    _cityController.text = "None";
+    selectCountryCode = "None";
+
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _countryController.dispose();
+    super.dispose();
   }
 
   @override
@@ -43,167 +56,191 @@ class _DropDownAddressFormState extends State<DropDownAddressForm> {
         if (state is GetAddressByIDSuccess) {
           print("[DropDownAddressForm] GetAddressByIDSuccess");
           setState(() {
-            countries = state.countries;
-            states = state.states;
-            cities = state.cities;
-            selectCountry = state.address.countryCode;
-            selectState = state.address.state;
-            selectCity = state.address.city;
-          });
-        } else if (state is GetCountryListSuccess) {
-          print("[DropDownAddressForm] GetCountryListSuccess");
-          setState(() {
-            countries = state.country;
-            selectCountry = "None";
-            selectState = "None";
-            selectCity = "None";
-            states = [];
-            cities = [];
-          });
-        } else if (state is GetStateListSuccess) {
-          print("[DropDownAddressForm] GetStateListSuccess");
-          setState(() {
-            selectState = "None";
-            selectCity = "None";
-            states = state.state;
-            cities = [];
-          });
-        } else if (state is GetCityListSuccess) {
-          setState(() {
-            selectCity = "None";
-            cities = state.city;
+            selectCountryCode = state.address.countryCode;
+            _countryController.text = state.address.countryName;
+            _stateController.text = state.address.state;
+            _cityController.text = state.address.city;
           });
         }
-        print("City: $selectCity (${cities.length})");
-        print("State: $selectState (${states.length})");
-        print("Country: $selectCountry (${countries.length})");
       },
       child: buildChild(context),
     );
   }
 
+  _selectCountryEvt(BuildContext context) async {
+    final result = await Navigator.push(
+      context,
+      CupertinoPageRoute(
+        builder: (context) => CountryList(),
+      ),
+    );
+    if (result != null && result.code != selectCountryCode) {
+      setState(() {
+        _countryController.text = result.label;
+        selectCountryCode = result.code;
+        _stateController.text = "None";
+        _cityController.text = "None";
+      });
+    }
+  }
+
+  _selectStateEvt(BuildContext context) async {
+    final result = await Navigator.push(
+      context,
+      CupertinoPageRoute(
+        builder: (context) => StateList(selectCountryCode),
+      ),
+    );
+    if (result != null && _stateController.text != result.label) {
+      setState(() {
+        _stateController.text = result.label;
+        _cityController.text = "None";
+      });
+    }
+  }
+
+  _selectCityEvt(BuildContext context) async {
+    final result = await Navigator.push(
+      context,
+      CupertinoPageRoute(
+        builder: (context) => CityList(_stateController.text),
+      ),
+    );
+    if (result != null && _cityController.text != result.label) {
+      setState(() {
+        _cityController.text = result.label;
+      });
+    }
+  }
+
   Widget buildChild(BuildContext context) {
-    print("[DropDownAddressForm] buildChild ${countries.length}");
+    print("[DropDownAddressForm] buildChild");
     return Column(
       children: <Widget>[
-        FormBuilderDropdown(
-          key: UniqueKey(),
-          attribute: "countryCode",
-          initialValue: countries == null || countries.length == 0
-              ? "None"
-              : selectCountry,
-          elevation: 16,
-          decoration: InputDecoration(
-            labelText:
-                FlutterI18n.translate(context, "account.address.country"),
-            enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: AppTheme.colorGray2),
-            ),
-            focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: AppTheme.colorGray2),
-            ),
-          ),
-          hint: Text(
-              FlutterI18n.translate(context, "account.address.selectCountry")),
-          validators: [
-            FormBuilderValidators.required(),
-            (val) {
-              if (val == "None")
-                return FlutterI18n.translate(context, "error.required");
-            }
-          ],
-          onChanged: (val) {
-            print("onChanged Country $val");
-            selectCountry = val;
-            GetIt.I<AddressBloc>().add(GetStateListEvent(context, val));
+        GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: () {
+            _selectCountryEvt(context);
           },
-          items: countries == null || countries.length == 0
-              ? [DropdownMenuItem(value: "None", child: Text("None"))]
-              : [
-                  DropdownMenuItem(value: "None", child: Text("None")),
-                  ...countries
-                      .map((country) => DropdownMenuItem(
-                          value: country.value,
-                          child: Text("${country.label}")))
-                      .toList()
-                ],
+          child: FormBuilderTextField(
+            attribute: 'countryCode',
+            controller: _countryController,
+            valueTransformer: (value) => selectCountryCode,
+            readOnly: true,
+            maxLines: 1,
+            autocorrect: false,
+            decoration: InputDecoration(
+              suffixIcon: Container(
+                padding: EdgeInsets.only(top: 20, left: 30),
+                child: FaIcon(
+                  FontAwesomeIcons.lightChevronRight,
+                  size: 15,
+                ),
+              ),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: AppTheme.colorGray2),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: AppTheme.colorGray2),
+              ),
+              disabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: AppTheme.colorGray2),
+              ),
+              labelText:
+                  FlutterI18n.translate(context, "account.address.country"),
+            ),
+            validators: [
+              FormUtil.required(context),
+              (val) {
+                if (val == "None")
+                  return FlutterI18n.translate(context, "error.required");
+              }
+            ],
+            keyboardType: TextInputType.text,
+          ),
         ),
         SizedBox(height: 10),
-        FormBuilderDropdown(
-          key: UniqueKey(),
-          attribute: "state",
-          initialValue:
-              states == null || states.length == 0 ? "None" : selectState,
-          decoration: InputDecoration(
-            labelText: FlutterI18n.translate(context, "account.address.state"),
-            enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: AppTheme.colorGray2),
-            ),
-            focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: AppTheme.colorGray2),
-            ),
-          ),
-          hint: Text(
-              FlutterI18n.translate(context, "account.address.selectState")),
-          elevation: 16,
-          validators: [
-            FormBuilderValidators.required(),
-            (val) {
-              if (val == "None")
-                return FlutterI18n.translate(context, "error.required");
-            }
-          ],
-          onChanged: (val) {
-            selectState = val;
-            GetIt.I<AddressBloc>().add(GetCityListEvent(context, val));
+        GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: () {
+            _selectStateEvt(context);
           },
-          items: states == null || states.length == 0
-              ? [DropdownMenuItem(value: "None", child: Text("None"))]
-              : [
-                  DropdownMenuItem(value: "None", child: Text("None")),
-                  ...states
-                      .map((state) => DropdownMenuItem(
-                          value: state.value, child: Text("${state.label}")))
-                      .toList()
-                ],
+          child: FormBuilderTextField(
+            attribute: 'state',
+            controller: _stateController,
+            readOnly: true,
+            maxLines: 1,
+            autocorrect: false,
+            decoration: InputDecoration(
+              suffixIcon: Container(
+                padding: EdgeInsets.only(top: 20, left: 30),
+                child: FaIcon(
+                  FontAwesomeIcons.lightChevronRight,
+                  size: 15,
+                ),
+              ),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: AppTheme.colorGray2),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: AppTheme.colorGray2),
+              ),
+              disabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: AppTheme.colorGray2),
+              ),
+              labelText:
+                  FlutterI18n.translate(context, "account.address.state"),
+            ),
+            validators: [
+              FormUtil.required(context),
+              (val) {
+                if (val == "None")
+                  return FlutterI18n.translate(context, "error.required");
+              }
+            ],
+            keyboardType: TextInputType.text,
+          ),
         ),
         SizedBox(height: 10),
-        FormBuilderDropdown(
-          key: UniqueKey(),
-          attribute: "city",
-          initialValue:
-              cities == null || cities.length == 0 ? "None" : selectCity,
-          elevation: 16,
-          decoration: InputDecoration(
-            labelText: FlutterI18n.translate(context, "account.address.city"),
-            enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: AppTheme.colorGray2),
-            ),
-            focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: AppTheme.colorGray2),
-            ),
-          ),
-          hint: Text(
-              FlutterI18n.translate(context, "account.address.selectCity")),
-          validators: [
-            FormBuilderValidators.required(),
-            (val) {
-              if (val == "None")
-                return FlutterI18n.translate(context, "error.required");
-            }
-          ],
-          onChanged: (val) {
-            selectCity = val;
+        GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: () {
+            _selectCityEvt(context);
           },
-          items: cities == null || cities.length == 0
-              ? [DropdownMenuItem(value: "None", child: Text("None"))]
-              : [
-                  DropdownMenuItem(value: "None", child: Text("None")),
-                  ...cities
-                      .map((city) => DropdownMenuItem(
-                          value: city.value, child: Text("${city.label}")))
-                      .toList()
-                ],
+          child: FormBuilderTextField(
+            attribute: 'city',
+            controller: _cityController,
+            readOnly: true,
+            maxLines: 1,
+            autocorrect: false,
+            decoration: InputDecoration(
+              suffixIcon: Container(
+                padding: EdgeInsets.only(top: 20, left: 30),
+                child: FaIcon(
+                  FontAwesomeIcons.lightChevronRight,
+                  size: 15,
+                ),
+              ),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: AppTheme.colorGray2),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: AppTheme.colorGray2),
+              ),
+              disabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: AppTheme.colorGray2),
+              ),
+              labelText: FlutterI18n.translate(context, "account.address.city"),
+            ),
+            validators: [
+              FormUtil.required(context),
+              (val) {
+                if (val == "None")
+                  return FlutterI18n.translate(context, "error.required");
+              }
+            ],
+            keyboardType: TextInputType.text,
+          ),
         ),
       ],
     );

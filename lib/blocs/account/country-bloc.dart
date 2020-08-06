@@ -18,8 +18,23 @@ class CountryBloc extends Bloc<CountryEvent, CountryState> {
   Stream<CountryState> mapEventToState(CountryEvent event) async* {
     try {
       if (event is GetCountryListEvent) {
+        yield GetCountryListInProgress();
         yield GetCountryListSuccess(
             await _countryDataSource.getDataSource(event.context));
+      } else if (event is GetCountryFilter) {
+        List<LabelValue> countries =
+            await _countryDataSource.getDataSource(event.context);
+        RegExp exp = new RegExp(
+          "${event.filter}",
+          caseSensitive: false,
+        );
+        List<LabelValue> matchedItems = [];
+        for (var f in countries) {
+          if (exp.hasMatch(f.label)) {
+            matchedItems.add(f);
+          }
+        }
+        yield GetCountryListSuccess(matchedItems);
       } else if (event is GetCountryByIdEvent) {
         yield GetCountrySuccess(await _countryService.getCountryById(event.id));
       } else if (event is GetCountryByCodeEvent) {
@@ -45,6 +60,8 @@ abstract class CountryState extends Equatable {
 }
 
 class CountryInitial extends CountryState {}
+
+class GetCountryListInProgress extends CountryState {}
 
 class GetCountryListSuccess extends CountryState {
   final List<LabelValue> addresses;
@@ -98,4 +115,13 @@ class GetCountryByCodeEvent extends CountryEvent {
 
   @override
   List<Object> get props => [code];
+}
+
+class GetCountryFilter extends CountryEvent {
+  final BuildContext context;
+  final String filter;
+  GetCountryFilter(this.context, this.filter);
+
+  @override
+  List<Object> get props => [context, filter];
 }

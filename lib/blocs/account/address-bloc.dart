@@ -128,14 +128,7 @@ class AddressBloc extends Bloc<AddressEvent, AddressState> {
             break;
           }
         }
-        List<LabelValue> _countries =
-            await _countryDataSource.getDataSource(event.context);
-        List<LabelValue> _states = await _stateDataSource
-            .getDataSource(event.context, param: tempCountry);
-        List<LabelValue> _cities = await _cityDataSource
-            .getDataSource(event.context, param: tempState);
-        yield GetAddressByIDSuccess(location, _countries, _states, _cities,
-            _companyProfile.locations.length);
+        yield GetAddressByIDSuccess(location, _companyProfile.locations.length);
       } else if (event is GetCityListEvent) {
         yield AddressInProgress();
         List<LabelValue> _cities = await _cityDataSource
@@ -186,15 +179,11 @@ class GetAddressSuccess extends AddressState {
 
 class GetAddressByIDSuccess extends AddressState {
   final Location address;
-  final List<LabelValue> countries;
-  final List<LabelValue> states;
-  final List<LabelValue> cities;
   final int total;
-  GetAddressByIDSuccess(
-      this.address, this.countries, this.states, this.cities, this.total);
+  GetAddressByIDSuccess(this.address, this.total);
 
   @override
-  List<Object> get props => [address, countries, states, cities, total];
+  List<Object> get props => [address, total];
 }
 
 class GetCityListSuccess extends AddressState {

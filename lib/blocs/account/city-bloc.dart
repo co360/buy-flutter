@@ -15,8 +15,23 @@ class CityBloc extends Bloc<CityEvent, CityState> {
   Stream<CityState> mapEventToState(CityEvent event) async* {
     try {
       if (event is GetCityListEvent) {
+        yield GetCityListInProgress();
         yield GetCityListSuccess(await _cityDataSource
             .getDataSource(event.context, param: event.state));
+      } else if (event is GetCityFilter) {
+        List<LabelValue> cities = await _cityDataSource
+            .getDataSource(event.context, param: event.state);
+        RegExp exp = new RegExp(
+          "${event.filter}",
+          caseSensitive: false,
+        );
+        List<LabelValue> matchedItems = [];
+        for (var f in cities) {
+          if (exp.hasMatch(f.label)) {
+            matchedItems.add(f);
+          }
+        }
+        yield GetCityListSuccess(matchedItems);
       } else {
         yield GetCityFailed("No case");
       }
@@ -37,6 +52,8 @@ abstract class CityState extends Equatable {
 }
 
 class CityInitial extends CityState {}
+
+class GetCityListInProgress extends CityState {}
 
 class GetCityListSuccess extends CityState {
   final List<LabelValue> addresses;
@@ -67,4 +84,14 @@ class GetCityListEvent extends CityEvent {
 
   @override
   List<Object> get props => [context, state];
+}
+
+class GetCityFilter extends CityEvent {
+  final BuildContext context;
+  final String filter;
+  final String state;
+  GetCityFilter(this.context, this.filter, this.state);
+
+  @override
+  List<Object> get props => [context, filter];
 }
