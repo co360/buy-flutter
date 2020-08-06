@@ -8,7 +8,6 @@ import 'package:storeFlutter/models/filter-type.dart';
 import 'package:storeFlutter/blocs/shopping/product-listing-bloc.dart';
 import 'package:storeFlutter/components/shopping/static-search-bar.dart';
 import 'package:storeFlutter/components/shopping/seller-store/seller-store-header.dart';
-import 'package:storeFlutter/components/shopping/seller-store/seller-store-body-nav.dart';
 import 'package:storeFlutter/components/shopping/seller-store/seller-store-overview.dart';
 import 'package:storeFlutter/components/shopping/seller-store/seller-store-products.dart';
 import 'package:storeFlutter/components/shopping/seller-store/seller-store-review.dart';
@@ -25,13 +24,22 @@ class SellerStore extends StatefulWidget {
   _SellerStoreState createState() => _SellerStoreState();
 }
 
-class _SellerStoreState extends State<SellerStore> {
+class _SellerStoreState extends State<SellerStore>
+    with SingleTickerProviderStateMixin {
   var activeChild = enumSellerStore.OVERVIEW;
+  TabController _tabController;
 
   @override
   void initState() {
     print("Initialize SellerStore Screen and State");
     super.initState();
+    _tabController = TabController(vsync: this, length: 3);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   @override
@@ -77,6 +85,7 @@ class _SellerStoreState extends State<SellerStore> {
             ),
             child: SellerStoreHeader(widget.sellerCompany),
           ),
+          iconTheme: IconThemeData(color: Colors.white),
         ),
       ),
       body: sellerStoreBody(context),
@@ -85,10 +94,49 @@ class _SellerStoreState extends State<SellerStore> {
 
   Widget sellerStoreBody(BuildContext context) {
     return (Column(children: <Widget>[
-      SellerStoreBodyNav(_changeChild, activeChild),
+      Container(
+        color: Colors.white,
+        child: TabBar(
+          controller: _tabController,
+          isScrollable: true,
+          unselectedLabelColor: Colors.black,
+          labelColor: AppTheme.colorOrange,
+          indicatorWeight: 2,
+          indicatorColor: AppTheme.colorOrange,
+          tabs: <Widget>[
+            Tab(
+              text: FlutterI18n.translate(
+                  context, "shopping.sellerStorePage.overview"),
+            ),
+            Tab(
+              text: FlutterI18n.translate(
+                  context, "shopping.sellerStorePage.products"),
+            ),
+            Tab(
+              text: FlutterI18n.translate(
+                  context, "shopping.sellerStorePage.ratings"),
+            )
+          ],
+        ),
+      ),
       Expanded(
         child: Container(
-          child: sellerStoreBodyContent(context),
+          child: TabBarView(
+            physics: BouncingScrollPhysics(),
+            controller: _tabController,
+            children: <Widget>[
+              SingleChildScrollView(
+                child: SellerStoreOverview(
+                    widget.sellerCompany, widget.sellerCompanyProfile),
+              ),
+              SellerStoreProducts(
+                  widget.sellerCompany, widget.sellerCompanyProfile),
+              SingleChildScrollView(
+                child: SellerStoreReview(
+                    widget.sellerCompany, widget.sellerCompanyProfile),
+              ),
+            ],
+          ),
         ),
       ),
     ]));
@@ -113,12 +161,5 @@ class _SellerStoreState extends State<SellerStore> {
         );
         break;
     }
-  }
-
-  void _changeChild(enumSellerStore en) {
-    print("Enum: $en");
-    setState(() {
-      activeChild = en;
-    });
   }
 }
