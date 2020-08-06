@@ -1,6 +1,9 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:storeFlutter/datasource/country-data-source.dart';
+import 'package:storeFlutter/models/label-value.dart';
 import 'package:storeFlutter/models/query-result.dart';
 import 'package:storeFlutter/models/shopping/product.dart';
 import 'package:storeFlutter/services/product-service.dart';
@@ -9,6 +12,7 @@ import 'package:storeFlutter/services/product-service.dart';
 class ProductListingBloc
     extends Bloc<ProductListingEvent, ProductListingState> {
   final ProductService _productService = GetIt.I<ProductService>();
+  final CountryDataSource _countryDataSource = GetIt.I<CountryDataSource>();
 
   ProductListingBloc() : super(ProductListingInitial());
 
@@ -21,7 +25,10 @@ class ProductListingBloc
       try {
         QueryResult<Product> result =
             await _productService.searchProduct(event.queryFilter);
-        yield ProductListingSearchComplete(result, event.queryFilter);
+        List<LabelValue> countries =
+            await _countryDataSource.getDataSource(event.context);
+        yield ProductListingSearchComplete(
+            result, event.queryFilter, countries);
       } catch (_, stacktrace) {
         print(stacktrace);
         yield ProductListingSearchError(_.toString());
@@ -40,13 +47,17 @@ class ProductListingBloc
 
         result.items = newResult;
 
-        yield ProductListingSearchComplete(result, event.queryFilter);
+        List<LabelValue> countries =
+            await _countryDataSource.getDataSource(event.context);
+
+        yield ProductListingSearchComplete(
+            result, event.queryFilter, countries);
       } catch (_, stacktrace) {
         print(stacktrace);
         yield ProductListingSearchError(_.toString());
       }
     } else if (event is ProductListingSearchReset) {
-        yield ProductListingCategoryResetState();
+      yield ProductListingCategoryResetState();
     }
   }
 }
@@ -80,10 +91,11 @@ class ProductListingSearchError extends ProductListingState {
 class ProductListingSearchComplete extends ProductListingState {
   final ProductListingQueryFilter queryFilter;
   final QueryResult<Product> result;
+  final List<LabelValue> countries;
 
-  ProductListingSearchComplete(this.result, this.queryFilter);
+  ProductListingSearchComplete(this.result, this.queryFilter, this.countries);
   @override
-  List<Object> get props => [result, queryFilter];
+  List<Object> get props => [result, queryFilter, countries];
 
 //  final dynamic data;
 //
@@ -101,23 +113,25 @@ abstract class ProductListingEvent extends Equatable {
 }
 
 class ProductListingSearch extends ProductListingEvent {
+  final BuildContext context;
   final ProductListingQueryFilter queryFilter;
   final QueryResult<Product> result;
 
-  ProductListingSearch(this.queryFilter, {this.result});
+  ProductListingSearch(this.context, this.queryFilter, {this.result});
 
   @override
-  List<Object> get props => [queryFilter, this.result];
+  List<Object> get props => [context, queryFilter, result];
 }
 
 class ProductListingNextPage extends ProductListingEvent {
+  final BuildContext context;
   final ProductListingQueryFilter queryFilter;
   final QueryResult<Product> result;
 
-  ProductListingNextPage(this.queryFilter, this.result);
+  ProductListingNextPage(this.context, this.queryFilter, this.result);
 
   @override
-  List<Object> get props => [queryFilter, this.result];
+  List<Object> get props => [context, queryFilter, result];
 }
 
 class ProductListingSearchReset extends ProductListingEvent {}

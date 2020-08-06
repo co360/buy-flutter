@@ -42,8 +42,10 @@ class _SellerStoreState extends State<SellerStore> {
     };
     return BlocProvider<ProductListingBloc>(
       create: (context) => ProductListingBloc()
-        ..add(ProductListingSearch(ProductListingQueryFilter(
-            query: "", filters: filter != null ? filter : {}))),
+        ..add(ProductListingSearch(
+            context,
+            ProductListingQueryFilter(
+                query: "", filters: filter != null ? filter : {}))),
       child: Builder(builder: (context) {
         return buildChild(context);
       }),

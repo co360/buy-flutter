@@ -26,7 +26,6 @@ import 'package:country_icons/country_icons.dart';
 import 'package:storeFlutter/datasource/country-data-source.dart';
 
 class ProductListingScreen extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     getBusinessTypeDatasource(context);
@@ -39,8 +38,10 @@ class ProductListingScreen extends StatelessWidget {
 
     return BlocProvider<ProductListingBloc>(
       create: (context) => ProductListingBloc()
-        ..add(ProductListingSearch(ProductListingQueryFilter(
-            query: query, category: filter, filters: {}))),
+        ..add(ProductListingSearch(
+            context,
+            ProductListingQueryFilter(
+                query: query, category: filter, filters: {}))),
       child: Builder(
         builder: (context) {
           return Scaffold(
@@ -151,16 +152,18 @@ class FilterDrawer extends StatelessWidget {
                   }
                   cacheState = state;
                   // TODO do the "View More" if filter option more than 5
-                  return buildFilterMeta(
-                      meta, bloc, state.queryFilter, state.result);
+                  return buildFilterMeta(context, meta, bloc, state.queryFilter,
+                      state.result, state.countries);
                 },
               ),
             ),
             buildPriceRangeInput(context)
           ]);
         } else if (state is ProductListingCategoryResetState) {
-          bloc.add(ProductListingSearch(ProductListingQueryFilter(
-              query: "", category: null, filters: {})));
+          bloc.add(ProductListingSearch(
+              context,
+              ProductListingQueryFilter(
+                  query: "", category: null, filters: {})));
           cacheMaxPrice = null;
           cacheMinPrice = null;
         } else if (state is ProductListingSearchError) {}
@@ -169,8 +172,13 @@ class FilterDrawer extends StatelessWidget {
     );
   }
 
-  Column buildFilterMeta(FilterMeta meta, ProductListingBloc bloc,
-      ProductListingQueryFilter queryFilter, QueryResult<Product> result) {
+  Column buildFilterMeta(
+      BuildContext context,
+      FilterMeta meta,
+      ProductListingBloc bloc,
+      ProductListingQueryFilter queryFilter,
+      QueryResult<Product> result,
+      List<LabelValue> countries) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
@@ -189,14 +197,16 @@ class FilterDrawer extends StatelessWidget {
                       ProductListingQueryFilter newFilter =
                           ProductListingQueryFilter.copy(queryFilter);
                       newFilter.toggleFilter(meta.code, e);
-                      bloc.add(ProductListingSearch(newFilter, result: result));
+                      bloc.add(ProductListingSearch(context, newFilter,
+                          result: result));
                     },
                     color: queryFilter.hasFilter(meta.code, e)
                         ? AppTheme.colorOrange
                         : AppTheme.colorGray2,
 //            visualDensity: VisualDensity.compact,
                     padding: EdgeInsets.all(10),
-                    child: filterUISwitchCase(meta.code, e, queryFilter),
+                    child: filterUISwitchCase(
+                        meta.code, e, queryFilter, countries),
                   ))
               .toList(),
         ),
@@ -254,7 +264,7 @@ class FilterDrawer extends StatelessWidget {
                               FilterValue("MAX_PRICE",
                                   _fbKey.currentState.value['maxPrice'], 1));
                           BlocProvider.of<ProductListingBloc>(context).add(
-                              ProductListingSearch(newFilter,
+                              ProductListingSearch(context, newFilter,
                                   result: cacheState.result));
                         }
                       }
@@ -592,8 +602,8 @@ class ProductListingScreenParams {
   ProductListingScreenParams({this.query, this.category});
 }
 
-Widget filterUISwitchCase(
-    String metaCode, FilterValue e, ProductListingQueryFilter queryFilter) {
+Widget filterUISwitchCase(String metaCode, FilterValue e,
+    ProductListingQueryFilter queryFilter, List<LabelValue> countries) {
   switch (metaCode) {
     case "COUNTRY":
       {
@@ -613,22 +623,28 @@ Widget filterUISwitchCase(
               width: 5,
             ),
             Text(
-              getCountryFullName(e.value),
+              countries == null
+                  ? e.value
+                  : countries
+                      .where((element) => element.code == e.value)
+                      .toList()[0]
+                      .label,
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
             ),
           ],
         );
       }
-    case "BUSINESS_TYPE" : {
-      return Text(getBusinessTypeName(e.value),
-          style: TextStyle(
-              color: queryFilter.hasFilter(metaCode, e)
-                  ? Colors.white
-                  : Colors.black,
-              fontSize: 14,
-              fontWeight: FontWeight.w400));
-    }
+    case "BUSINESS_TYPE":
+      {
+        return Text(getBusinessTypeName(e.value),
+            style: TextStyle(
+                color: queryFilter.hasFilter(metaCode, e)
+                    ? Colors.white
+                    : Colors.black,
+                fontSize: 14,
+                fontWeight: FontWeight.w400));
+      }
     default:
       {
         return Text(e.name != null ? e.name : e.value,
@@ -642,25 +658,15 @@ Widget filterUISwitchCase(
   }
 }
 
-String getCountryFullName(String code) {
-  List<LabelValue> countries = GetIt.I<CountryDataSource>()
-      .datas
-      .where((element) => element.code == code)
-      .toList();
-  String name = countries[0].label;
-  return name != null ? name : code;
-
-}
-
 void getBusinessTypeDatasource(BuildContext context) async {
   businessType = await GetIt.I<BusinessTypeDataSource>().getDataSource(context);
 }
 
 String getBusinessTypeName(String code) {
   String name;
-  if(businessType != null && businessType.length > 0) {
-    LabelValue lv = businessType.where((element) => element.value == code)
-        .toList()[0];
+  if (businessType != null && businessType.length > 0) {
+    LabelValue lv =
+        businessType.where((element) => element.value == code).toList()[0];
     name = lv.label;
   }
   return name != null ? name : "";
