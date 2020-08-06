@@ -15,8 +15,23 @@ class StateBloc extends Bloc<StateEvent, StateState> {
   Stream<StateState> mapEventToState(StateEvent event) async* {
     try {
       if (event is GetStateListEvent) {
+        yield GetStateListInProgress();
         yield GetStateListSuccess(await _stateDataSource
             .getDataSource(event.context, param: event.country));
+      } else if (event is GetStateFilter) {
+        List<LabelValue> states = await _stateDataSource
+            .getDataSource(event.context, param: event.country);
+        RegExp exp = new RegExp(
+          "${event.filter}",
+          caseSensitive: false,
+        );
+        List<LabelValue> matchedItems = [];
+        for (var f in states) {
+          if (exp.hasMatch(f.label)) {
+            matchedItems.add(f);
+          }
+        }
+        yield GetStateListSuccess(matchedItems);
       } else {
         yield GetStateFailed("No case");
       }
@@ -37,6 +52,8 @@ abstract class StateState extends Equatable {
 }
 
 class StateInitial extends StateState {}
+
+class GetStateListInProgress extends StateState {}
 
 class GetStateListSuccess extends StateState {
   final List<LabelValue> addresses;
@@ -67,4 +84,14 @@ class GetStateListEvent extends StateEvent {
 
   @override
   List<Object> get props => [context, country];
+}
+
+class GetStateFilter extends StateEvent {
+  final BuildContext context;
+  final String filter;
+  final String country;
+  GetStateFilter(this.context, this.filter, this.country);
+
+  @override
+  List<Object> get props => [context, filter];
 }
