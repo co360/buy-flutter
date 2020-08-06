@@ -5,7 +5,6 @@ import 'package:storeFlutter/components/shopping/category-grid-list.dart';
 import 'package:storeFlutter/components/button/grid-button.dart';
 import 'package:storeFlutter/components/button/grid-button-disable.dart';
 import 'package:storeFlutter/blocs/shopping/product-category-bloc.dart';
-import 'package:storeFlutter/models/filter-type.dart';
 import 'package:storeFlutter/models/query-result-category.dart';
 import 'package:storeFlutter/screens/shopping/product-listing.dart';
 
@@ -36,8 +35,7 @@ class CategoryLists extends StatelessWidget {
 
     // 2nd layer
     for (int i = 0; i < categories.layer2Category.length; i += 2) {
-      list.add(
-          Container(
+      list.add(Container(
           margin: const EdgeInsets.all(5.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -47,9 +45,10 @@ class CategoryLists extends StatelessWidget {
                       title: categories.layer2Category[i].name,
                       cb: () {
                         print("Select ${categories.layer2Category[i].id}");
-                        Navigator.pushNamedAndRemoveUntil(
-                            context, '/product-listing', ModalRoute.withName('/'),
-                            arguments: ProductListingScreenParams(category: categories.layer2Category[i].code));
+                        Navigator.pushNamedAndRemoveUntil(context,
+                            '/product-listing', ModalRoute.withName('/'),
+                            arguments: ProductListingScreenParams(
+                                category: categories.layer2Category[i].code));
                       })
                   : GridButtonDisable(),
               categories.layer2Category.length > i + 1
@@ -57,9 +56,11 @@ class CategoryLists extends StatelessWidget {
                       title: categories.layer2Category[i + 1].name,
                       cb: () {
                         print("Select ${categories.layer2Category[i + 1].id}");
-                        Navigator.pushNamedAndRemoveUntil(
-                            context, '/product-listing', ModalRoute.withName('/'),
-                            arguments: ProductListingScreenParams(category: categories.layer2Category[i+1].code));
+                        Navigator.pushNamedAndRemoveUntil(context,
+                            '/product-listing', ModalRoute.withName('/'),
+                            arguments: ProductListingScreenParams(
+                                category:
+                                    categories.layer2Category[i + 1].code));
                       })
                   : GridButtonDisable(),
               // categories.layer2Category.length > i + 2
