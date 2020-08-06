@@ -1,7 +1,10 @@
+import 'package:flappy_search_bar/scaled_tile.dart';
 import 'package:flappy_search_bar/search_bar_style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:get_it/get_it.dart';
 import 'package:storeFlutter/blocs/shopping/search-bloc.dart';
 import 'package:storeFlutter/components/shopping/custom-search-bar.dart';
 import 'package:storeFlutter/models/label-value.dart';
@@ -17,9 +20,14 @@ class SearchList extends StatefulWidget {
   final String placeholder;
   final enumSearchListType searchListType;
   final String extParam;
+  final List<LabelValue> initalValue;
 
   SearchList(
-      {this.query, this.placeholder, this.searchListType, this.extParam});
+      {this.query,
+      this.placeholder,
+      this.initalValue,
+      this.searchListType,
+      this.extParam});
 
   @override
   _SearchListState createState() => _SearchListState();
@@ -28,9 +36,9 @@ class SearchList extends StatefulWidget {
 class _SearchListState extends State<SearchList> {
   final SearchBarController<LabelValue> searchController =
       SearchBarController();
-  final CountryService _countryService = CountryService();
-  final StateService _stateService = StateService();
-  final CityService _cityService = CityService();
+  final CountryService _countryService = GetIt.I<CountryService>();
+  final StateService _stateService = GetIt.I<StateService>();
+  final CityService _cityService = GetIt.I<CityService>();
 
   String searchedText;
   FocusNode searchFN = new FocusNode();
@@ -61,7 +69,7 @@ class _SearchListState extends State<SearchList> {
                   searchFocusNode: searchFN,
                   minimumChars: 1,
                   emptyWidget: buildNotFound(),
-                  placeHolder: buildPlaceHolder(),
+                  placeHolder: buildPlaceHolder(context),
                   loader: Center(
                     child: CircularProgressIndicator(
                       valueColor:
@@ -144,8 +152,27 @@ class _SearchListState extends State<SearchList> {
     );
   }
 
-  Widget buildPlaceHolder() {
-    return SizedBox.shrink();
+  Widget buildPlaceHolder(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.all(0),
+      child: MediaQuery.removePadding(
+        removeTop: true,
+        context: context,
+        child: StaggeredGridView.countBuilder(
+          crossAxisCount: 1,
+          itemCount: widget.initalValue.length,
+          shrinkWrap: false,
+          staggeredTileBuilder: (int index) => ScaledTile.fit(1),
+          scrollDirection: Axis.vertical,
+          mainAxisSpacing: 0,
+          crossAxisSpacing: 0,
+          addAutomaticKeepAlives: true,
+          itemBuilder: (BuildContext context, int index) {
+            return buildResult(widget.initalValue[index], index, context);
+          },
+        ),
+      ),
+    );
   }
 
   Widget buildPlaceHolderBackup() {
@@ -171,7 +198,8 @@ class _SearchListState extends State<SearchList> {
   }
 
   Widget buildResult(LabelValue labelValue, int index, BuildContext context) {
-    print('last search ${searchController.lastSearchedText}');
+    print(
+        'last search ${searchController.lastSearchedText} ${labelValue.label}');
     return Container(
       color: Colors.white,
       child: Column(
@@ -194,7 +222,9 @@ class _SearchListState extends State<SearchList> {
               padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12),
               child: SubstringHighlight(
                 text: labelValue.label,
-                term: searchController.lastSearchedText,
+                term: searchController.lastSearchedText == null
+                    ? ""
+                    : searchController.lastSearchedText,
                 textStyle: TextStyle(fontSize: 14, color: Colors.black),
                 textStyleHighlight:
                     TextStyle(fontSize: 14, color: AppTheme.colorLink),
