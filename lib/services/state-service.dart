@@ -9,6 +9,7 @@ class StateService extends BaseRestService {
   Future<List<LabelValue>> getStateByCountry(String country) async {
     String url = '$_endPoint/dataSourceByCountry?country=$country';
     final response = await dio.get(url);
+    states = [];
     for (var f in response.data) {
       states.add(LabelValue.fromJson(f));
     }

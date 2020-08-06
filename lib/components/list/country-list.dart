@@ -18,8 +18,15 @@ class CountryList extends StatelessWidget {
 
   Widget buildChild(BuildContext context) {
     return BlocBuilder<CountryBloc, CountryState>(builder: (context, state) {
+      if (state is GetCountryListSuccess) {
+        return SearchList(
+          placeholder: "Search country",
+          initalValue: state.addresses,
+          searchListType: enumSearchListType.COUNTRY,
+        );
+      }
       return SearchList(
-        placeholder: "Select country",
+        initalValue: [],
         searchListType: enumSearchListType.COUNTRY,
       );
     });

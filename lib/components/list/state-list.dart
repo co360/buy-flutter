@@ -23,8 +23,16 @@ class StateList extends StatelessWidget {
 
   Widget buildChild(BuildContext context) {
     return BlocBuilder<StateBloc, StateState>(builder: (context, state) {
+      if (state is GetStateListSuccess) {
+        return SearchList(
+          placeholder: "Search state",
+          initalValue: state.addresses,
+          searchListType: enumSearchListType.STATE,
+          extParam: _country,
+        );
+      }
       return SearchList(
-        placeholder: "Select state",
+        initalValue: [],
         searchListType: enumSearchListType.STATE,
         extParam: _country,
       );

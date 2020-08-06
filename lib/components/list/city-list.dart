@@ -22,8 +22,16 @@ class CityList extends StatelessWidget {
 
   Widget buildChild(BuildContext context) {
     return BlocBuilder<CityBloc, CityState>(builder: (context, state) {
+      if (state is GetCityListSuccess) {
+        return SearchList(
+          placeholder: "Search city",
+          initalValue: state.addresses,
+          searchListType: enumSearchListType.CITY,
+          extParam: _state,
+        );
+      }
       return SearchList(
-        placeholder: "Select city",
+        initalValue: [],
         searchListType: enumSearchListType.CITY,
         extParam: _state,
       );

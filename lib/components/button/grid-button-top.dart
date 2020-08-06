@@ -3,14 +3,15 @@ import 'package:storeFlutter/util/app-theme.dart';
 
 class GridButtonTop extends StatelessWidget {
   final VoidCallback cb;
+  final String title;
 
-  GridButtonTop({@required this.cb});
+  GridButtonTop({@required this.cb, this.title});
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: MediaQuery.of(context).size.width * 0.50,
-      height: 36,
+      // height: 36,
       child: FlatButton(
         color: AppTheme.colorGray2,
         textColor: Colors.black,
@@ -20,7 +21,7 @@ class GridButtonTop extends StatelessWidget {
         // splashColor: Colors.blueAccent,
         onPressed: () => cb(),
         child: Text(
-          "See All Apparel",
+          "See All " + title,
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 14.0,
