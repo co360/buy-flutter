@@ -204,7 +204,7 @@ class ProductDetailBloc extends Bloc<ProductDetailEvent, ProductDetailState> {
                     tempValue =
                         VariantTypeValue(0, value.label, value.value, 0);
                   }
-                  if (tempValue != null) {
+                  if (tempValue != null && !option.values.contains(tempValue.value)) {
                     option.values.add(tempValue.value);
                     option.labels.add(value.label);
                   }
