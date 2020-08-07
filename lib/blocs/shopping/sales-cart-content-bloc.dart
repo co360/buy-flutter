@@ -382,6 +382,7 @@ class SalesCartContentBloc
             qi.currencyCode = price.currency.code;
             qi.uomCode = price.uom.code;
           } else {
+            // TODO handle no price in UI and disable add to cart/buy now
             qi.invoicePrice = 0;
           }
 
@@ -400,7 +401,9 @@ class SalesCartContentBloc
           if (stock != null) {
             qi.maxOrderQty = stock.stock;
           } else {
-            qi.maxOrderQty = 9999;
+            // TODO handle no quantity in UI and disable add to cart/buy now
+            // TODO also handle if the cart quantity is less than the stock quantity
+            qi.maxOrderQty = 0;
           }
         }
       }

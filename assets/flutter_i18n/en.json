@@ -132,6 +132,10 @@
       "reviews": "Reviews",
       "quantity": "Quantity",
 
+      "pleaseChooseOption": "Please Choose Option",
+      "priceNotAvailable": "Price Not Available",
+      "stockNotAvailable": "Stock Not Available",
+
       "company" : "Company",
       "businessType" : "Business Type",
       "location" : "Location",

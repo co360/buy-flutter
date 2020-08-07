@@ -173,11 +173,15 @@ class ProductDetailScreen extends StatelessWidget {
     );
   }
 
+  // TODO fixed on load click the bottom sheet will cause the error
   static void showProductDetailBottomSheet(
       BuildContext context, Product product,
       {ProductActionModalAction action: ProductActionModalAction.both}) {
     ProductDetailBloc productDetailBloc =
         BlocProvider.of<ProductDetailBloc>(context);
+
+    // manually trigger event to refresh price and stock
+    productDetailBloc.add(ProductDetailVariantSelection());
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
@@ -192,7 +196,7 @@ class ProductDetailScreen extends StatelessWidget {
           action: action,
         );
       },
-    ).whenComplete(() => productDetailBloc.add(ProductDetailSkuViewMode()));
+    );
   }
 }
 
@@ -211,58 +215,156 @@ class ProductActionModalBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     print("action is $action");
-    return SafeArea(
-      child: Container(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            buildInfoAndPrice(context),
-            SizedBox(height: 10),
-            divider(),
-            ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: 300),
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: EdgeInsets.all(AppTheme.paddingStandard),
-                  child: Column(
-                    children: <Widget>[
-                      ProductVariant(product, enumVariantViewType.SELECTION,
-                          productDetailBloc),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            divider(),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return BlocBuilder<ProductDetailBloc, ProductDetailState>(
+        bloc: productDetailBloc,
+        buildWhen: (previousState, state) {
+          return (state is ProductDetailPriceUpdateInProgress ||
+              state is ProductDetailPriceUpdateComplete ||
+              state is ProductDetailPriceUpdateFailed ||
+              state is ProductDetailInitial);
+        },
+        builder: (context, state) {
+          return SafeArea(
+            child: Container(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  Text(
-                    FlutterI18n.translate(
-                            context, "shopping.productDetail.quantity") +
-                        " (${product.consumerPriceUom})",
-                    style: TextStyle(fontWeight: FontWeight.w500),
+                  buildInfoAndPrice(context, state),
+                  SizedBox(height: 10),
+                  divider(),
+                  ConstrainedBox(
+                    constraints: BoxConstraints(maxHeight: 300),
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: EdgeInsets.all(AppTheme.paddingStandard),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            buildSelectWidgetWarning(context, state),
+                            ProductVariant(
+                                product,
+                                enumVariantViewType.SELECTION,
+                                productDetailBloc),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
+                  divider(),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 10),
+                    child: SizedBox(
+                      height: 32,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Text(
+                            FlutterI18n.translate(context,
+                                    "shopping.productDetail.quantity") +
+                                " (${product.consumerPriceUom})",
+                            style: TextStyle(fontWeight: FontWeight.w500),
+                          ),
 //                  TouchSpin(),
-                  QuantityInput(),
+                          buildQuantityInput(context, state),
+                        ],
+                      ),
+                    ),
+                  ),
+                  buildActionButtons(context, state)
                 ],
               ),
             ),
-            buildActionButtons(context)
-          ],
-        ),
-      ),
-    );
+          );
+        });
   }
 
-  Widget buildInfoAndPrice(BuildContext context) {
+  Widget buildSelectWidgetWarning(
+      BuildContext context, ProductDetailState state) {
+    if (state is ProductDetailPriceUpdateFailed && state.noSkuError) {
+      return Padding(
+        padding: EdgeInsets.only(bottom: 10.0),
+        child: Text(
+          FlutterI18n.translate(
+              context, "shopping.productDetail.pleaseChooseOption"),
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            color: AppTheme.colorOrange,
+          ),
+        ),
+      );
+    } else {
+      return SizedBox.shrink();
+    }
+  }
+
+  Widget buildQuantityInput(BuildContext context, ProductDetailState state) {
+    if (state is ProductDetailPriceUpdateInProgress) {
+      return SizedBox(
+          height: 22,
+          child:
+              AppLoading(padding: EdgeInsets.zero, size: 20, strokeWidth: 2));
+    } else if (state is ProductDetailPriceUpdateFailed && state.noSkuError) {
+      return QuantityInput(
+        key: UniqueKey(),
+        quantity: productDetailBloc.quoteItem.quantity.toInt(),
+        min: 1,
+        max: 1,
+        enabled: false,
+      );
+    } else if (state is ProductDetailPriceUpdateFailed && state.stockError) {
+      return Text(
+        FlutterI18n.translate(
+            context, "shopping.productDetail.stockNotAvailable"),
+        style: TextStyle(color: AppTheme.colorDanger),
+      );
+    } else {
+      return QuantityInput(
+        key: UniqueKey(),
+        quantity: productDetailBloc.quoteItem.quantity.toInt(),
+        min: productDetailBloc.quoteItem.minOrderQty,
+        max: productDetailBloc.quoteItem.maxOrderQty,
+        onChanged: (num) {
+          productDetailBloc.add(ProductDetailChangeQuantity(num));
+        },
+      );
+    }
+  }
+
+  Widget buildPrice(BuildContext context, ProductDetailState state) {
+    if (state is ProductDetailPriceUpdateInProgress) {
+      return SizedBox(
+          width: 20,
+          child:
+              AppLoading(padding: EdgeInsets.zero, size: 20, strokeWidth: 2));
+    } else if (state is ProductDetailPriceUpdateFailed && state.noSkuError) {
+      return SizedBox.shrink();
+    } else if (state is ProductDetailPriceUpdateFailed && state.priceError) {
+      return Text(
+        FlutterI18n.translate(
+            context, "shopping.productDetail.priceNotAvailable"),
+        style: TextStyle(
+            color: AppTheme.colorDanger,
+            fontSize: 15,
+            fontWeight: FontWeight.bold),
+      );
+    } else {
+      return Text(
+        "${productDetailBloc.quoteItem.currencyCode} ${FormatUtil.formatPrice(productDetailBloc.quoteItem.invoicePrice)}",
+        style: TextStyle(
+            color: AppTheme.colorOrange,
+            fontSize: 19,
+            fontWeight: FontWeight.bold),
+      );
+    }
+  }
+
+  Widget buildInfoAndPrice(BuildContext context, ProductDetailState state) {
     return Row(
-//              mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
-
       children: <Widget>[
         Padding(
           padding: EdgeInsets.only(
@@ -286,19 +388,11 @@ class ProductActionModalBody extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(product.name + "fd fdsa fdas fds afdsafdsa"),
+                Text(product.name),
                 SizedBox(
                   height: 10,
                 ),
-                product.consumerPrice > 0
-                    ? Text(
-                        "${product.consumerPriceCurrency} ${FormatUtil.formatPrice(product.consumerPrice)}",
-                        style: TextStyle(
-                            color: AppTheme.colorOrange,
-                            fontSize: 19,
-                            fontWeight: FontWeight.bold),
-                      )
-                    : SizedBox.shrink()
+                buildPrice(context, state)
               ],
             ),
           ),
@@ -317,8 +411,11 @@ class ProductActionModalBody extends StatelessWidget {
 
   Widget divider() => Divider(height: 1, thickness: 1);
 
-  Widget buildActionButtons(BuildContext context) {
+  Widget buildActionButtons(BuildContext context, ProductDetailState state) {
     List<Widget> buttons = [];
+
+    bool enable = false;
+    if (state is ProductDetailPriceUpdateComplete) enable = true;
 
     if (action == ProductActionModalAction.both ||
         action == ProductActionModalAction.addToCart) {
@@ -330,7 +427,7 @@ class ProductActionModalBody extends StatelessWidget {
               children: <Widget>[
                 FaIcon(
                   FontAwesomeIcons.lightShoppingCart,
-                  color: Colors.white,
+                  color: enable ? Colors.white : AppTheme.colorGray5,
                   size: 16,
                 ),
                 SizedBox(width: 10),
@@ -339,13 +436,14 @@ class ProductActionModalBody extends StatelessWidget {
                   minFontSize: 7,
                   maxLines: 1,
                   style: TextStyle(
-                    color: Colors.white,
+                    color: enable ? Colors.white : AppTheme.colorGray5,
                     fontWeight: FontWeight.bold,
                   ),
                 )
               ],
             ),
             () => {},
+            enabled: enable,
             size: AppButtonSize.small,
             type: AppButtonType.success,
             noPadding: true,
@@ -369,6 +467,7 @@ class ProductActionModalBody extends StatelessWidget {
           child: AppButton(
             FlutterI18n.translate(context, "shopping.buyNow"),
             () => {},
+            enabled: enable,
             size: AppButtonSize.small,
             noPadding: true,
           ),
@@ -709,8 +808,8 @@ class ProductDetailBody extends StatelessWidget {
               () => CheckSession.checkSession(
                 context,
                 () {
-                  productDetailBloc
-                      .add(ProductDetailSkuInitiate(product.variantSkus));
+//                  productDetailBloc
+//                      .add(ProductDetailSkuInitiate(product.variantSkus));
                   ProductDetailScreen.showProductDetailBottomSheet(
                       context, product);
                 },

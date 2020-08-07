@@ -10,14 +10,23 @@ import 'package:storeFlutter/models/identity/company-profile.dart';
 import 'package:storeFlutter/models/identity/company.dart';
 import 'package:storeFlutter/models/identity/location.dart';
 import 'package:storeFlutter/models/label-value.dart';
+import 'package:storeFlutter/models/shopping/consumer-product-list-price.dart';
 import 'package:storeFlutter/models/shopping/easy-parcel-param.dart';
 import 'package:storeFlutter/models/shopping/easy-parcel-response.dart';
+import 'package:storeFlutter/models/shopping/minimum-order-quantity.dart';
+import 'package:storeFlutter/models/shopping/product-stock-quantity.dart';
 import 'package:storeFlutter/models/shopping/product.dart';
+import 'package:storeFlutter/models/shopping/quote-item.dart';
 import 'package:storeFlutter/models/shopping/sales-quotation.dart';
 import 'package:storeFlutter/models/shopping/sku.dart';
 import 'package:storeFlutter/models/shopping/variant-type-value.dart';
+import 'package:storeFlutter/models/shopping/variant-type.dart';
 import 'package:storeFlutter/services/company-profile-service.dart';
 import 'package:storeFlutter/services/company-service.dart';
+import 'package:storeFlutter/services/consumer-product-list-price-service.dart';
+import 'package:storeFlutter/services/minimum-order-quantity-service.dart';
+import 'package:storeFlutter/services/product-stock-quantity-service.dart';
+import 'package:storeFlutter/services/sales-cart-service.dart';
 import 'package:storeFlutter/services/shipment-service.dart';
 import 'package:storeFlutter/services/storage-service.dart';
 
@@ -26,17 +35,25 @@ class ProductDetailBloc extends Bloc<ProductDetailEvent, ProductDetailState> {
   final Product product;
   final BuildContext buildContext;
   SalesQuotation salesQuotation;
+  QuoteItem quoteItem;
 
   CompanyProfile sellerCompanyProfile;
   Company sellerCompany;
   Location userAddress;
   List<EasyParcelResponse> shipment;
 
-  CompanyService _companyService = GetIt.I<CompanyService>();
-  CompanyProfileService _companyProfileService =
+  final CompanyService _companyService = GetIt.I<CompanyService>();
+  final CompanyProfileService _companyProfileService =
       GetIt.I<CompanyProfileService>();
-  ShipmentService _shipmentService = GetIt.I<ShipmentService>();
-  StorageService _storageService = GetIt.I<StorageService>();
+  final ShipmentService _shipmentService = GetIt.I<ShipmentService>();
+  final StorageService _storageService = GetIt.I<StorageService>();
+  final MinimumOrderQuantityService _minimumOrderQuantityService =
+      GetIt.I<MinimumOrderQuantityService>();
+  final ProductStockQuantityService _productStockQuantityService =
+      GetIt.I<ProductStockQuantityService>();
+  final ConsumerProductListPriceService _consumerProductListPriceService =
+      GetIt.I<ConsumerProductListPriceService>();
+  final SalesCartService _salesCartService = GetIt.I<SalesCartService>();
 
   BusinessTypeDataSource _businessTypeDataSource =
       GetIt.I<BusinessTypeDataSource>();
@@ -50,16 +67,22 @@ class ProductDetailBloc extends Bloc<ProductDetailEvent, ProductDetailState> {
       GetIt.I<AnnualRevenueDataSource>();
   List<LabelValue> annualRevenueLvs;
 
-  Sku selectedSku;
   List<VariantOption> variantOptions;
   List<Sku> variantSkus;
+
+  // to save into sales quotation
+  Sku selectedSku;
+//  double quantity = 1;
+//  double invoicePrice;
+//  String currencyCode;
+//  String uomCode;
 
   ProductDetailBloc({@required this.product, @required this.buildContext})
       : super(ProductDetailInitial()) {
     sellerCompany = this.product.sellerCompany;
     sellerCompanyProfile = this.product.sellerCompanyProfile;
 
-    salesQuotation = SalesQuotation();
+    initSalesQuotation();
 
     add(ProductDetailLoad());
   }
@@ -112,33 +135,29 @@ class ProductDetailBloc extends Bloc<ProductDetailEvent, ProductDetailState> {
           await _totalEmployeeDataSource.getDataSource(buildContext);
       annualRevenueLvs =
           await _annualRevenueDataSource.getDataSource(buildContext);
-      resetBlocVariables();
+
+      variantOptions = await buildVariantOptions();
+      variantSkus = product.variantSkus;
+
+      allVariantSelected();
+
+//      resetBlocVariables();
       yield ProductDetailLoadComplete();
     } else if (event is ProductDetailChangeQuantity) {
       yield ProductDetailPriceUpdateInProgress();
 
       // TODO set quantity
+      quoteItem.quantity = event.quantity.toDouble();
 
       yield ProductDetailPriceUpdateComplete();
-    } else if (event is ProductDetailSkuInitiate) {
-      variantSkus = event.variantSkus;
-      yield ProductDetailSkuInit();
-    } else if (event is ProductDetailSkuLoad) {
-      variantOptions = await event.buildOption();
-      yield ProductDetailSkuLoaded();
     } else if (event is ProductDetailVariantSelection) {
-      onVariantOptionClicked(event.variantOption, event.value);
-      yield ProductDetailSelectVariant();
-    } else if (event is ProductDetailSkuCheck) {
-      yield ProductDetailSkuChecked();
-    } else if (event is ProductDetailSkuViewMode) {
-      yield ProductDetailSkuViewLoaded();
-    } else if (event is ProductDetailSelectSKU) {
+      if (event.value != null) {
+        onVariantOptionClicked(event.variantOption, event.value);
+      }
+
       yield ProductDetailPriceUpdateInProgress();
 
-      // TODO set sku
-
-      yield ProductDetailPriceUpdateComplete();
+      yield* refreshPriceAndQuantity();
     } else if (event is ProductDetailAddToCart) {
       yield ProductDetailAddToCartInProgress();
 
@@ -159,12 +178,75 @@ class ProductDetailBloc extends Bloc<ProductDetailEvent, ProductDetailState> {
 
   void resetBlocVariables() {
     this.selectedSku = null;
-    this.variantOptions = null;
-    this.variantSkus = null;
+//    this.variantOptions = null;
+//    this.variantSkus = null;
   }
 
-  List<VariantOption> onVariantOptionClicked(
-      VariantOption clickedOption, String value) {
+  Stream<ProductDetailState> refreshPriceAndQuantity() async* {
+    bool priceError = false;
+    bool stockError = false;
+
+    if (selectedSku == null) {
+      print("no sku");
+      yield ProductDetailPriceUpdateFailed(noSkuError: true);
+      return;
+    }
+
+    // TODO need to handle here
+    String countryCode = "MY";
+
+    if (userAddress != null) {
+      countryCode = userAddress.countryCode;
+    }
+    ConsumerProductListPrice price = await _consumerProductListPriceService
+        .getPrice(selectedSku.productSkuID, product.companyId, countryCode);
+
+    if (price != null) {
+      quoteItem.invoicePrice = price.price;
+      quoteItem.currencyCode = price.currency.code;
+      quoteItem.uomCode = price.uom.code;
+    } else {
+      quoteItem.invoicePrice = 0;
+      priceError = true;
+    }
+
+    MinimumOrderQuantity minQty = await _minimumOrderQuantityService
+        .findMinimumOrder(selectedSku.productSkuID, product.companyId);
+
+    if (minQty != null) {
+      quoteItem.minOrderQty = minQty.minQuantity;
+    } else {
+      quoteItem.minOrderQty = 1;
+    }
+
+    if (quoteItem.quantity == null ||
+        quoteItem.quantity < quoteItem.minOrderQty) {
+      quoteItem.quantity = quoteItem.minOrderQty;
+    }
+
+    ProductStockQuantity stock = await _productStockQuantityService.getStock(
+        selectedSku.productSkuID, product.companyId, countryCode);
+
+    if (stock != null) {
+      quoteItem.maxOrderQty = stock.stock;
+    } else {
+      quoteItem.maxOrderQty = 0;
+    }
+
+    if (quoteItem.maxOrderQty == 0) {
+      stockError = true;
+    }
+
+    if (priceError || stockError) {
+      yield ProductDetailPriceUpdateFailed(
+          priceError: priceError, stockError: stockError);
+    } else {
+      yield ProductDetailPriceUpdateComplete();
+    }
+  }
+
+  void onVariantOptionClicked(VariantOption clickedOption, String value) {
+    print("calling onVariantOptionClicked $variantSkus");
     if (variantSkus == null) {
       return null;
     }
@@ -223,10 +305,11 @@ class ProductDetailBloc extends Bloc<ProductDetailEvent, ProductDetailState> {
     });
 
     allVariantSelected();
-    return variantOptions;
+//    return variantOptions;
   }
 
   void allVariantSelected() {
+    print(" calling all variant selected");
     bool allOptionsSelected = true;
     final variantValueMap = new Map<String, String>();
 
@@ -263,6 +346,181 @@ class ProductDetailBloc extends Bloc<ProductDetailEvent, ProductDetailState> {
       });
     }
   }
+
+  initSalesQuotation() {
+    salesQuotation = SalesQuotation();
+    quoteItem = QuoteItem();
+    quoteItem.quantity = 1;
+  }
+
+  populateSalesQuotation() {
+//    SalesQuotation quotation = new SalesQuotation();
+    // TODO to set some defaul value
+
+//    this.salesQuotation.requestorAccount = this.currentUser;
+//    this.salesQuotation.requestorCompany = this.currentCompany;
+//    const company = this.storageService.getLoginCompany();
+//    this.salesQuotation.buyerCompanyId = company.id;
+//    this.salesQuotation.sellerCompanyId = this.product.companyId; // stamp seller id here for grouping
+
+//    QuoteItem quoteItem = new QuoteItem();
+//    this.salesQuotation.quoteItems[0] = quoteItem;
+//    quoteItem.itemNumber = "1";
+//    quoteItem.product = this.product;
+//    quoteItem.sku = this.selectedSku;
+//    quoteItem.quantity = this.quantity;
+//    quoteItem.invoicePrice = this.listPrice;
+//    quoteItem.currencyCode = this.currency;
+//    quoteItem.checked = true;
+//    if (this.listPriceObj) {
+//      quoteItem.uomCode = this.listPriceObj.uom.code;
+//    }
+//    if (this.selectedSku && this.selectedSku.skuSalesUnit) {
+//      quoteItem.product.uomCode = this.selectedSku.skuSalesUnit.code;
+//    }
+//
+//    if (this.salesQuotation.storeShippingOption) {
+//      this.salesQuotation.storeShippingOption.shippingAddress = this.deliveryLocation;
+//    } else {
+//      let storeShippingOption = new StoreShippingOption();
+//      storeShippingOption.shippingAddress = this.deliveryLocation;
+//      this.salesQuotation.storeShippingOption = storeShippingOption;
+//    }
+  }
+
+  Future<List<VariantOption>> buildVariantOptions() async {
+    // TODO copy from angular product-variant.component.ts?
+//    int index = 0;
+
+    List<VariantOption> variantOptions = [];
+    List<Sku> variantSkus = product.variantSkus;
+    for (var i = 0;
+        i < product.category.variantFamily.variantTypes.length;
+        i++) {
+      VariantType type = product.category.variantFamily.variantTypes[i];
+
+      var option = VariantOption();
+      if (i > 0) {
+        option.parentOption = variantOptions[i - 1];
+      }
+
+//      VariantType type = await _variantTypeService.get(temp.id);
+
+      option.variantType = type;
+
+      variantSkus.forEach((sku) {
+        if (option.parentOption == null) {
+          final variantValue = sku.variantValues[i];
+          VariantTypeValue temp = variantValue.variantType.variantTypeValues
+              .firstWhere((vv) => vv.id.toString() == variantValue.value,
+                  orElse: () => null);
+          if (temp == null && !(variantValue.value is int)) {
+            temp =
+                VariantTypeValue(0, variantValue.label, variantValue.value, 0);
+          }
+          if (temp != null && !option.values.contains(temp.value)) {
+            option.values.add(temp.value);
+            if (variantValue.label != null) {
+              option.labels.add(variantValue.label);
+            } else {
+              if (variantValue.variantType != null &&
+                  variantValue.variantType.variantTypeValues != null) {
+                variantValue.variantType.variantTypeValues.forEach((v) {
+                  if (variantValue.value == v.value.toString()) {
+                    option.labels.add(v.name);
+                  }
+                });
+              }
+            }
+          }
+        } else {
+          final parentValue = sku.variantValues[i - 1];
+          final variantValue = sku.variantValues[i];
+
+          VariantTypeValue tempParent;
+          tempParent = parentValue.variantType.variantTypeValues.firstWhere(
+              (finder) => finder.id.toString() == parentValue.value,
+              orElse: () => null);
+          if (tempParent == null && !(parentValue.value is int)) {
+            tempParent =
+                VariantTypeValue(0, parentValue.label, parentValue.value, 0);
+          }
+          VariantTypeValue temp;
+          temp = variantValue.variantType.variantTypeValues.firstWhere(
+              (finder) => finder.id.toString() == variantValue.value,
+              orElse: () => null);
+          if (temp == null && !(variantValue.value is int)) {
+            temp =
+                VariantTypeValue(0, variantValue.label, variantValue.value, 0);
+          }
+
+          //if parent selected
+          if (option.parentOption.selectedValue != null) {
+            if (tempParent.value == option.parentOption.selectedValue &&
+                !option.values.contains(temp.value)) {
+              option.values.add(temp.value);
+              if (variantValue.label != null) {
+                option.labels.add(variantValue.label);
+              } else {
+                if (variantValue.variantType != null &&
+                    variantValue.variantType.variantTypeValues != null) {
+                  variantValue.variantType.variantTypeValues.forEach((v) {
+                    if (variantValue.value.toString() == v.value) {
+                      option.labels.add(v.name);
+                    }
+                  });
+                }
+                // option.labels.push(variantValue.value);
+              }
+            }
+          } else {
+            if (!option.values.contains(temp.value)) {
+              option.values.add(temp.value);
+              if (variantValue.label != null) {
+                option.labels.add(variantValue.label);
+              } else {
+                if (variantValue.variantType != null &&
+                    variantValue.variantType.variantTypeValues != null) {
+                  variantValue.variantType.variantTypeValues.forEach((v) {
+                    if (variantValue.value.toString() == v.value) {
+                      option.labels.add(v.name);
+                    }
+                  });
+                }
+                // option.labels.push(variantValue.value);
+              }
+            }
+          }
+        }
+      });
+
+//      type.variantTypeValues.forEach((vtv) {
+//        print("variant type value $vtv");
+//        option.labels.add(vtv.name);
+//        option.values.add(vtv.value);
+//      });
+//      variantOptions.add(option);
+      if (selectedSku != null) {
+        VariantTypeValue temp;
+        temp = selectedSku.variantValues[i].variantType.variantTypeValues
+            .firstWhere((finder) =>
+                finder.id.toString() == selectedSku.variantValues[i].value);
+        if (temp == null && !(selectedSku.variantValues[i].value is int)) {
+          temp = VariantTypeValue(0, selectedSku.variantValues[i].label,
+              selectedSku.variantValues[i].value, 0);
+        }
+        if (temp != null) {
+          option.selectedValue = temp.value;
+        }
+      }
+      if (option.selectedValue == null) {
+        option.selectedValue = option.values != null ? option.values[0] : "";
+      }
+      variantOptions.add(option);
+    }
+
+    return variantOptions;
+  }
 }
 
 // state
@@ -283,23 +541,25 @@ class ProductDetailPriceUpdateInProgress extends ProductDetailState {}
 
 class ProductDetailPriceUpdateComplete extends ProductDetailState {}
 
-class ProductDetailPriceUpdateFailed extends ProductDetailState {}
+class ProductDetailPriceUpdateFailed extends ProductDetailState {
+  final bool priceError;
+  final bool stockError;
+  final bool noSkuError;
+
+  ProductDetailPriceUpdateFailed(
+      {this.priceError = false,
+      this.stockError = false,
+      this.noSkuError = false});
+
+  @override
+  List<Object> get props => [priceError, stockError, noSkuError];
+}
 
 class ProductDetailAddToCartInProgress extends ProductDetailState {}
 
 class ProductDetailAddToCartComplete extends ProductDetailState {}
 
 class ProductDetailAddToCartFailed extends ProductDetailState {}
-
-class ProductDetailSkuInit extends ProductDetailState {}
-
-class ProductDetailSkuLoaded extends ProductDetailState {}
-
-class ProductDetailSelectVariant extends ProductDetailState {}
-
-class ProductDetailSkuChecked extends ProductDetailState {}
-
-class ProductDetailSkuViewLoaded extends ProductDetailState {}
 
 class ProductDetailSelectAddressComplete extends ProductDetailState {
   final Location address;
@@ -318,15 +578,6 @@ abstract class ProductDetailEvent extends Equatable {
 
 class ProductDetailLoad extends ProductDetailEvent {}
 
-class ProductDetailSelectSKU extends ProductDetailEvent {
-  final Sku sku;
-
-  ProductDetailSelectSKU(this.sku);
-
-  @override
-  List<Object> get props => [sku];
-}
-
 class ProductDetailChangeQuantity extends ProductDetailEvent {
   final int quantity;
 
@@ -338,29 +589,11 @@ class ProductDetailChangeQuantity extends ProductDetailEvent {
 
 class ProductDetailAddToCart extends ProductDetailEvent {}
 
-class ProductDetailSkuInitiate extends ProductDetailEvent {
-  final List<Sku> variantSkus;
-
-  ProductDetailSkuInitiate(this.variantSkus);
-
-  @override
-  List<Object> get props => [variantSkus];
-}
-
-class ProductDetailSkuLoad extends ProductDetailEvent {
-  final Function() buildOption;
-
-  ProductDetailSkuLoad(this.buildOption);
-
-  @override
-  List<Object> get props => [buildOption];
-}
-
 class ProductDetailVariantSelection extends ProductDetailEvent {
   final VariantOption variantOption;
   final String value;
 
-  ProductDetailVariantSelection(this.variantOption, this.value);
+  ProductDetailVariantSelection({this.variantOption, this.value});
 
   @override
   List<Object> get props => [variantOption, this.value];
@@ -374,7 +607,3 @@ class ProductDetailSelectAddress extends ProductDetailEvent {
   @override
   List<Object> get props => [id];
 }
-
-class ProductDetailSkuCheck extends ProductDetailEvent {}
-
-class ProductDetailSkuViewMode extends ProductDetailEvent {}
