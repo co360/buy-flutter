@@ -51,7 +51,7 @@ class AppConfirmationDialog {
                     : FlutterI18n.translate(context, "general.ok"),
                 style: TextStyle(
                   color: delete ? Colors.red : AppTheme.colorLink,
-                  fontWeight: delete ? FontWeight.normal : FontWeight.bold,
+                  fontWeight: delete ? FontWeight.w500 : FontWeight.bold,
                 ),
               ),
               onPressed: () {
