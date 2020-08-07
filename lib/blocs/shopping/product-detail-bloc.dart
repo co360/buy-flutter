@@ -44,27 +44,27 @@ class ProductDetailBloc extends Bloc<ProductDetailEvent, ProductDetailState> {
 
   final CompanyService _companyService = GetIt.I<CompanyService>();
   final CompanyProfileService _companyProfileService =
-      GetIt.I<CompanyProfileService>();
+  GetIt.I<CompanyProfileService>();
   final ShipmentService _shipmentService = GetIt.I<ShipmentService>();
   final StorageService _storageService = GetIt.I<StorageService>();
   final MinimumOrderQuantityService _minimumOrderQuantityService =
-      GetIt.I<MinimumOrderQuantityService>();
+  GetIt.I<MinimumOrderQuantityService>();
   final ProductStockQuantityService _productStockQuantityService =
-      GetIt.I<ProductStockQuantityService>();
+  GetIt.I<ProductStockQuantityService>();
   final ConsumerProductListPriceService _consumerProductListPriceService =
-      GetIt.I<ConsumerProductListPriceService>();
+  GetIt.I<ConsumerProductListPriceService>();
   final SalesCartService _salesCartService = GetIt.I<SalesCartService>();
 
   BusinessTypeDataSource _businessTypeDataSource =
-      GetIt.I<BusinessTypeDataSource>();
+  GetIt.I<BusinessTypeDataSource>();
   List<LabelValue> businessTypeLvs;
 
   TotalEmployeeDataSource _totalEmployeeDataSource =
-      GetIt.I<TotalEmployeeDataSource>();
+  GetIt.I<TotalEmployeeDataSource>();
   List<LabelValue> totalEmployeeLvs;
 
   AnnualRevenueDataSource _annualRevenueDataSource =
-      GetIt.I<AnnualRevenueDataSource>();
+  GetIt.I<AnnualRevenueDataSource>();
   List<LabelValue> annualRevenueLvs;
 
   List<VariantOption> variantOptions;
@@ -95,7 +95,7 @@ class ProductDetailBloc extends Bloc<ProductDetailEvent, ProductDetailState> {
       // reload company, company profile cause it might be outdated
       sellerCompany = await _companyService.getCompany(product.companyId);
       sellerCompanyProfile =
-          await _companyProfileService.findByCompany(product.companyId);
+      await _companyProfileService.findByCompany(product.companyId);
 
       // get user's location
       CompanyProfile userProfile = await _companyProfileService
@@ -114,9 +114,9 @@ class ProductDetailBloc extends Bloc<ProductDetailEvent, ProductDetailState> {
           senderCountry: sellerCompany.country,
           senderState: sellerCompany.state,
           receiverCountry:
-              userAddress == null || userAddress.countryCode == null
-                  ? "MY"
-                  : userAddress.countryCode,
+          userAddress == null || userAddress.countryCode == null
+              ? "MY"
+              : userAddress.countryCode,
           receiverPostcode: userAddress == null || userAddress.postcode == null
               ? "45000"
               : userAddress.postcode,
@@ -130,11 +130,11 @@ class ProductDetailBloc extends Bloc<ProductDetailEvent, ProductDetailState> {
 
       // some other data source to resolve?
       businessTypeLvs =
-          await _businessTypeDataSource.getDataSource(buildContext);
+      await _businessTypeDataSource.getDataSource(buildContext);
       totalEmployeeLvs =
-          await _totalEmployeeDataSource.getDataSource(buildContext);
+      await _totalEmployeeDataSource.getDataSource(buildContext);
       annualRevenueLvs =
-          await _annualRevenueDataSource.getDataSource(buildContext);
+      await _annualRevenueDataSource.getDataSource(buildContext);
 
       variantOptions = await buildVariantOptions();
       variantSkus = product.variantSkus;
@@ -167,12 +167,32 @@ class ProductDetailBloc extends Bloc<ProductDetailEvent, ProductDetailState> {
 
       // TODO triger sales cart bloc to refresh...
     } else if (event is ProductDetailSelectAddress) {
+      yield ProductDetailSelectAddressInProgress();
       CompanyProfile userProfile = await _companyProfileService
           .findByCompany(_storageService.loginUser.companyId);
       userAddress = userProfile.locations
           .where((element) => element.id == event.id)
           .toList()[0];
-      yield ProductDetailSelectAddressComplete(userAddress);
+
+      shipment = await _shipmentService.getEasyParcel(new EasyParcelParam(
+          senderPostcode: sellerCompany.postcode,
+          senderCountry: sellerCompany.country,
+          senderState: sellerCompany.state,
+          receiverCountry:
+          userAddress == null || userAddress.countryCode == null
+              ? "MY"
+              : userAddress.countryCode,
+          receiverPostcode: userAddress == null || userAddress.postcode == null
+              ? "45000"
+              : userAddress.postcode,
+          receiverState: userAddress == null || userAddress.state == null
+              ? "Selangor"
+              : userAddress.state,
+          weight: product.weight,
+          height: product.height,
+          width: product.width,
+          length: product.length));
+      yield ProductDetailSelectAddressComplete(userAddress, shipment);
     }
   }
 
@@ -252,7 +272,7 @@ class ProductDetailBloc extends Bloc<ProductDetailEvent, ProductDetailState> {
     }
     List<VariantOption> tempList;
     VariantOption selectedOption = variantOptions.firstWhere(
-        (opt) => opt.variantType.code == clickedOption.variantType.code);
+            (opt) => opt.variantType.code == clickedOption.variantType.code);
     selectedOption.selectedValue = value;
     variantOptions.forEach((option) {
       if (option.parentOption != null &&
@@ -270,7 +290,7 @@ class ProductDetailBloc extends Bloc<ProductDetailEvent, ProductDetailState> {
                 final parentVariant = sku.variantValues[index - 1];
                 VariantTypeValue temp;
                 temp = parentVariant.variantType.variantTypeValues.firstWhere(
-                    (finder) => finder.id.toString() == parentVariant.value,
+                        (finder) => finder.id.toString() == parentVariant.value,
                     orElse: () => null);
                 if (temp == null && !(parentVariant.value is int)) {
                   temp = VariantTypeValue(
@@ -279,7 +299,7 @@ class ProductDetailBloc extends Bloc<ProductDetailEvent, ProductDetailState> {
                 if (temp != null && temp.value == parentValue) {
                   VariantTypeValue tempValue;
                   tempValue = value.variantType.variantTypeValues.firstWhere(
-                      (finder) => finder.id.toString() == value.value,
+                          (finder) => finder.id.toString() == value.value,
                       orElse: () => null);
                   if (tempValue == null && !(value.value is int)) {
                     tempValue =
@@ -328,7 +348,7 @@ class ProductDetailBloc extends Bloc<ProductDetailEvent, ProductDetailState> {
           final selectedValue = variantValueMap[variant.variantType.code];
           VariantTypeValue temp;
           temp = variant.variantType.variantTypeValues.firstWhere(
-              (finder) => finder.id.toString() == variant.value,
+                  (finder) => finder.id.toString() == variant.value,
               orElse: () => null);
           if (temp == null && !(variant.value is int)) {
             temp = VariantTypeValue(0, variant.label, variant.value, 0);
@@ -395,8 +415,8 @@ class ProductDetailBloc extends Bloc<ProductDetailEvent, ProductDetailState> {
     List<VariantOption> variantOptions = [];
     List<Sku> variantSkus = product.variantSkus;
     for (var i = 0;
-        i < product.category.variantFamily.variantTypes.length;
-        i++) {
+    i < product.category.variantFamily.variantTypes.length;
+    i++) {
       VariantType type = product.category.variantFamily.variantTypes[i];
 
       var option = VariantOption();
@@ -413,7 +433,7 @@ class ProductDetailBloc extends Bloc<ProductDetailEvent, ProductDetailState> {
           final variantValue = sku.variantValues[i];
           VariantTypeValue temp = variantValue.variantType.variantTypeValues
               .firstWhere((vv) => vv.id.toString() == variantValue.value,
-                  orElse: () => null);
+              orElse: () => null);
           if (temp == null && !(variantValue.value is int)) {
             temp =
                 VariantTypeValue(0, variantValue.label, variantValue.value, 0);
@@ -439,7 +459,7 @@ class ProductDetailBloc extends Bloc<ProductDetailEvent, ProductDetailState> {
 
           VariantTypeValue tempParent;
           tempParent = parentValue.variantType.variantTypeValues.firstWhere(
-              (finder) => finder.id.toString() == parentValue.value,
+                  (finder) => finder.id.toString() == parentValue.value,
               orElse: () => null);
           if (tempParent == null && !(parentValue.value is int)) {
             tempParent =
@@ -447,7 +467,7 @@ class ProductDetailBloc extends Bloc<ProductDetailEvent, ProductDetailState> {
           }
           VariantTypeValue temp;
           temp = variantValue.variantType.variantTypeValues.firstWhere(
-              (finder) => finder.id.toString() == variantValue.value,
+                  (finder) => finder.id.toString() == variantValue.value,
               orElse: () => null);
           if (temp == null && !(variantValue.value is int)) {
             temp =
@@ -504,7 +524,7 @@ class ProductDetailBloc extends Bloc<ProductDetailEvent, ProductDetailState> {
         VariantTypeValue temp;
         temp = selectedSku.variantValues[i].variantType.variantTypeValues
             .firstWhere((finder) =>
-                finder.id.toString() == selectedSku.variantValues[i].value);
+        finder.id.toString() == selectedSku.variantValues[i].value);
         if (temp == null && !(selectedSku.variantValues[i].value is int)) {
           temp = VariantTypeValue(0, selectedSku.variantValues[i].label,
               selectedSku.variantValues[i].value, 0);
@@ -548,8 +568,8 @@ class ProductDetailPriceUpdateFailed extends ProductDetailState {
 
   ProductDetailPriceUpdateFailed(
       {this.priceError = false,
-      this.stockError = false,
-      this.noSkuError = false});
+        this.stockError = false,
+        this.noSkuError = false});
 
   @override
   List<Object> get props => [priceError, stockError, noSkuError];
@@ -561,13 +581,16 @@ class ProductDetailAddToCartComplete extends ProductDetailState {}
 
 class ProductDetailAddToCartFailed extends ProductDetailState {}
 
+class ProductDetailSelectAddressInProgress extends ProductDetailState {}
+
 class ProductDetailSelectAddressComplete extends ProductDetailState {
   final Location address;
+  final List<EasyParcelResponse> shipment;
 
-  ProductDetailSelectAddressComplete(this.address);
+  ProductDetailSelectAddressComplete(this.address, this.shipment);
 
   @override
-  List<Object> get props => [address];
+  List<Object> get props => [address, shipment];
 }
 
 // event

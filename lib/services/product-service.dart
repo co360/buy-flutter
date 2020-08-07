@@ -18,22 +18,6 @@ class ProductService extends BaseRestService {
     });
   }
 
-  Future<List<LabelValue>> keyWordByNameFilter(
-      String name, List<Product> filterProduct) async {
-    var url = '$_endPoint/keywordByName?name=$name';
-    return await dio.get<List<dynamic>>(url).then((value) {
-      print(value.data);
-
-      return value.data.map((e) => LabelValue.fromJson(e)).where((element) {
-        for (var f in filterProduct) {
-          if (f.category.name == element.label ||
-              f.category.parentCategory.name == element.label) return true;
-        }
-        return false;
-      }).toList();
-    });
-  }
-
   Future<QueryResult<Product>> searchProduct(
       ProductListingQueryFilter queryFilter,
       {int page = 0,

@@ -5,11 +5,7 @@ import 'package:get_it/get_it.dart';
 import 'package:storeFlutter/models/identity/company-profile.dart';
 import 'package:storeFlutter/models/identity/country.dart';
 import 'package:storeFlutter/services/company-profile-service.dart';
-import 'package:storeFlutter/datasource/country-data-source.dart';
-import 'package:storeFlutter/datasource/state-data-source.dart';
-import 'package:storeFlutter/datasource/city-data-source.dart';
 import 'package:storeFlutter/models/identity/location.dart';
-import 'package:storeFlutter/models/label-value.dart';
 import 'package:storeFlutter/services/country-service.dart';
 
 // bloc
@@ -17,9 +13,6 @@ class AddressBloc extends Bloc<AddressEvent, AddressState> {
   final CompanyProfileService _companyProfileService =
       GetIt.I<CompanyProfileService>();
   final CountryService _countryService = GetIt.I<CountryService>();
-  final CountryDataSource _countryDataSource = GetIt.I<CountryDataSource>();
-  final StateDataSource _stateDataSource = GetIt.I<StateDataSource>();
-  final CityDataSource _cityDataSource = GetIt.I<CityDataSource>();
   CompanyProfile _companyProfile;
 
   AddressBloc() : super(AddressInitial());
@@ -28,8 +21,10 @@ class AddressBloc extends Bloc<AddressEvent, AddressState> {
   Stream<AddressState> mapEventToState(AddressEvent event) async* {
     try {
       if (event is GetAddressEvent) {
-        yield AddressInProgress();
+        yield GetAddressInProgress();
+
         _companyProfile = await _companyProfileService.findByCompany(event.id);
+        print("=================> $_companyProfile");
         if (_companyProfile != null) {
           List<Location> locations = [];
           for (var f in _companyProfile.locations) {
@@ -39,13 +34,12 @@ class AddressBloc extends Bloc<AddressEvent, AddressState> {
             locations.add(f);
           }
           yield GetAddressSuccess(locations);
+        } else {
+          yield GetAddressFailed();
         }
       } else if (event is SetAddressEvent) {
-        yield AddressInProgress();
-        CompanyProfile tempCompanyProfile = _companyProfile;
-
-        List<LabelValue> _countries =
-            await _countryDataSource.getDataSource(event.context);
+        yield SetAddressInProgress();
+        CompanyProfile tmpProfile = _companyProfile;
 
         // Reconfigure the parameters
         event.location.defaultShipping = event.location.defaultShipping == null
@@ -59,100 +53,82 @@ class AddressBloc extends Bloc<AddressEvent, AddressState> {
         bool setDefaultShipping = event.location.defaultShipping;
         bool setDefaultBilling = event.location.defaultBilling;
 
-        for (var i = 0; i < tempCompanyProfile.locations.length; i++) {
+        for (var i = 0; i < tmpProfile.locations.length; i++) {
           if (setDefaultShipping) {
-            tempCompanyProfile.locations[i].defaultShipping = false;
+            tmpProfile.locations[i].defaultShipping = false;
           }
           if (setDefaultBilling) {
-            tempCompanyProfile.locations[i].defaultBilling = false;
+            tmpProfile.locations[i].defaultBilling = false;
           }
           if (event.location.id != null &&
-              tempCompanyProfile.locations[i].id == event.location.id) {
-            tempCompanyProfile.locations[i] = event.location;
-            for (var f in _countries) {
-              if (f.label == tempCompanyProfile.locations[i].countryCode) {
-                tempCompanyProfile.locations[i].countryName = f.label;
-                break;
-              }
-            }
+              tmpProfile.locations[i].id == event.location.id) {
+            tmpProfile.locations[i] = event.location;
+            Country country = await _countryService
+                .getCountryByCode(tmpProfile.locations[i].countryCode);
+            tmpProfile.locations[i].countryName = country.name;
+
             isNew = false;
           }
         }
 
         if (isNew) {
-          tempCompanyProfile.locations.add(event.location);
-          for (var f in _countries) {
-            if (f.code ==
-                tempCompanyProfile
-                    .locations[tempCompanyProfile.locations.length - 1]
-                    .countryCode) {
-              tempCompanyProfile
-                  .locations[tempCompanyProfile.locations.length - 1]
-                  .countryName = f.label;
-              break;
-            }
-          }
+          tmpProfile.locations.add(event.location);
+          Country country = await _countryService.getCountryByCode(tmpProfile
+              .locations[tmpProfile.locations.length - 1].countryCode);
+          tmpProfile.locations[tmpProfile.locations.length - 1].countryName =
+              country.name;
         }
 
-        _companyProfile = await _companyProfileService
-            .updateCompanyProfile(tempCompanyProfile);
+        _companyProfile =
+            await _companyProfileService.updateCompanyProfile(tmpProfile);
         if (_companyProfile != null) {
           yield SetAddressSuccess();
+        } else {
+          yield SetAddressFailed();
         }
       } else if (event is DeleteAddressEvent) {
+        yield DeleteAddressInProgress();
         List<Location> newLocations = [];
-        CompanyProfile tempCompanyProfile = _companyProfile;
+        CompanyProfile tmpProfile = _companyProfile;
 
-        for (var i = 0; i < tempCompanyProfile.locations.length; i++) {
-          if (tempCompanyProfile.locations[i].id != event.id) {
-            newLocations.add(tempCompanyProfile.locations[i]);
+        for (var i = 0; i < tmpProfile.locations.length; i++) {
+          if (tmpProfile.locations[i].id != event.id) {
+            newLocations.add(tmpProfile.locations[i]);
           }
         }
-        tempCompanyProfile.locations = newLocations;
+        tmpProfile.locations = newLocations;
 
-        _companyProfile = await _companyProfileService
-            .updateCompanyProfile(tempCompanyProfile);
+        _companyProfile =
+            await _companyProfileService.updateCompanyProfile(tmpProfile);
         if (_companyProfile != null) {
           yield DeleteAddressSuccess();
+        } else {
+          yield DeleteAddressFailed();
         }
       } else if (event is GetAddressByIDEvent) {
-        yield AddressInProgress();
-        String tempCountry = "MY";
-        String tempState = "Kuala Lumpur";
+        yield GetAddressInProgress();
         Location location;
         for (var f in _companyProfile.locations) {
           if (f.id == event.id) {
             location = f;
-            tempCountry = f.countryCode;
-            tempState = f.state;
             break;
           }
         }
-        yield GetAddressByIDSuccess(location, _companyProfile.locations.length);
-      } else if (event is GetCityListEvent) {
-        yield AddressInProgress();
-        List<LabelValue> _cities = await _cityDataSource
-            .getDataSource(event.context, param: event.state);
-        yield GetCityListSuccess(_cities);
-      } else if (event is GetStateListEvent) {
-        yield AddressInProgress();
-        List<LabelValue> _states = await _stateDataSource
-            .getDataSource(event.context, param: event.country);
-        yield GetStateListSuccess(_states);
+        if (location != null) {
+          yield GetAddressByIDSuccess(
+              location, _companyProfile.locations.length);
+        } else {
+          GetAddressByIDFailed();
+        }
       } else if (event is SetAddressHomeEvent) {
         yield SetAddressHomeSuccess(event.isHome);
-      } else if (event is GetCountryListEvent) {
-        yield AddressInProgress();
-        List<LabelValue> _countries =
-            await _countryDataSource.getDataSource(event.context);
-        yield GetCountryListSuccess(_countries);
       } else {
         yield AddressInitial();
       }
     } catch (e) {
       print("Error");
       print(e);
-      yield ManageAddressFailed();
+      yield AddressOpFailed(e);
     }
   }
 }
@@ -167,7 +143,19 @@ abstract class AddressState extends Equatable {
 
 class AddressInitial extends AddressState {}
 
-class AddressInProgress extends AddressState {}
+class AddressOpFailed extends AddressState {
+  final String error;
+  AddressOpFailed(this.error);
+
+  @override
+  List<Object> get props => [error];
+}
+
+class GetAddressInProgress extends AddressState {}
+
+class SetAddressInProgress extends AddressState {}
+
+class DeleteAddressInProgress extends AddressState {}
 
 class GetAddressSuccess extends AddressState {
   final List<Location> addresses;
@@ -176,6 +164,8 @@ class GetAddressSuccess extends AddressState {
   @override
   List<Object> get props => [addresses];
 }
+
+class GetAddressFailed extends AddressState {}
 
 class GetAddressByIDSuccess extends AddressState {
   final Location address;
@@ -186,31 +176,11 @@ class GetAddressByIDSuccess extends AddressState {
   List<Object> get props => [address, total];
 }
 
-class GetCityListSuccess extends AddressState {
-  final List<LabelValue> city;
-  GetCityListSuccess(this.city);
-
-  @override
-  List<Object> get props => [city];
-}
-
-class GetCountryListSuccess extends AddressState {
-  final List<LabelValue> country;
-  GetCountryListSuccess(this.country);
-
-  @override
-  List<Object> get props => [country];
-}
-
-class GetStateListSuccess extends AddressState {
-  final List<LabelValue> state;
-  GetStateListSuccess(this.state);
-
-  @override
-  List<Object> get props => [state];
-}
+class GetAddressByIDFailed extends AddressState {}
 
 class SetAddressSuccess extends AddressState {}
+
+class SetAddressFailed extends AddressState {}
 
 class SetAddressHomeSuccess extends AddressState {
   final bool isHome;
@@ -220,9 +190,11 @@ class SetAddressHomeSuccess extends AddressState {
   List<Object> get props => [isHome];
 }
 
+class SetAddressHomeFailed extends AddressState {}
+
 class DeleteAddressSuccess extends AddressState {}
 
-class ManageAddressFailed extends AddressState {}
+class DeleteAddressFailed extends AddressState {}
 
 // Event
 abstract class AddressEvent extends Equatable {
@@ -247,35 +219,6 @@ class GetAddressByIDEvent extends AddressEvent {
 
   @override
   List<Object> get props => [context, id];
-}
-
-class GetStateListEvent extends AddressEvent {
-  final BuildContext context;
-  final String country;
-
-  GetStateListEvent(this.context, this.country);
-
-  @override
-  List<Object> get props => [context, country];
-}
-
-class GetCityListEvent extends AddressEvent {
-  final BuildContext context;
-  final String state;
-
-  GetCityListEvent(this.context, this.state);
-
-  @override
-  List<Object> get props => [context, state];
-}
-
-class GetCountryListEvent extends AddressEvent {
-  final BuildContext context;
-
-  GetCountryListEvent(this.context);
-
-  @override
-  List<Object> get props => [context];
 }
 
 class SetAddressEvent extends AddressEvent {

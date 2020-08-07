@@ -7,6 +7,7 @@ import 'package:get_it/get_it.dart';
 import 'package:storeFlutter/blocs/account/address-bloc.dart';
 import 'package:storeFlutter/components/app-button.dart';
 import 'package:storeFlutter/components/app-loading-dialog.dart';
+import 'package:storeFlutter/components/app-loading.dart';
 import 'package:storeFlutter/models/identity/location.dart';
 import 'package:storeFlutter/services/storage-service.dart';
 import 'package:storeFlutter/util/app-theme.dart';
@@ -41,23 +42,21 @@ class _AddressViewState extends State<AddressView> {
         bloc: GetIt.I<AddressBloc>(),
         builder: (context, state) {
           print("[AddressView] current state $state");
-          List<Location> lists = [];
-          if (state is GetAddressSuccess) {
+
+          if (state is GetAddressInProgress) {
+            return AppLoading();
+          } else if (state is GetAddressSuccess) {
             print(state.addresses);
             if (state.addresses.length > 0) {
-              lists = state.addresses;
+              return SingleChildScrollView(
+                child: Column(
+                    children: generateDynamicList(context, state.addresses)),
+              );
             }
           }
-
-          if (lists.length > 0) {
-            return SingleChildScrollView(
-              child: Column(children: generateDynamicList(context, lists)),
-            );
-          } else {
-            return SingleChildScrollView(
-              child: emptyList(context),
-            );
-          }
+          return SingleChildScrollView(
+            child: emptyList(context),
+          );
         });
   }
 
@@ -271,46 +270,29 @@ class _AddressViewState extends State<AddressView> {
   }
 
   Widget emptyList(BuildContext _context) {
-    return BlocListener<AddressBloc, AddressState>(
-        bloc: GetIt.I<AddressBloc>(),
-        listener: (context, state) {
-          print("[AddressView] current state $state, $hasDialog");
-          if (state is AddressInProgress) {
-            AppLoadingDialog(context);
-
-            if (!hasDialog) {
-              hasDialog = true;
-            }
-          } else {
-            if (hasDialog) {
-              Navigator.of(context).pop();
-              hasDialog = false;
-            }
-          }
-        },
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Container(
-                  alignment: Alignment.center,
-                  margin: const EdgeInsets.only(top: 40.0),
-                  child: Text(
-                    FlutterI18n.translate(_context, "account.noAddress"),
-                    textAlign: TextAlign.center,
-                  )),
-              Container(
-                alignment: Alignment.center,
-                margin: const EdgeInsets.only(top: 40.0),
-                child: SizedBox(
-                  width: 264,
-                  child: AppButton(
-                    FlutterI18n.translate(_context, "account.addAddressNow"),
-                    () => widget.callBack(_context, 0),
-                    size: AppButtonSize.small,
-                    noPadding: true,
-                  ),
-                ),
+    return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Container(
+              alignment: Alignment.center,
+              margin: const EdgeInsets.only(top: 40.0),
+              child: Text(
+                FlutterI18n.translate(_context, "account.noAddress"),
+                textAlign: TextAlign.center,
+              )),
+          Container(
+            alignment: Alignment.center,
+            margin: const EdgeInsets.only(top: 40.0),
+            child: SizedBox(
+              width: 264,
+              child: AppButton(
+                FlutterI18n.translate(_context, "account.addAddressNow"),
+                () => widget.callBack(_context, 0),
+                size: AppButtonSize.small,
+                noPadding: true,
               ),
-            ]));
+            ),
+          ),
+        ]);
   }
 }

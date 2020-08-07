@@ -83,8 +83,9 @@ class _ProductReviewState extends State<ProductReview> {
   Widget noReviewBody(BuildContext context) {
     return (Column(children: <Widget>[
       // SizedBox(height: 15),
-      Text(FlutterI18n.translate(
-          context, "shopping.productDetail.noReviewsYet")),
+      Text(
+          FlutterI18n.translate(context, "shopping.productDetail.noReviewsYet"),
+          style: TextStyle(color: AppTheme.colorGray5)),
       SizedBox(height: 15),
     ]));
   }

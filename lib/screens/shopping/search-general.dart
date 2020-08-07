@@ -15,9 +15,8 @@ import 'package:substring_highlight/substring_highlight.dart';
 class SearchGeneral extends StatefulWidget {
   final String query;
   final String placeholder;
-  final List<Product> filterProduct;
 
-  SearchGeneral({this.query, this.placeholder, this.filterProduct});
+  SearchGeneral({this.query, this.placeholder});
 
   @override
   _SearchGeneralState createState() => _SearchGeneralState();
@@ -216,9 +215,6 @@ class _SearchGeneralState extends State<SearchGeneral> {
 
   Future<List<LabelValue>> search(BuildContext context, String search) async {
     BlocProvider.of<SearchBloc>(context).add(SearchWithTerm(search));
-    if (widget.filterProduct != null && widget.filterProduct.length > 0) {
-      return productService.keyWordByNameFilter(search, widget.filterProduct);
-    }
     return productService.keyWordByName(search);
   }
 }

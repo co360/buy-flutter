@@ -9,11 +9,11 @@ import 'package:storeFlutter/util/app-theme.dart';
 
 class ProductDeliveryInfo extends StatelessWidget {
   final Location userAddress;
-  final List<EasyParcelResponse> shipments;
+  final List<EasyParcelResponse> shipmentLists;
 
   ProductDeliveryInfo(
     this.userAddress,
-    this.shipments, {
+    this.shipmentLists, {
     Key key,
   }) : super(key: key);
 
@@ -25,14 +25,15 @@ class ProductDeliveryInfo extends StatelessWidget {
       bloc: productDetailBloc,
       builder: (context, state) {
         if (state is ProductDetailSelectAddressComplete) {
-          return buildChild(context, state.address);
+          return buildChild(context, state.address, state.shipment);
         }
-        return buildChild(context, userAddress);
+        return buildChild(context, userAddress, shipmentLists);
       },
     );
   }
 
-  Widget buildChild(BuildContext context, Location address) {
+  Widget buildChild(BuildContext context, Location address,
+      List<EasyParcelResponse> shipments) {
     return Column(
       children: <Widget>[
         Row(
@@ -66,12 +67,13 @@ class ProductDeliveryInfo extends StatelessWidget {
           ],
         ),
         SizedBox(height: 10),
-        courierDynamicList(context),
+        courierDynamicList(context, shipments),
       ],
     );
   }
 
-  Widget courierDynamicList(BuildContext context) {
+  Widget courierDynamicList(
+      BuildContext context, List<EasyParcelResponse> shipments) {
     double minCost = 1000000;
     double maxCost = 0;
     DateTime minDate = new DateTime(2080, 1, 1, 0, 0);
@@ -107,12 +109,14 @@ class ProductDeliveryInfo extends StatelessWidget {
           Container(
             width: MediaQuery.of(context).size.width * 0.55,
             child: Text(
-              shipments != null && shipments.length > 1
-                  ? "RM " +
-                      minCost.toStringAsFixed(2) +
-                      " - RM " +
-                      maxCost.toStringAsFixed(2)
-                  : "RM " + minCost.toStringAsFixed(2),
+              shipments == null || shipments.length == 0
+                  ? " - "
+                  : (shipments.length > 1
+                      ? "RM " +
+                          minCost.toStringAsFixed(2) +
+                          " - RM " +
+                          maxCost.toStringAsFixed(2)
+                      : "RM " + minCost.toStringAsFixed(2)),
               textAlign: TextAlign.left,
               style: TextStyle(color: AppTheme.colorOrange, fontSize: 14),
             ),
@@ -136,13 +140,15 @@ class ProductDeliveryInfo extends StatelessWidget {
           Container(
             width: MediaQuery.of(context).size.width * 0.55,
             child: Text(
-              minDate.day.toString() +
-                  " " +
-                  reformatMonth(minDate.month) +
-                  " - " +
-                  maxDate.day.toString() +
-                  " " +
-                  reformatMonth(maxDate.month),
+              shipments == null || shipments.length == 0
+                  ? " - "
+                  : (minDate.day.toString() +
+                      " " +
+                      reformatMonth(minDate.month) +
+                      " - " +
+                      maxDate.day.toString() +
+                      " " +
+                      reformatMonth(maxDate.month)),
               textAlign: TextAlign.left,
               style: TextStyle(fontSize: 14),
             ),

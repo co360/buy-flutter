@@ -47,10 +47,20 @@ class _ProductRatingState extends State<ProductRating> {
         Container(
             color: Colors.white,
             padding: EdgeInsets.only(top: 10, right: 5, left: 5),
-            child: ratingBody(context, ratings)),
+            child: ratings.length == 0
+                ? noRatingBody(context)
+                : ratingBody(context, ratings)),
         SizedBox(height: 20)
       ],
     ));
+  }
+
+  Widget noRatingBody(BuildContext context) {
+    return (Column(children: <Widget>[
+      Text(
+          FlutterI18n.translate(context, "shopping.productDetail.noRatingsYet"),
+          style: TextStyle(color: AppTheme.colorGray5)),
+    ]));
   }
 
   Widget ratingBody(BuildContext context, List<OrderRateReview> ratings) {

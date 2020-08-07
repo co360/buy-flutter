@@ -28,7 +28,6 @@ class SellerStoreSearch extends StatelessWidget {
       child: StaticSearchBar(
         placeholder: FlutterI18n.translate(
             context, "shopping.sellerStorePage.searchProductSeller"),
-        filterProduct: products,
       ),
     );
   }
