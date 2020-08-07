@@ -7,6 +7,7 @@ import 'package:get_it/get_it.dart';
 import 'package:storeFlutter/blocs/account/address-bloc.dart';
 import 'package:storeFlutter/components/app-button.dart';
 import 'package:storeFlutter/components/app-loading-dialog.dart';
+import 'package:storeFlutter/components/app-loading.dart';
 import 'package:storeFlutter/models/identity/location.dart';
 import 'package:storeFlutter/services/storage-service.dart';
 import 'package:storeFlutter/util/app-theme.dart';
@@ -41,23 +42,20 @@ class _AddressViewState extends State<AddressView> {
         bloc: GetIt.I<AddressBloc>(),
         builder: (context, state) {
           print("[AddressView] current state $state");
-          List<Location> lists = [];
-          if (state is GetAddressSuccess) {
+          if (state is AddressInProgress) {
+            return AppLoading();
+          } else if (state is GetAddressSuccess) {
             print(state.addresses);
             if (state.addresses.length > 0) {
-              lists = state.addresses;
+              return SingleChildScrollView(
+                child: Column(
+                    children: generateDynamicList(context, state.addresses)),
+              );
             }
           }
-
-          if (lists.length > 0) {
-            return SingleChildScrollView(
-              child: Column(children: generateDynamicList(context, lists)),
-            );
-          } else {
-            return SingleChildScrollView(
-              child: emptyList(context),
-            );
-          }
+          return SingleChildScrollView(
+            child: emptyList(context),
+          );
         });
   }
 

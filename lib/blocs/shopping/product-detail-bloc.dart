@@ -148,12 +148,32 @@ class ProductDetailBloc extends Bloc<ProductDetailEvent, ProductDetailState> {
 
       // TODO triger sales cart bloc to refresh...
     } else if (event is ProductDetailSelectAddress) {
+      yield ProductDetailSelectAddressInProgress();
+
       CompanyProfile userProfile = await _companyProfileService
           .findByCompany(_storageService.loginUser.companyId);
       userAddress = userProfile.locations
           .where((element) => element.id == event.id)
           .toList()[0];
-      yield ProductDetailSelectAddressComplete(userAddress);
+      shipment = await _shipmentService.getEasyParcel(new EasyParcelParam(
+          senderPostcode: sellerCompany.postcode,
+          senderCountry: sellerCompany.country,
+          senderState: sellerCompany.state,
+          receiverCountry:
+              userAddress == null || userAddress.countryCode == null
+                  ? "MY"
+                  : userAddress.countryCode,
+          receiverPostcode: userAddress == null || userAddress.postcode == null
+              ? "45000"
+              : userAddress.postcode,
+          receiverState: userAddress == null || userAddress.state == null
+              ? "Selangor"
+              : userAddress.state,
+          weight: product.weight,
+          height: product.height,
+          width: product.width,
+          length: product.length));
+      yield ProductDetailSelectAddressComplete(userAddress, shipment);
     }
   }
 
@@ -301,13 +321,16 @@ class ProductDetailSkuChecked extends ProductDetailState {}
 
 class ProductDetailSkuViewLoaded extends ProductDetailState {}
 
+class ProductDetailSelectAddressInProgress extends ProductDetailState {}
+
 class ProductDetailSelectAddressComplete extends ProductDetailState {
   final Location address;
+  final List<EasyParcelResponse> shipment;
 
-  ProductDetailSelectAddressComplete(this.address);
+  ProductDetailSelectAddressComplete(this.address, this.shipment);
 
   @override
-  List<Object> get props => [address];
+  List<Object> get props => [address, shipment];
 }
 
 // event

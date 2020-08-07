@@ -69,7 +69,8 @@
       "easeOfDoingBusiness": "Ease Of Doing Business",
       "seeAll": "See All",
       "seeLess": "See Less",
-      "noReviewsYet": "This product has no reviews",
+      "noReviewsYet": "This product has no reviews.",
+      "noRatingsYet": "This product has no ratings.",
       "standardDelivery": "Standard Delivery",
       "deliverTo": "Deliver To",
       "deliveryFeeInformation": "Delivery Fee Information"
@@ -90,8 +91,8 @@
       "ratingsLabel": "Ratings",
       "reviewsLabel": "Reviews",
       "totalProduct": "Products",
-      "noRatingsYet": "No Ratings Yet",
-      "noReviewsYet": "This Seller Has No Reviews"
+      "noRatingsYet": "This Seller Has No Reviews.",
+      "noReviewsYet": "This Seller Has No Reviews."
     }
   },
   "account" : {

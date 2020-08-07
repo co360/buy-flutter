@@ -55,8 +55,9 @@ class _SellerStoreReviewState extends State<SellerStoreReview> {
         ),
         Container(
             color: Colors.white,
-            padding: EdgeInsets.only(top: 20, bottom: 20, right: 5, left: 5),
-            child: ratingBody(context, ratings)),
+            child: ratings.length == 0
+                ? noRatingBody(context)
+                : ratingBody(context, ratings)),
         SizedBox(height: 15),
         Align(
           alignment: Alignment.centerLeft,
@@ -84,75 +85,90 @@ class _SellerStoreReviewState extends State<SellerStoreReview> {
       avg = avg / ratings.length;
     }
 
+    return (Padding(
+        padding: EdgeInsets.only(top: 20, bottom: 20, right: 5, left: 5),
+        child: Column(children: <Widget>[
+          Text(
+            avg.toStringAsFixed(2),
+            textAlign: TextAlign.center,
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 34),
+          ),
+          SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              FaDuotoneIcon(
+                FontAwesomeIcons.duotoneStarHalf,
+                primaryColor:
+                    avg >= 0.5 ? AppTheme.colorYellow : AppTheme.colorGray2,
+                secondaryColor:
+                    avg > 0 ? AppTheme.colorYellow : AppTheme.colorGray2,
+                size: 30,
+              ),
+              FaDuotoneIcon(
+                FontAwesomeIcons.duotoneStarHalf,
+                primaryColor:
+                    avg >= 1.5 ? AppTheme.colorYellow : AppTheme.colorGray2,
+                secondaryColor:
+                    avg > 1 ? AppTheme.colorYellow : AppTheme.colorGray2,
+                size: 30,
+              ),
+              FaDuotoneIcon(
+                FontAwesomeIcons.duotoneStarHalf,
+                primaryColor:
+                    avg >= 2.5 ? AppTheme.colorYellow : AppTheme.colorGray2,
+                secondaryColor:
+                    avg > 2 ? AppTheme.colorYellow : AppTheme.colorGray2,
+                size: 30,
+              ),
+              FaDuotoneIcon(
+                FontAwesomeIcons.duotoneStarHalf,
+                primaryColor:
+                    avg >= 3.5 ? AppTheme.colorYellow : AppTheme.colorGray2,
+                secondaryColor:
+                    avg > 3 ? AppTheme.colorYellow : AppTheme.colorGray2,
+                size: 30,
+              ),
+              FaDuotoneIcon(
+                FontAwesomeIcons.duotoneStarHalf,
+                primaryColor:
+                    avg >= 4.5 ? AppTheme.colorYellow : AppTheme.colorGray2,
+                secondaryColor:
+                    avg > 4 ? AppTheme.colorYellow : AppTheme.colorGray2,
+                size: 30,
+              ),
+            ],
+          ),
+          SizedBox(height: 15),
+          Text(
+            ratings.length.toString() +
+                " " +
+                FlutterI18n.translate(
+                    context, "shopping.sellerStorePage.ratingsLabel"),
+            textAlign: TextAlign.center,
+            style: TextStyle(fontWeight: FontWeight.normal, fontSize: 14),
+          ),
+        ])));
+  }
+
+  Widget noRatingBody(BuildContext context) {
     return (Column(children: <Widget>[
-      Text(
-        avg.toStringAsFixed(2),
-        textAlign: TextAlign.center,
-        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 34),
-      ),
-      SizedBox(height: 10),
-      Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          FaDuotoneIcon(
-            FontAwesomeIcons.duotoneStarHalf,
-            primaryColor:
-                avg >= 0.5 ? AppTheme.colorYellow : AppTheme.colorGray2,
-            secondaryColor:
-                avg > 0 ? AppTheme.colorYellow : AppTheme.colorGray2,
-            size: 30,
-          ),
-          FaDuotoneIcon(
-            FontAwesomeIcons.duotoneStarHalf,
-            primaryColor:
-                avg >= 1.5 ? AppTheme.colorYellow : AppTheme.colorGray2,
-            secondaryColor:
-                avg > 1 ? AppTheme.colorYellow : AppTheme.colorGray2,
-            size: 30,
-          ),
-          FaDuotoneIcon(
-            FontAwesomeIcons.duotoneStarHalf,
-            primaryColor:
-                avg >= 2.5 ? AppTheme.colorYellow : AppTheme.colorGray2,
-            secondaryColor:
-                avg > 2 ? AppTheme.colorYellow : AppTheme.colorGray2,
-            size: 30,
-          ),
-          FaDuotoneIcon(
-            FontAwesomeIcons.duotoneStarHalf,
-            primaryColor:
-                avg >= 3.5 ? AppTheme.colorYellow : AppTheme.colorGray2,
-            secondaryColor:
-                avg > 3 ? AppTheme.colorYellow : AppTheme.colorGray2,
-            size: 30,
-          ),
-          FaDuotoneIcon(
-            FontAwesomeIcons.duotoneStarHalf,
-            primaryColor:
-                avg >= 4.5 ? AppTheme.colorYellow : AppTheme.colorGray2,
-            secondaryColor:
-                avg > 4 ? AppTheme.colorYellow : AppTheme.colorGray2,
-            size: 30,
-          ),
-        ],
-      ),
       SizedBox(height: 15),
       Text(
-        ratings.length.toString() +
-            " " +
-            FlutterI18n.translate(
-                context, "shopping.sellerStorePage.ratingsLabel"),
-        textAlign: TextAlign.center,
-        style: TextStyle(fontWeight: FontWeight.normal, fontSize: 14),
+        FlutterI18n.translate(context, "shopping.sellerStorePage.noRatingsYet"),
+        style: TextStyle(color: AppTheme.colorGray5),
       ),
+      SizedBox(height: 15),
     ]));
   }
 
   Widget noReviewBody(BuildContext context) {
     return (Column(children: <Widget>[
       SizedBox(height: 15),
-      Text(FlutterI18n.translate(
-          context, "shopping.sellerStorePage.noReviewsYet")),
+      Text(
+        FlutterI18n.translate(context, "shopping.sellerStorePage.noReviewsYet"),
+        style: TextStyle(color: AppTheme.colorGray5),
+      ),
       SizedBox(height: 15),
     ]));
   }
