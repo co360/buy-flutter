@@ -20,7 +20,7 @@ abstract class ProductFeeInfo extends StatelessWidget {
       context: context,
       isScrollControlled: true,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10.0),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
       ),
       backgroundColor: AppTheme.colorBg,
       builder: (BuildContext context) {
@@ -44,14 +44,16 @@ class ProductFeeInfoModalBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ProductDetailBloc, ProductDetailState>(
-      bloc: productDetailBloc,
-      builder: (context, state) {
-        if (state is ProductDetailSelectAddressComplete) {
-          return buildChild(context, state.address);
-        }
-        return buildChild(context, userAddress);
-      },
+    return SafeArea(
+      child: BlocBuilder<ProductDetailBloc, ProductDetailState>(
+        bloc: productDetailBloc,
+        builder: (context, state) {
+          if (state is ProductDetailSelectAddressComplete) {
+            return buildChild(context, state.address);
+          }
+          return buildChild(context, userAddress);
+        },
+      ),
     );
   }
 
@@ -121,7 +123,7 @@ class ProductFeeInfoModalBody extends StatelessWidget {
                   GestureDetector(
                     behavior: HitTestBehavior.translucent,
                     onTap: () {
-                      Navigator.pop(context);
+//                      Navigator.pop(context);
                       Navigator.push(
                         context,
                         CupertinoPageRoute(

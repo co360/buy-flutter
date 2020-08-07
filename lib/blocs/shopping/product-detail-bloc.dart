@@ -20,7 +20,6 @@ import 'package:storeFlutter/services/company-profile-service.dart';
 import 'package:storeFlutter/services/company-service.dart';
 import 'package:storeFlutter/services/shipment-service.dart';
 import 'package:storeFlutter/services/storage-service.dart';
-import 'package:storeFlutter/util/enums-util.dart';
 
 // bloc
 class ProductDetailBloc extends Bloc<ProductDetailEvent, ProductDetailState> {
@@ -204,7 +203,8 @@ class ProductDetailBloc extends Bloc<ProductDetailEvent, ProductDetailState> {
                     tempValue =
                         VariantTypeValue(0, value.label, value.value, 0);
                   }
-                  if (tempValue != null && !option.values.contains(tempValue.value)) {
+                  if (tempValue != null &&
+                      !option.values.contains(tempValue.value)) {
                     option.values.add(tempValue.value);
                     option.labels.add(value.label);
                   }

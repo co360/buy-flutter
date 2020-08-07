@@ -11,15 +11,16 @@ import 'package:storeFlutter/components/app-button.dart';
 import 'package:storeFlutter/components/app-html.dart';
 import 'package:storeFlutter/components/app-label-value.dart';
 import 'package:storeFlutter/components/app-list-title.dart';
+import 'package:storeFlutter/components/app-loading.dart';
 import 'package:storeFlutter/components/app-panel.dart';
 import 'package:storeFlutter/components/form/quantity-input.dart';
 import 'package:storeFlutter/components/shopping/product-detail/product-delivery-info.dart';
 import 'package:storeFlutter/components/shopping/product-detail/product-fee-info.dart';
 import 'package:storeFlutter/components/shopping/product-detail/product-image-slider.dart';
+import 'package:storeFlutter/components/shopping/product-detail/product-rating.dart';
 import 'package:storeFlutter/components/shopping/product-detail/product-review.dart';
 import 'package:storeFlutter/components/shopping/product-detail/product-variant.dart';
 import 'package:storeFlutter/components/shopping/product-detail/seller-store-button.dart';
-import 'package:storeFlutter/components/shopping/product-detail/product-rating.dart';
 import 'package:storeFlutter/components/shopping/shopping-cart-icon.dart';
 import 'package:storeFlutter/components/shopping/static-search-bar.dart';
 import 'package:storeFlutter/datasource/data-source-helper.dart';
@@ -29,9 +30,9 @@ import 'package:storeFlutter/models/identity/location.dart';
 import 'package:storeFlutter/models/shopping/easy-parcel-response.dart';
 import 'package:storeFlutter/models/shopping/product.dart';
 import 'package:storeFlutter/util/app-theme.dart';
+import 'package:storeFlutter/util/enums-util.dart';
 import 'package:storeFlutter/util/format-util.dart';
 import 'package:storeFlutter/util/resource-util.dart';
-import 'package:storeFlutter/util/enums-util.dart';
 
 class ProductDetailScreen extends StatelessWidget {
   @override
@@ -49,6 +50,8 @@ class ProductDetailScreen extends StatelessWidget {
           return BlocBuilder<ProductDetailBloc, ProductDetailState>(
             buildWhen: (previousState, state) {
               return (state is ProductDetailLoadComplete ||
+                  state is ProductDetailLoadInProgress ||
+                  state is ProductDetailLoadFailed ||
                   state is ProductDetailInitial);
             },
             builder: (context, state) {
@@ -173,12 +176,13 @@ class ProductDetailScreen extends StatelessWidget {
   static void showProductDetailBottomSheet(
       BuildContext context, Product product,
       {ProductActionModalAction action: ProductActionModalAction.both}) {
-    ProductDetailBloc productDetailBloc = BlocProvider.of<ProductDetailBloc>(context);
+    ProductDetailBloc productDetailBloc =
+        BlocProvider.of<ProductDetailBloc>(context);
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10.0),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
       ),
       backgroundColor: Colors.white,
       builder: (BuildContext context) {
@@ -198,7 +202,7 @@ class ProductActionModalBody extends StatelessWidget {
   ProductDetailBloc productDetailBloc;
 
   ProductActionModalBody(
-      this.productDetailBloc,
+    this.productDetailBloc,
     this.product, {
     this.action = ProductActionModalAction.both,
     Key key,
@@ -222,7 +226,8 @@ class ProductActionModalBody extends StatelessWidget {
                   padding: EdgeInsets.all(AppTheme.paddingStandard),
                   child: Column(
                     children: <Widget>[
-                      ProductVariant(product, enumVariantViewType.SELECTION, productDetailBloc),
+                      ProductVariant(product, enumVariantViewType.SELECTION,
+                          productDetailBloc),
                     ],
                   ),
                 ),
@@ -416,13 +421,15 @@ class ProductDetailBody extends StatelessWidget {
           AppListTitle.noTopPadding(FlutterI18n.translate(
               context, "shopping.productDetail.delivery")),
           AppPanel(
-            child: buildPanelContentWithAction(
-                ProductDeliveryInfo(userAddress, shipment), () {
-              CheckSession.checkSession(context, () {
-                ProductFeeInfo.showProductDetailBottomSheet(
-                    context, userAddress, shipment);
-              });
-            }),
+            child: productDetailBloc.state is ProductDetailLoadInProgress
+                ? AppLoading()
+                : buildPanelContentWithAction(
+                    ProductDeliveryInfo(userAddress, shipment), () {
+                    CheckSession.checkSession(context, () {
+                      ProductFeeInfo.showProductDetailBottomSheet(
+                          context, userAddress, shipment);
+                    });
+                  }),
           ),
           ...buildProductOption(context),
           AppListTitle.noTopPadding(FlutterI18n.translate(
@@ -690,21 +697,28 @@ class ProductDetailBody extends StatelessWidget {
               context, "shopping.productDetail.productOption"),
         ),
       );
-      widgets.add(
-        AppPanel(
-          child: buildPanelContentWithAction(
-            ProductVariant(product, enumVariantViewType.ALL, productDetailBloc),
-            () => CheckSession.checkSession(
-              context,
-              () {
-                productDetailBloc.add(ProductDetailSkuInitiate(product.variantSkus));
-                ProductDetailScreen.showProductDetailBottomSheet(
-                    context, product);
-              },
+
+      if (productDetailBloc.state is ProductDetailLoadInProgress) {
+        widgets.add(AppPanel(child: AppLoading()));
+      } else {
+        widgets.add(
+          AppPanel(
+            child: buildPanelContentWithAction(
+              ProductVariant(
+                  product, enumVariantViewType.ALL, productDetailBloc),
+              () => CheckSession.checkSession(
+                context,
+                () {
+                  productDetailBloc
+                      .add(ProductDetailSkuInitiate(product.variantSkus));
+                  ProductDetailScreen.showProductDetailBottomSheet(
+                      context, product);
+                },
+              ),
             ),
           ),
-        ),
-      );
+        );
+      }
     }
 
     return widgets;

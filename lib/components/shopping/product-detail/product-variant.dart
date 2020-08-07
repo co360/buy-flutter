@@ -6,7 +6,6 @@ import 'package:storeFlutter/models/shopping/product.dart';
 import 'package:storeFlutter/models/shopping/sku.dart';
 import 'package:storeFlutter/models/shopping/variant-type-value.dart';
 import 'package:storeFlutter/models/shopping/variant-type.dart';
-import 'package:storeFlutter/models/shopping/variant-value.dart';
 import 'package:storeFlutter/services/variant-type-service.dart';
 import 'package:storeFlutter/util/app-theme.dart';
 import 'package:storeFlutter/util/enums-util.dart';
@@ -42,7 +41,6 @@ class ProductVariant extends StatelessWidget {
         bloc: productDetailBloc,
         builder: (context, state) {
           if (state is ProductDetailLoadComplete) {
-
             productDetailBloc.add(ProductDetailSkuLoad(buildVariantOptions));
           } else if (state is ProductDetailSkuInit) {
             this.viewType = enumVariantViewType.SELECTION;
@@ -300,11 +298,14 @@ class VariantOptionValueWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
+      onTap: (this.viewType == enumVariantViewType.SELECTION)
+          ? () {
 //        this.option.selectedValue = this.value;
-        if (this.viewType == enumVariantViewType.SELECTION)
-          productDetailBloc.add(ProductDetailVariantSelection(option, value));
-      },
+//        if (this.viewType == enumVariantViewType.SELECTION)
+              productDetailBloc
+                  .add(ProductDetailVariantSelection(option, value));
+            }
+          : null,
       behavior: HitTestBehavior.translucent,
       child: Container(
         decoration: BoxDecoration(
