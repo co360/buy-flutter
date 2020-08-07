@@ -154,6 +154,7 @@
       "priceRange": "Price Range (RM)"
     },
     "sellerStorePage": {
+      "searchProductSeller": "Search Product In Seller Store",
       "overview": "Company Overview",
       "products": "All Products",
       "ratings": "Ratings & Reviews",

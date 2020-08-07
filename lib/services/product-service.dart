@@ -18,6 +18,22 @@ class ProductService extends BaseRestService {
     });
   }
 
+  Future<List<LabelValue>> keyWordByNameFilter(
+      String name, List<Product> filterProduct) async {
+    var url = '$_endPoint/keywordByName?name=$name';
+    return await dio.get<List<dynamic>>(url).then((value) {
+      print(value.data);
+
+      return value.data.map((e) => LabelValue.fromJson(e)).where((element) {
+        for (var f in filterProduct) {
+          if (f.category.name == element.label ||
+              f.category.parentCategory.name == element.label) return true;
+        }
+        return false;
+      }).toList();
+    });
+  }
+
   Future<QueryResult<Product>> searchProduct(
       ProductListingQueryFilter queryFilter,
       {int page = 0,
@@ -88,10 +104,10 @@ class ProductService extends BaseRestService {
 //    params
 //        .addAll(filter.filters.map((key, value) => MapEntry(key, value.value)));
 
-    if(filter.filters != null) {
+    if (filter.filters != null) {
       params.addAll(filter.toQueryParameter());
     }
-    if(filter.category != null && filter.query == null) {
+    if (filter.category != null && filter.query == null) {
       params["category.code"] = filter.category;
     }
     return params;
@@ -104,7 +120,7 @@ class ProductListingQueryFilter {
 
   Map<String, FilterValue> filters = {};
 
-  ProductListingQueryFilter({this.query,this.category, this.filters});
+  ProductListingQueryFilter({this.query, this.category, this.filters});
 
   ProductListingQueryFilter.copy(ProductListingQueryFilter filter) {
     query = filter.query;
@@ -137,7 +153,7 @@ class ProductListingQueryFilter {
 
       if (key == 'CATEGORY') {
         finalKey = "category.code";
-        if((category != null && category.length > 0) && (value != null)) {
+        if ((category != null && category.length > 0) && (value != null)) {
           category = null;
         }
       }

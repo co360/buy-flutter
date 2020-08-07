@@ -2,11 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_i18n/flutter_i18n.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:storeFlutter/components/shopping/seller-store/seller-store-search.dart';
 import 'package:storeFlutter/models/identity/company-profile.dart';
 import 'package:storeFlutter/models/identity/company.dart';
 import 'package:storeFlutter/models/filter-type.dart';
 import 'package:storeFlutter/blocs/shopping/product-listing-bloc.dart';
-import 'package:storeFlutter/components/shopping/static-search-bar.dart';
 import 'package:storeFlutter/components/shopping/seller-store/seller-store-header.dart';
 import 'package:storeFlutter/components/shopping/seller-store/seller-store-overview.dart';
 import 'package:storeFlutter/components/shopping/seller-store/seller-store-products.dart';
@@ -68,11 +68,7 @@ class _SellerStoreState extends State<SellerStore>
         child: AppBar(
           title: Row(
             children: <Widget>[
-              Expanded(
-                child: StaticSearchBar(
-                    placeholder: FlutterI18n.translate(
-                        context, "shopping.searchProductSeller")),
-              ),
+              SellerStoreSearch(),
             ],
           ),
           flexibleSpace: Container(
@@ -103,6 +99,7 @@ class _SellerStoreState extends State<SellerStore>
           labelColor: AppTheme.colorOrange,
           indicatorWeight: 2,
           indicatorColor: AppTheme.colorOrange,
+          unselectedLabelStyle: TextStyle(fontWeight: FontWeight.normal),
           tabs: <Widget>[
             Tab(
               text: FlutterI18n.translate(

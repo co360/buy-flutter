@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:quiver/strings.dart';
+import 'package:storeFlutter/models/shopping/product.dart';
 import 'package:storeFlutter/screens/shopping/search-general.dart';
 import 'package:storeFlutter/util/app-theme.dart';
 
@@ -8,11 +9,13 @@ class StaticSearchBar extends StatelessWidget {
   final String placeholder;
   final String query;
   final Color borderColor;
+  final List<Product> filterProduct;
 
   const StaticSearchBar({
     this.placeholder,
     this.query,
     this.borderColor,
+    this.filterProduct,
     Key key,
   }) : super(key: key);
 
@@ -64,6 +67,7 @@ class StaticSearchBar extends StatelessWidget {
       pageBuilder: (BuildContext context, _, __) => SearchGeneral(
         query: query,
         placeholder: placeholder,
+        filterProduct: filterProduct,
       ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         var begin = Offset(0.0, 1.0);

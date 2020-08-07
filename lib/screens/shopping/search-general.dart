@@ -6,6 +6,7 @@ import 'package:get_it/get_it.dart';
 import 'package:storeFlutter/blocs/shopping/search-bloc.dart';
 import 'package:storeFlutter/components/shopping/custom-search-bar.dart';
 import 'package:storeFlutter/models/label-value.dart';
+import 'package:storeFlutter/models/shopping/product.dart';
 import 'package:storeFlutter/screens/shopping/product-listing.dart';
 import 'package:storeFlutter/services/product-service.dart';
 import 'package:storeFlutter/util/app-theme.dart';
@@ -14,8 +15,9 @@ import 'package:substring_highlight/substring_highlight.dart';
 class SearchGeneral extends StatefulWidget {
   final String query;
   final String placeholder;
+  final List<Product> filterProduct;
 
-  SearchGeneral({this.query, this.placeholder});
+  SearchGeneral({this.query, this.placeholder, this.filterProduct});
 
   @override
   _SearchGeneralState createState() => _SearchGeneralState();
@@ -214,6 +216,9 @@ class _SearchGeneralState extends State<SearchGeneral> {
 
   Future<List<LabelValue>> search(BuildContext context, String search) async {
     BlocProvider.of<SearchBloc>(context).add(SearchWithTerm(search));
+    if (widget.filterProduct != null && widget.filterProduct.length > 0) {
+      return productService.keyWordByNameFilter(search, widget.filterProduct);
+    }
     return productService.keyWordByName(search);
   }
 }
