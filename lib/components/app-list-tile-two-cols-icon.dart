@@ -56,7 +56,7 @@ class AppListTileTwoColsIcons extends StatelessWidget {
       ),
       bottomDivider
           ? Divider(
-              color: AppTheme.colorGray3,
+              color: AppTheme.colorGray2,
               height: 1,
               thickness: 1,
             )
@@ -67,7 +67,7 @@ class AppListTileTwoColsIcons extends StatelessWidget {
       widgets.insert(
         0,
         Divider(
-          color: AppTheme.colorGray3,
+          color: AppTheme.colorGray2,
           height: 1,
           thickness: 1,
         ),

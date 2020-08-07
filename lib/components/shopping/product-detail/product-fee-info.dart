@@ -92,12 +92,22 @@ class ProductFeeInfoModalBody extends StatelessWidget {
                 ],
               ),
             ),
+            Divider(
+              color: AppTheme.colorGray2,
+              height: 1,
+              thickness: 1,
+            ),
             SizedBox(
-              height: 10,
+              height: 20,
             ),
             Container(
-              color: Colors.white,
               padding: EdgeInsets.all(AppTheme.paddingStandard),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border(
+                    bottom: BorderSide(color: AppTheme.colorGray2),
+                    top: BorderSide(color: AppTheme.colorGray2)),
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
