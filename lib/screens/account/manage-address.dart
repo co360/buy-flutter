@@ -41,9 +41,6 @@ class _ManageAddressScreenState extends State<ManageAddressScreen> {
     if (!isNew) {
       print("[ManageAddressScreen] Existing case - ${widget.id}");
       GetIt.I<AddressBloc>().add(GetAddressByIDEvent(context, widget.id));
-    } else {
-      print("[ManageAddressScreen] New case");
-      GetIt.I<AddressBloc>().add(GetCountryListEvent(context));
     }
     super.initState();
   }
@@ -67,7 +64,9 @@ class _ManageAddressScreenState extends State<ManageAddressScreen> {
       bloc: GetIt.I<AddressBloc>(),
       listener: (context, state) {
         print("[[ManageAddressScreen]] current state $state, $hasDialog");
-        if (state is AddressInProgress) {
+        if (state is GetAddressInProgress ||
+            state is SetAddressInProgress ||
+            state is DeleteAddressInProgress) {
           AppLoadingDialog(context);
           if (!hasDialog) {
             hasDialog = true;
@@ -77,15 +76,15 @@ class _ManageAddressScreenState extends State<ManageAddressScreen> {
             Navigator.of(context).pop();
             hasDialog = false;
           }
-          if (state is ManageAddressFailed) {
+          if (state is SetAddressFailed ||
+              state is DeleteAddressFailed ||
+              state is AddressOpFailed) {
             AppNotification(
                     FlutterI18n.translate(context, "error.pleaseTryAgain"))
                 .show(context);
           } else if (state is SetAddressSuccess ||
               state is DeleteAddressSuccess) {
-            print("Route here");
             Navigator.pop(context);
-            // Navigator.popUntil(context, ModalRoute.withName('/'));
           }
         }
       },
